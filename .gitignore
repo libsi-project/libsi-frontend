@@ -1,0 +1,30 @@
+# Dart / pub (all packages in monorepo)
+**/.dart_tool/
+**/.packages
+**/.pub-cache/
+**/build/
+**/doc/api/
+pubspec_overrides.yaml
+
+# IDE / editor
+**/.idea/
+**/.vscode/
+**/.cursor/
+*.iml
+*.ipr
+*.iws
+
+# Test / tooling
+**/coverage/
+
+# OS / misc
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
