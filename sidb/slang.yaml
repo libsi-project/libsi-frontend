@@ -1,0 +1,6 @@
+base_locale: ru
+flutter_integration: false
+input_directory: lib/config/localization/l10n
+output_directory: lib/config/localization/l10n
+input_file_pattern: .l10n.json
+output_file_name: l10n.g.dart

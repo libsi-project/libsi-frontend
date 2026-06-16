@@ -1,0 +1,15 @@
+name: jaspr_bloc
+description: Jaspr components that make it easy to implement the BLoC (Business
+  Logic Component) design pattern. Built to be used with the bloc state
+  management package.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  bloc: ^8.0.2
+  jaspr: ^0.23.1
+  jaspr_provider:
+    path: ../jaspr_provider

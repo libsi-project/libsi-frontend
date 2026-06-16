@@ -1,0 +1,15 @@
+{
+    "packages": "Пакеты",
+    "search": "Поиск",
+    "authors": "Авторы",
+    "favorites": "Избранное",
+    "about": "О сайте",
+    "search_packages": "Поиск пакетов...",
+    "added": "Добавлен",
+    "topics_count": {
+        "one": "$n ТЕМА",
+        "few": "$n ТЕМЫ",
+        "many": "$n ТЕМ",
+        "other": "$n ТЕМ"
+    }
+}
