@@ -8,6 +8,7 @@ class AppTheme {
   final Color inputBg;
   final Color border;
   final Color text;
+  final Color textLink;
   final Color textSec;
   final Color surface;
   final Color canvas;
@@ -24,6 +25,7 @@ class AppTheme {
     required this.inputBg,
     required this.border,
     required this.text,
+    required this.textLink,
     required this.textSec,
     required this.surface,
     required this.canvas,
@@ -42,6 +44,7 @@ class AppTheme {
     inputBg: Color('var(--theme-input-bg)'),
     border: Color('var(--theme-border)'),
     text: Color('var(--theme-text)'),
+    textLink: Color('var(--theme-text-link)'),
     textSec: Color('var(--theme-text-sec)'),
     surface: Color('var(--theme-surface)'),
     canvas: Color('var(--theme-canvas)'),

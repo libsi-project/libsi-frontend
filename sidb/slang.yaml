@@ -4,3 +4,5 @@ input_directory: lib/config/localization/l10n
 output_directory: lib/config/localization/l10n
 input_file_pattern: .l10n.json
 output_file_name: l10n.g.dart
+
+# use dart run slang command to generate localizations files

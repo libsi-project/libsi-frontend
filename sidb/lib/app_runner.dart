@@ -9,7 +9,7 @@ import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 import 'package:sidb/presentation/features/pack/view/packs_page.dart';
 
 import 'presentation/components/footer_neo.dart';
-import 'presentation/components/top_bar_neo.dart';
+import 'presentation/components/top_bar_neo_circ.dart';
 import 'presentation/theme/theme_cubit.dart';
 
 // The main component of your application.
@@ -28,13 +28,18 @@ class AppRunner extends StatelessComponent {
                 attributes: {'data-theme': mode.name},
                 [
                   div(
-                    classes: 'flex-1 flex flex-col min-w-0',
-                    styles: Styles(display: Display.flex, width: 100.percent, flexDirection: FlexDirection.column),
+                    styles: Styles(
+                      display: Display.flex,
+                      width: 100.percent,
+                      flexDirection: FlexDirection.column,
+                    ),
                     [
                       TopBarNeo(location: state.location),
                       div(
-                        classes: 'flex-1 overflow-y-auto p-8 nb-bg',
-                        styles: Styles(overflow: Overflow.only(y: Overflow.auto), flex: Flex(grow: 1)),
+                        styles: Styles(
+                          overflow: Overflow.only(y: Overflow.auto),
+                          flex: Flex(grow: 1),
+                        ),
                         [child],
                       ),
                       const FooterNeo(),

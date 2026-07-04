@@ -163,7 +163,7 @@ class TopBarNeo extends StatelessComponent {
               [
                 Input(
                   type: 'text',
-                  placeholder: l10n.search_packages,
+                  placeholder: l10n.searchPackages,
                   inlineStyles: Styles(
                     width: 100.percent,
                     height: 36.px,
@@ -215,8 +215,7 @@ class TopBarNeo extends StatelessComponent {
   }
 }
 
-const String _userPath =
-    'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 10c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z';
+const String _userPath = 'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 10c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z';
 
 class TopBarItem extends StatelessComponent {
   const TopBarItem({

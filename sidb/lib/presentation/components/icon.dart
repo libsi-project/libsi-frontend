@@ -9,9 +9,13 @@ class Icon extends StatelessComponent {
   final double? height;
   final String? strokeWidth;
   final bool filled;
+  final Color? fillColor;
+  final Color? strokeColor;
 
   const Icon(
     this.svgPath, {
+    this.fillColor,
+    this.strokeColor = const Color('var(--theme-text)'),
     this.classes,
     this.width,
     this.height,
@@ -31,18 +35,18 @@ class Icon extends StatelessComponent {
         'width': w.toString(),
         'height': h.toString(),
         'viewBox': '0 0 24 24',
-        'fill': filled ? 'currentColor' : 'none',
-        'stroke': filled ? 'none' : 'currentColor',
       },
       [
-        Component.element(
-          tag: 'path',
+        path(
+          d: svgPath,
+          fill: filled ? fillColor : Colors.transparent,
+          stroke: strokeColor,
+          strokeWidth: strokeWidth,
           attributes: {
             if (!filled) 'stroke-linecap': 'round',
             if (!filled) 'stroke-linejoin': 'round',
-            if (!filled && strokeWidth != null) 'stroke-width': strokeWidth!,
-            'd': svgPath,
           },
+          [],
         ),
       ],
     );

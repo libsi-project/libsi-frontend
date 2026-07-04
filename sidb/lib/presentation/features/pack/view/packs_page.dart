@@ -92,7 +92,7 @@ class _PacksPageState extends State<PacksPage> {
 Component _pageShell(List<Component> children) {
   return div(
     styles: Styles(
-      padding: Padding.only(left: 9.5.rem, right: 9.5.rem, top: 3.rem, bottom: 3.rem),
+      padding: Padding.only(left: 2.rem, right: 2.rem, top: 3.rem, bottom: 3.rem),
     ),
     children,
   );

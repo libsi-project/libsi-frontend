@@ -108,7 +108,17 @@ class Input extends StatelessComponent {
     return input(
       id: id,
       classes: classes,
-      styles: resolvedStyles,
+      styles: resolvedStyles.combine(
+        Styles(
+          backgroundImage: ImageStyle.url('images/search.svg'),
+          backgroundPosition: BackgroundPosition(
+            alignX: BackgroundAlignX.left,
+            alignY: BackgroundAlignY.center,
+            offsetX: 0.75.rem,
+          ),
+          backgroundRepeat: BackgroundRepeat.noRepeat,
+        ),
+      ),
       attributes: resolvedAttributes,
       events: eventMap.isNotEmpty ? eventMap : null,
     );

@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 
 class FooterNeo extends StatelessComponent {
@@ -57,12 +58,13 @@ class FooterNeo extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final l10n = context.l10n;
     return footer(classes: 'footer', [
       nav(classes: 'footer-nav', [
-        a(href: '/about', classes: 'footer-link', [.text('О Сайте')]),
-        a(href: '/faq', classes: 'footer-link', [.text('FAQ')]),
-        a(href: '/feedback', classes: 'footer-link', [.text('Обратная связь')]),
-        a(href: '/license', classes: 'footer-link', [.text('Лицензирование')]),
+        a(href: '/about', classes: 'footer-link', [.text(l10n.aboutSite)]),
+        a(href: '/faq', classes: 'footer-link', [.text(l10n.faq)]),
+        a(href: '/feedback', classes: 'footer-link', [.text(l10n.contact)]),
+        a(href: '/license', classes: 'footer-link', [.text(l10n.licensing)]),
       ]),
       div(classes: 'footer-socials', [
         a(
@@ -79,7 +81,7 @@ class FooterNeo extends StatelessComponent {
         ),
       ]),
       p(classes: 'footer-copyright', [
-        .text('Copyright © 2026 - All right reserved by ACME Industries Ltd'),
+        .text(l10n.copyright),
       ]),
     ]);
   }

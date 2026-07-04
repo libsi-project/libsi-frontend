@@ -24,6 +24,7 @@
   --theme-border: #000000;
   --theme-text: #000000;
   --theme-text-sec: #64748B;
+  --theme-text-link: #0077FF;
   --theme-surface: #FFFFFF;
   --theme-canvas: #FFEEC9;
   --theme-badge-student: #C7F9CC;
@@ -42,6 +43,7 @@
   --theme-border: #FFFFFF;
   --theme-text: #FFFFFF;
   --theme-text-sec: #94A3B8;
+  --theme-text-link: #3399FF;
   --theme-surface: #111827;
   --theme-canvas: #0B1220;
   --theme-badge-student: #2D4A3E;

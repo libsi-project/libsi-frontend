@@ -10,9 +10,6 @@ class PackageCard extends StatelessComponent {
 
   const PackageCard({super.key, required this.pack});
 
-  static const _shadowColor = Color('rgba(0,0,0,0.85)');
-  static const _authorsColor = Color('#0077ff');
-  static const _mutedText = Color('rgba(0,0,0,0.48)');
   static const _cyanBadge = Color('#a6feff');
   static const _greenBadge = Color('#c3ffc7');
   static const _yellowBadge = Color('#fff9a9');
@@ -21,17 +18,19 @@ class PackageCard extends StatelessComponent {
   static List<StyleRule> get styles => [
     css('.pc').styles(
       display: Display.flex,
-      width: 240.px,
-      height: 330.px,
-      padding: Padding.symmetric(horizontal: 20.px, vertical: 24.px),
+      width: 100.percent,
+      minWidth: 240.px,
+      minHeight: 300.px,
+      maxWidth: 300.px,
+      padding: Padding.all(1.rem),
       border: Border.all(width: 3.px, color: AppTheme.theme.border),
-      radius: BorderRadius.circular(2.px),
+      radius: BorderRadius.circular(6.px),
       shadow: BoxShadow(
-        offsetX: 10.px,
-        offsetY: 10.px,
+        offsetX: 6.px,
+        offsetY: 6.px,
         blur: 0.px,
         spread: 0.px,
-        color: _shadowColor,
+        color: AppTheme.theme.border,
       ),
       transition: Transition('all', duration: 150.ms),
       flexDirection: FlexDirection.column,
@@ -43,7 +42,7 @@ class PackageCard extends StatelessComponent {
         offsetY: 4.px,
         blur: 0.px,
         spread: 0.px,
-        color: _shadowColor,
+        color: AppTheme.theme.border,
       ),
       transform: Transform.translate(x: 6.px, y: 6.px),
     ),
@@ -80,7 +79,7 @@ class PackageCard extends StatelessComponent {
         offsetY: 4.px,
         blur: 0.px,
         spread: 0.px,
-        color: _shadowColor,
+        color: AppTheme.theme.border,
       ),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
@@ -107,7 +106,7 @@ class PackageCard extends StatelessComponent {
     ),
     css('.pc-added').styles(
       margin: Margin.only(top: 4.px),
-      color: _mutedText,
+      color: AppTheme.theme.textSec,
       fontFamily: const FontFamily('Inter'),
       fontSize: 12.px,
       fontWeight: FontWeight.w700,
@@ -116,7 +115,7 @@ class PackageCard extends StatelessComponent {
       margin: Margin.only(top: 8.px),
       overflow: Overflow.hidden,
       flex: Flex(grow: 1),
-      color: _authorsColor,
+      color: AppTheme.theme.textLink,
       textAlign: TextAlign.justify,
       fontFamily: const FontFamily('Inter'),
       fontSize: 12.px,
@@ -175,24 +174,42 @@ class PackageCard extends StatelessComponent {
         span(classes: 'pc-badge pc-badge-yellow', [.text(pack.difficulty)]),
       ]),
       div(classes: 'pc-meta', [
-        span([.text(l10n.topics_count(n: pack.topicsCount).toLowerCase())]),
+        span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
         span([.text(_monthYear(pack.publishDate))]),
       ]),
-      p(classes: 'pc-added', [.text('добавлен вчера')]),
+      p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
       p(classes: 'pc-authors', [.text(pack.authors.join(' · '))]),
       div(classes: 'pc-reactions', [
         div(classes: 'pc-reactions-group', [
           button(classes: 'pc-reaction-btn', [
-            Icon(IconPaths.thumbUp, width: 22, height: 22, filled: true),
+            Icon(
+              IconPaths.thumbUp,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
             span([.text('${pack.likesCount}')]),
           ]),
           button(classes: 'pc-reaction-btn', [
-            Icon(_thumbDownPath, width: 22, height: 22, filled: true),
+            Icon(
+              _thumbDownPath,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
             span([.text('${pack.dislikesCount}')]),
           ]),
         ]),
         button(classes: 'pc-bookmark-btn', [
-          Icon(_bookmarkPath, width: 18, height: 22, filled: true),
+          Icon(
+            _bookmarkPath,
+            width: 18,
+            height: 22,
+            filled: true,
+            fillColor: AppTheme.theme.textLink,
+          ),
         ]),
       ]),
     ]);
@@ -200,14 +217,23 @@ class PackageCard extends StatelessComponent {
 
   static String _monthYear(DateTime date) {
     const months = [
-      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
+      'Январь',
+      'Февраль',
+      'Март',
+      'Апрель',
+      'Май',
+      'Июнь',
+      'Июль',
+      'Август',
+      'Сентябрь',
+      'Октябрь',
+      'Ноябрь',
+      'Декабрь',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
 
   static const String _thumbDownPath =
       'M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.017c.163 0 .326.02.485.06L17 4m-7 10v5a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5';
-  static const String _bookmarkPath =
-      'M6 4h12a1 1 0 011 1v16l-7-4-7 4V5a1 1 0 011-1z';
+  static const String _bookmarkPath = 'M6 4h12a1 1 0 011 1v16l-7-4-7 4V5a1 1 0 011-1z';
 }
