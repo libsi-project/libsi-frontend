@@ -2,15 +2,18 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:jaspr_bloc/jaspr_bloc.dart';
+import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/core/di/di.dart';
 import 'package:sidb/presentation/features/about/view/about.dart';
+import 'package:sidb/presentation/features/developer_faq/view/developer_faq_page.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 import 'package:sidb/presentation/features/pack/view/packs_page.dart';
+import 'package:sidb/presentation/features/placeholder/view/placeholder_page.dart';
+import 'package:sidb/presentation/theme/theme_cubit.dart';
 
-import 'presentation/components/footer_neo.dart';
-import 'presentation/components/top_bar_neo_circ.dart';
-import 'presentation/theme/theme_cubit.dart';
+import 'package:sidb/presentation/components/footer_neo.dart';
+import 'package:sidb/presentation/components/top_bar_neo_circ.dart';
 
 // The main component of your application.
 class AppRunner extends StatelessComponent {
@@ -24,25 +27,46 @@ class AppRunner extends StatelessComponent {
           router.ShellRoute(
             builder: (context, state, child) => BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, mode) => div(
-                classes: 'flex h-screen overflow-hidden',
-                attributes: {'data-theme': mode.name},
+                styles: Styles(
+                  display: Display.flex,
+                  height: 100.vh,
+                  overflow: Overflow.hidden,
+                ),
                 [
                   div(
                     styles: Styles(
                       display: Display.flex,
                       width: 100.percent,
+                      height: 100.percent,
                       flexDirection: FlexDirection.column,
                     ),
                     [
                       TopBarNeo(location: state.location),
                       div(
                         styles: Styles(
+                          minHeight: 0.px,
                           overflow: Overflow.only(y: Overflow.auto),
                           flex: Flex(grow: 1),
                         ),
-                        [child],
+                        [
+                          div(
+                            styles: Styles(
+                              display: Display.flex,
+                              minHeight: 100.percent,
+                              flexDirection: FlexDirection.column,
+                            ),
+                            [
+                              div(
+                                styles: Styles(
+                                  flex: Flex(grow: 1),
+                                ),
+                                [child],
+                              ),
+                              const FooterNeo(),
+                            ],
+                          ),
+                        ],
                       ),
-                      const FooterNeo(),
                     ],
                   ),
                 ],
@@ -51,6 +75,41 @@ class AppRunner extends StatelessComponent {
             routes: [
               router.Route(path: '/', title: 'Home', builder: (context, state) => const PacksPage()),
               router.Route(path: '/about', title: 'About', builder: (context, state) => const About()),
+              router.Route(
+                path: '/developer-faq',
+                title: 'Developer FAQ',
+                builder: (context, state) => const DeveloperFaqPage(),
+              ),
+              router.Route(
+                path: '/search',
+                title: 'Search',
+                builder: (context, state) => PlaceholderPage(title: context.l10n.search),
+              ),
+              router.Route(
+                path: '/authors',
+                title: 'Authors',
+                builder: (context, state) => PlaceholderPage(title: context.l10n.authors),
+              ),
+              router.Route(
+                path: '/favorites',
+                title: 'Favorites',
+                builder: (context, state) => PlaceholderPage(title: context.l10n.favorites),
+              ),
+              router.Route(
+                path: '/faq',
+                title: 'FAQ',
+                builder: (context, state) => PlaceholderPage(title: context.l10n.faq),
+              ),
+              router.Route(
+                path: '/feedback',
+                title: 'Feedback',
+                builder: (context, state) => PlaceholderPage(title: context.l10n.contact),
+              ),
+              router.Route(
+                path: '/license',
+                title: 'License',
+                builder: (context, state) => PlaceholderPage(title: context.l10n.licensing),
+              ),
             ],
           ),
         ],

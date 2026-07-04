@@ -1,8 +1,7 @@
-import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_bloc/jaspr_bloc.dart' hide Transition;
 import 'package:sidb/presentation/components/icon.dart';
-import 'package:sidb/presentation/theme/app_theme.dart';
+import 'package:sidb/presentation/components/neo_button.dart';
 import 'package:sidb/presentation/theme/theme_cubit.dart';
 
 /// A client-side component that toggles the application theme between light and dark modes.
@@ -14,26 +13,14 @@ class ThemeToggle extends StatelessComponent {
   Component build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, state) {
-        final theme = state == ThemeMode.light ? AppTheme.light : AppTheme.dark;
-
-        return button(
-          id: 'theme-toggle',
+        return NeoIconButton(
+          attributes: const {'id': 'theme-toggle', 'aria-label': 'Toggle theme'},
           classes: 'topbar-icon-btn topbar-theme-btn',
-          styles: Styles(
-            backgroundColor: theme.surface,
-          ),
           onClick: () => BlocProvider.of<ThemeCubit>(context).toggleTheme(),
-          [
-            span(
-              styles: Styles(display: Display.flex),
-              [
-              Icon(
-                state == ThemeMode.light ? _sunPath : _moonPath,
-                classes: 'h-6 w-6',
-                strokeWidth: '2.5',
-              ),
-            ]),
-          ],
+          child: AppIcon(
+            state == ThemeMode.light ? _sunPath : _moonPath,
+            strokeWidth: '2.5',
+          ),
         );
       },
     );
