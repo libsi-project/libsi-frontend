@@ -51,18 +51,39 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	String get about => 'О сайте';
 
 	/// ru: 'Поиск пакетов...'
-	String get search_packages => 'Поиск пакетов...';
+	String get searchPackages => 'Поиск пакетов...';
 
 	/// ru: 'Добавлен'
 	String get added => 'Добавлен';
 
 	/// ru: '(one) {$n ТЕМА} (few) {$n ТЕМЫ} (many) {$n ТЕМ} (other) {$n ТЕМ}'
-	String topics_count({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+	String topicsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
 		one: '${n} ТЕМА',
 		few: '${n} ТЕМЫ',
 		many: '${n} ТЕМ',
 		other: '${n} ТЕМ',
 	);
+
+	/// ru: 'О сайте'
+	String get aboutSite => 'О сайте';
+
+	/// ru: 'FAQ'
+	String get faq => 'FAQ';
+
+	/// ru: 'Обратная связь'
+	String get contact => 'Обратная связь';
+
+	/// ru: 'Лицензирование'
+	String get licensing => 'Лицензирование';
+
+	/// ru: 'Политика конфиденциальности'
+	String get privacy => 'Политика конфиденциальности';
+
+	/// ru: 'Copyright © 2026 - All right reserved by Kekers))))'
+	String get copyright => 'Copyright © 2026 - All right reserved by Kekers))))';
+
+	/// ru: 'добавлен вчера'
+	String get addedYesterday => 'добавлен вчера';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -78,9 +99,16 @@ extension on Translations {
 			'authors' => 'Авторы',
 			'favorites' => 'Избранное',
 			'about' => 'О сайте',
-			'search_packages' => 'Поиск пакетов...',
+			'searchPackages' => 'Поиск пакетов...',
 			'added' => 'Добавлен',
-			'topics_count' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} ТЕМА', few: '${n} ТЕМЫ', many: '${n} ТЕМ', other: '${n} ТЕМ', ), 
+			'topicsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} ТЕМА', few: '${n} ТЕМЫ', many: '${n} ТЕМ', other: '${n} ТЕМ', ), 
+			'aboutSite' => 'О сайте',
+			'faq' => 'FAQ',
+			'contact' => 'Обратная связь',
+			'licensing' => 'Лицензирование',
+			'privacy' => 'Политика конфиденциальности',
+			'copyright' => 'Copyright © 2026 - All right reserved by Kekers))))',
+			'addedYesterday' => 'добавлен вчера',
 			_ => null,
 		};
 	}

@@ -1,274 +1,235 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:sidb/config/localization/extension.dart';
-import 'package:sidb/core/extensions/date_time.dart';
+import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/features/pack/model/pack.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
-import 'package:sidb/presentation/components/icon.dart';
 
 class PackageCard extends StatelessComponent {
   final Pack pack;
 
-  const PackageCard({
-    super.key,
-    required this.pack,
-  });
+  const PackageCard({super.key, required this.pack});
+
+  static const _cyanBadge = Color('#a6feff');
+  static const _greenBadge = Color('#c3ffc7');
+  static const _yellowBadge = Color('#fff9a9');
 
   @css
   static List<StyleRule> get styles => [
-    css.fontFace(
-      family: 'Geologica',
-      url: 'fonts/Geologica.ttf',
-      style: FontStyle.normal,
+    css('.pc').styles(
+      display: Display.flex,
+      width: 100.percent,
+      minWidth: 240.px,
+      minHeight: 300.px,
+      maxWidth: 300.px,
+      padding: Padding.all(1.rem),
+      border: Border.all(width: 3.px, color: AppTheme.theme.border),
+      radius: BorderRadius.circular(6.px),
+      shadow: BoxShadow(
+        offsetX: 6.px,
+        offsetY: 6.px,
+        blur: 0.px,
+        spread: 0.px,
+        color: AppTheme.theme.border,
+      ),
+      transition: Transition('all', duration: 150.ms),
+      flexDirection: FlexDirection.column,
+      backgroundColor: AppTheme.theme.surface,
     ),
-    css(
-      '.package-card',
-      [
-        css('&').styles(
-          display: Display.flex,
-          width: 100.percent,
-          minWidth: 240.px,
-          minHeight: 300.px,
-          maxWidth: 300.px,
-          border: Border.all(width: 3.px, color: AppTheme.theme.border),
-          radius: BorderRadius.circular(6.px),
-          shadow: BoxShadow(
-            offsetX: 6.px,
-            offsetY: 6.px,
-            blur: 0.px,
-            spread: 0.px,
-            color: AppTheme.theme.border,
-          ),
-          transition: Transition('all', duration: 200.ms),
-          flexDirection: FlexDirection.column,
-          backgroundColor: AppTheme.theme.surface,
-        ),
-        css('&:hover').styles(
-          shadow: BoxShadow(
-            offsetX: 2.px,
-            offsetY: 2.px,
-            blur: 0.px,
-            spread: 0.px,
-            color: AppTheme.theme.border,
-          ),
-          transform: Transform.translate(x: 4.px, y: 4.px),
-        ),
-      ],
+    css('.pc:hover').styles(
+      shadow: BoxShadow(
+        offsetX: 4.px,
+        offsetY: 4.px,
+        blur: 0.px,
+        spread: 0.px,
+        color: AppTheme.theme.border,
+      ),
+      transform: Transform.translate(x: 6.px, y: 6.px),
     ),
-    css('.badge').styles(
-      display: Display.inlineFlex,
-      padding: Padding.symmetric(horizontal: 0.6.rem, vertical: 0.25.rem),
-      border: Border.all(width: 2.px, color: AppTheme.theme.border),
-      radius: BorderRadius.circular(4.px),
-      alignItems: AlignItems.center,
-      color: AppTheme.theme.border,
-      fontSize: 0.75.rem,
+    css('.pc-title').styles(
+      overflow: Overflow.hidden,
+      color: AppTheme.theme.text,
+      fontFamily: const FontFamily('Geologica'),
+      fontSize: 18.px,
       fontWeight: FontWeight.w700,
-      textTransform: TextTransform.upperCase,
-      whiteSpace: WhiteSpace.noWrap,
+      textTransform: TextTransform.capitalize,
+      lineHeight: 1.15.em,
+      raw: {
+        'display': '-webkit-box',
+        '-webkit-line-clamp': '2',
+        '-webkit-box-orient': 'vertical',
+        'white-space': 'pre-line',
+      },
     ),
-    css('.badge-student').styles(backgroundColor: AppTheme.theme.badgeStudent),
-    css('.badge-hardcore').styles(backgroundColor: AppTheme.theme.badgeHardcore),
-    css('.badge-thematic').styles(backgroundColor: AppTheme.theme.badgeThematic),
-    css('.badge-general').styles(backgroundColor: AppTheme.theme.badgeGeneral),
+    css('.pc-badges').styles(
+      display: Display.flex,
+      margin: Margin.only(top: 10.px),
+      flexWrap: FlexWrap.nowrap,
+      justifyContent: JustifyContent.spaceBetween,
+      alignItems: AlignItems.center,
+    ),
+    css('.pc-badge').styles(
+      display: Display.inlineFlex,
+      height: 27.px,
+      padding: Padding.symmetric(horizontal: 7.px),
+      border: Border.all(width: 2.px, color: AppTheme.theme.border),
+      radius: BorderRadius.circular(3.px),
+      shadow: BoxShadow(
+        offsetX: 4.px,
+        offsetY: 4.px,
+        blur: 0.px,
+        spread: 0.px,
+        color: AppTheme.theme.border,
+      ),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+      flex: Flex(shrink: 0),
+      color: Colors.black,
+      fontFamily: const FontFamily('Inter'),
+      fontSize: 11.px,
+      fontWeight: FontWeight.w700,
+      whiteSpace: WhiteSpace.noWrap,
+      raw: {'letter-spacing': '-0.1px'},
+    ),
+    css('.pc-badge-cyan').styles(backgroundColor: _cyanBadge),
+    css('.pc-badge-green').styles(backgroundColor: _greenBadge),
+    css('.pc-badge-yellow').styles(backgroundColor: _yellowBadge),
+    css('.pc-meta').styles(
+      display: Display.flex,
+      margin: Margin.only(top: 20.px),
+      flexDirection: FlexDirection.column,
+      color: AppTheme.theme.text,
+      fontFamily: const FontFamily('Inter'),
+      fontSize: 12.px,
+      fontWeight: FontWeight.w700,
+      lineHeight: 1.2.em,
+    ),
+    css('.pc-added').styles(
+      margin: Margin.only(top: 4.px),
+      color: AppTheme.theme.textSec,
+      fontFamily: const FontFamily('Inter'),
+      fontSize: 12.px,
+      fontWeight: FontWeight.w700,
+    ),
+    css('.pc-authors').styles(
+      margin: Margin.only(top: 8.px),
+      overflow: Overflow.hidden,
+      flex: Flex(grow: 1),
+      color: AppTheme.theme.textLink,
+      textAlign: TextAlign.justify,
+      fontFamily: const FontFamily('Inter'),
+      fontSize: 12.px,
+      fontWeight: FontWeight.w700,
+      lineHeight: 1.em,
+      raw: {
+        'display': '-webkit-box',
+        '-webkit-line-clamp': '7',
+        '-webkit-box-orient': 'vertical',
+      },
+    ),
+    css('.pc-reactions').styles(
+      display: Display.flex,
+      margin: Margin.only(top: 8.px),
+      justifyContent: JustifyContent.spaceBetween,
+      alignItems: AlignItems.center,
+    ),
+    css('.pc-reactions-group').styles(
+      display: Display.flex,
+      alignItems: AlignItems.center,
+      gap: Gap.all(20.px),
+    ),
+    css('.pc-reaction-btn').styles(
+      display: Display.inlineFlex,
+      padding: Padding.zero,
+      border: Border.unset,
+      cursor: Cursor.pointer,
+      alignItems: AlignItems.center,
+      gap: Gap.all(6.px),
+      color: AppTheme.theme.text,
+      fontFamily: const FontFamily('Inter'),
+      fontSize: 20.px,
+      fontWeight: FontWeight.w400,
+      lineHeight: 1.em,
+      backgroundColor: Colors.transparent,
+    ),
+    css('.pc-bookmark-btn').styles(
+      display: Display.inlineFlex,
+      padding: Padding.zero,
+      border: Border.unset,
+      cursor: Cursor.pointer,
+      color: AppTheme.theme.text,
+      backgroundColor: Colors.transparent,
+    ),
   ];
 
   @override
   Component build(BuildContext context) {
-    return div(
-      classes: 'package-card',
-      [
-        // Card content
-        div(
-          styles: Styles(
-            padding: Padding.all(1.rem),
-            flex: Flex(grow: 1),
+    final l10n = context.l10n;
+
+    return div(classes: 'pc', [
+      h3(classes: 'pc-title', [.text(pack.title)]),
+      div(classes: 'pc-badges', [
+        span(classes: 'pc-badge pc-badge-cyan', [.text(pack.gameType)]),
+        span(classes: 'pc-badge pc-badge-green', [.text(pack.difficultyType)]),
+        span(classes: 'pc-badge pc-badge-yellow', [.text(pack.difficulty)]),
+      ]),
+      div(classes: 'pc-meta', [
+        span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
+        span([.text(_monthYear(pack.publishDate))]),
+      ]),
+      p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
+      p(classes: 'pc-authors', [.text(pack.authors.join(' · '))]),
+      div(classes: 'pc-reactions', [
+        div(classes: 'pc-reactions-group', [
+          button(classes: 'pc-reaction-btn', [
+            Icon(
+              IconPaths.thumbUp,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
+            span([.text('${pack.likesCount}')]),
+          ]),
+          button(classes: 'pc-reaction-btn', [
+            Icon(
+              IconPaths.thumbDown,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
+            span([.text('${pack.dislikesCount}')]),
+          ]),
+        ]),
+        button(classes: 'pc-bookmark-btn', [
+          Icon(
+            IconPaths.bookmark,
+            width: 18,
+            height: 22,
+            filled: true,
+            fillColor: AppTheme.theme.textLink,
           ),
-          [
-            // Title
-            h3(
-              styles: Styles(
-                margin: Margin.only(bottom: 0.6.rem),
-                color: AppTheme.theme.text,
-                fontFamily: FontFamily('Geologica'),
-                fontSize: 1.15.rem,
-                fontWeight: FontWeight.w800,
-                textTransform: TextTransform.upperCase,
-                lineHeight: 1.2.em,
-              ),
-              [Component.text(pack.title)],
-            ),
-
-            // Badges row
-            div(
-              styles: Styles(
-                display: Display.flex,
-                margin: Margin.only(bottom: 0.75.rem),
-                flexWrap: FlexWrap.wrap,
-                gap: Gap.all(0.5.rem),
-              ),
-              [
-                span(
-                  classes: 'badge badge-${_badgeClassByDifficulty(pack.difficultyType)}',
-                  [Component.text(pack.difficultyType)],
-                ),
-                span(
-                  classes: 'badge',
-                  styles: Styles(backgroundColor: AppTheme.theme.badgeNeutral),
-                  [Component.text(pack.gameType)],
-                ),
-                span(
-                  classes: 'badge',
-                  styles: Styles(backgroundColor: AppTheme.theme.accent),
-                  [Component.text(pack.difficulty)],
-                ),
-              ],
-            ),
-
-            // Meta info
-            div(
-              styles: Styles(
-                display: Display.flex,
-                margin: Margin.only(bottom: 0.6.rem),
-                flexDirection: FlexDirection.column,
-                gap: Gap.all(0.25.rem),
-              ),
-              [
-                p(
-                  styles: Styles(
-                    color: AppTheme.theme.textSec,
-                    fontSize: 0.9.rem,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  [Component.text(context.l10n.topics_count(n: pack.topicsCount))],
-                ),
-                p(
-                  styles: Styles(
-                    color: AppTheme.theme.textSec,
-                    fontSize: 0.9.rem,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  [Component.text('Добавлен ${pack.publishDate.printable}')],
-                ),
-              ],
-            ),
-
-            // Authors section
-            p(
-              styles: Styles(
-                color: AppTheme.theme.text,
-                fontSize: 0.95.rem,
-                fontWeight: FontWeight.w700,
-                lineHeight: 1.35.em,
-              ),
-              [Component.text(pack.authors.join(' · '))],
-            ),
-          ],
-        ),
-
-        // Footer
-        div(
-          styles: Styles(
-            display: Display.flex,
-            padding: Padding.symmetric(horizontal: 1.rem, vertical: 0.75.rem),
-            border: Border.only(
-              top: BorderSide(width: 2.px, color: AppTheme.theme.border),
-            ),
-            justifyContent: JustifyContent.spaceBetween,
-            alignItems: AlignItems.center,
-            color: AppTheme.theme.text,
-            fontSize: 0.9.rem,
-            fontWeight: FontWeight.w700,
-            backgroundColor: AppTheme.theme.surface,
-          ),
-          [
-            div(
-              styles: Styles(
-                display: Display.flex,
-                alignItems: AlignItems.center,
-                gap: Gap.all(0.75.rem),
-              ),
-              [
-                // Like button
-                button(
-                  styles: Styles(
-                    display: Display.flex,
-                    border: Border.unset,
-                    cursor: Cursor.pointer,
-                    alignItems: AlignItems.center,
-                    gap: Gap.all(0.25.rem),
-                    color: AppTheme.theme.text,
-                    backgroundColor: Colors.transparent,
-                  ),
-                  [
-                    Icon(
-                      IconPaths.thumbUp,
-                      classes: '',
-                      width: 18,
-                      height: 18,
-                      strokeWidth: '2.5',
-                    ),
-                    span([Component.text('${pack.likesCount}')]),
-                  ],
-                ),
-
-                // Download or dislike button
-                if (pack.dislikesCount > 0)
-                  button(
-                    styles: Styles(
-                      display: Display.flex,
-                      border: Border.unset,
-                      cursor: Cursor.pointer,
-                      alignItems: AlignItems.center,
-                      gap: Gap.all(0.25.rem),
-                      color: AppTheme.theme.text,
-                      backgroundColor: Colors.transparent,
-                    ),
-                    [
-                      Icon(
-                        IconPaths.thumbUp,
-                        classes: '',
-                        width: 18,
-                        height: 18,
-                        strokeWidth: '2.5',
-                      ),
-                      span([Component.text('${pack.dislikesCount}')]),
-                    ],
-                  )
-                else
-                  button(
-                    styles: Styles(
-                      display: Display.flex,
-                      border: Border.unset,
-                      cursor: Cursor.pointer,
-                      color: AppTheme.theme.text,
-                      backgroundColor: Colors.transparent,
-                    ),
-                    [
-                      Icon(
-                        _bookmarkPath,
-                        classes: '',
-                        width: 18,
-                        height: 18,
-                        strokeWidth: '2.5',
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
+        ]),
+      ]),
+    ]);
   }
 
-  String _badgeClassByDifficulty(String difficultyType) {
-    final normalized = difficultyType.trim().toLowerCase();
-    if (normalized.contains('student')) return 'student';
-    if (normalized.contains('hard')) return 'hardcore';
-    if (normalized.contains('theme')) return 'thematic';
-    return 'general';
+  static String _monthYear(DateTime date) {
+    const months = [
+      'Январь',
+      'Февраль',
+      'Март',
+      'Апрель',
+      'Май',
+      'Июнь',
+      'Июль',
+      'Август',
+      'Сентябрь',
+      'Октябрь',
+      'Ноябрь',
+      'Декабрь',
+    ];
+    return '${months[date.month - 1]} ${date.year}';
   }
-
-  static const String _bookmarkPath = 'M6 4h12a2 2 0 012 2v14l-8-4-8 4V6a2 2 0 012-2z';
 }

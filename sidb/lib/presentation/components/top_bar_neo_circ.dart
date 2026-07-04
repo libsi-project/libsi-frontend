@@ -206,7 +206,7 @@ class TopBarNeo extends StatelessComponent {
               [
                 Input(
                   type: 'text',
-                  placeholder: l10n.search_packages,
+                  placeholder: l10n.searchPackages,
                   inlineStyles: Styles(
                     width: 100.percent,
                     padding: Padding.only(

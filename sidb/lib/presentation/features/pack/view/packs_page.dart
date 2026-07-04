@@ -4,6 +4,7 @@ import 'package:jaspr_bloc/jaspr_bloc.dart';
 import 'package:sidb/core/di/di.dart';
 import 'package:sidb/presentation/components/package_card.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
+import 'package:sidb/presentation/features/pack/model/pack.dart';
 import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 
 class PacksPage extends StatefulComponent {
@@ -13,7 +14,7 @@ class PacksPage extends StatefulComponent {
   static List<StyleRule> get styles => [
     css('.package-grid').styles(
       display: Display.grid,
-      justifyContent: JustifyContent.center,
+      justifyContent: JustifyContent.start,
       gridTemplate: GridTemplate(
         columns: GridTracks(
           [
@@ -28,8 +29,8 @@ class PacksPage extends StatefulComponent {
           ],
         ),
       ),
-      justifyItems: JustifyItems.center,
-      gap: Gap(row: 1.rem, column: 30.px),
+      justifyItems: JustifyItems.start,
+      gap: Gap(row: 1.5.rem, column: 30.px),
     ),
     css.media(MediaQuery.screen(minWidth: 768.px), [
       css('.package-grid').styles(
@@ -74,19 +75,11 @@ class _PacksPageState extends State<PacksPage> {
             ),
           ]);
         }
-        if (state is PackErrorState) {
-          return _pageShell([
-            p(
-              styles: Styles(fontSize: 1.1.rem, fontWeight: FontWeight.w700),
-              [.text('Ошибка при загрузке пакетов: ${state.error}')],
-            ),
-          ]);
-        }
-        if (state is PackLoadedState) {
+        if (state is PackErrorState || state is PackLoadedState) {
           return _pageShell([
             div(
               classes: 'package-grid',
-              state.packs.map((pack) => PackageCard(pack: pack)).toList(),
+              _mockPacks.map((pack) => PackageCard(pack: pack)).toList(),
             ),
           ]);
         }
@@ -99,8 +92,34 @@ class _PacksPageState extends State<PacksPage> {
 Component _pageShell(List<Component> children) {
   return div(
     styles: Styles(
-      padding: Padding.only(left: 2.rem, right: 2.rem, top: 3.rem, bottom: 2.rem),
+      padding: Padding.only(left: 2.rem, right: 2.rem, top: 3.rem, bottom: 3.rem),
     ),
     children,
   );
 }
+
+final _mockPacks = List<Pack>.generate(
+  8,
+  (idx) => Pack(
+    id: 'mock-$idx',
+    title: 'BUG MAJOR 3\nБуг Мажор 2',
+    gameType: 'ИСИ',
+    difficultyType: 'Школьный',
+    difficulty: 'Средне',
+    authors: const [
+      'Алексей Кураев',
+      'Иван Дрозд',
+      'Михаил Карпук',
+      'Константин Насковец',
+      'Максим Гиндеров',
+      'Григорий Зырянов',
+      'Никита Шевела',
+      'и другие...',
+    ],
+    topicsCount: 52,
+    publishDate: DateTime(2023, 5, 14),
+    playDate: DateTime(2023, 5, 20),
+    likesCount: 10,
+    dislikesCount: 2,
+  ),
+);

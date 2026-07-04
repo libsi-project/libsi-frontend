@@ -8,8 +8,10 @@ class AppTheme {
   final Color inputBg;
   final Color border;
   final Color text;
+  final Color textLink;
   final Color textSec;
   final Color surface;
+  final Color canvas;
   final Color badgeStudent;
   final Color badgeHardcore;
   final Color badgeThematic;
@@ -23,8 +25,10 @@ class AppTheme {
     required this.inputBg,
     required this.border,
     required this.text,
+    required this.textLink,
     required this.textSec,
     required this.surface,
+    required this.canvas,
     required this.badgeStudent,
     required this.badgeHardcore,
     required this.badgeThematic,
@@ -40,8 +44,10 @@ class AppTheme {
     inputBg: Color('var(--theme-input-bg)'),
     border: Color('var(--theme-border)'),
     text: Color('var(--theme-text)'),
+    textLink: Color('var(--theme-text-link)'),
     textSec: Color('var(--theme-text-sec)'),
     surface: Color('var(--theme-surface)'),
+    canvas: Color('var(--theme-canvas)'),
     badgeStudent: Color('var(--theme-badge-student)'),
     badgeHardcore: Color('var(--theme-badge-hardcore)'),
     badgeThematic: Color('var(--theme-badge-thematic)'),

@@ -4,12 +4,19 @@
     "authors": "Авторы",
     "favorites": "Избранное",
     "about": "О сайте",
-    "search_packages": "Поиск пакетов...",
+    "searchPackages": "Поиск пакетов...",
     "added": "Добавлен",
-    "topics_count": {
+    "topicsCount": {
         "one": "$n ТЕМА",
         "few": "$n ТЕМЫ",
         "many": "$n ТЕМ",
         "other": "$n ТЕМ"
-    }
+    },
+    "aboutSite": "О сайте",
+    "faq": "FAQ",
+    "contact": "Обратная связь",
+    "licensing": "Лицензирование",
+    "privacy": "Политика конфиденциальности",
+    "copyright": "Copyright © 2026 - All right reserved by Kekers))))",
+    "addedYesterday": "добавлен вчера"
 }
