@@ -1,11 +1,9 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
-
 import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/input.dart';
-
 import 'package:sidb/presentation/components/theme_toggle.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 
@@ -14,21 +12,99 @@ class TopBarNeo extends StatelessComponent {
 
   final String location;
 
-  static String _normalizePath(String rawLocation) {
-    // jaspr_router may include hash fragments depending on deployment configuration.
-    // Normalize to a plain path like "/about".
-    var s = rawLocation.trim();
+  @css
+  static List<StyleRule> get styles => [
+    css('.topbar-icon-btn').styles(
+      display: Display.inlineFlex,
+      width: 36.px,
+      height: 36.px,
+      border: Border.all(width: 2.px, color: Colors.black),
+      radius: BorderRadius.circular(2.px),
+      cursor: Cursor.pointer,
+      userSelect: UserSelect.none,
+      transition: Transition('all', duration: 150.ms),
+      transform: Transform.translate(x: 0.px, y: 0.px),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+    ),
+    css('.topbar-icon-btn:hover').styles(
+      shadow: BoxShadow(
+        offsetX: 3.px,
+        offsetY: 3.px,
+        blur: 0.px,
+        spread: 0.px,
+        color: Colors.black,
+      ),
+    ),
+    css('.topbar-route-btn').styles(
+      display: Display.inlineFlex,
+      cursor: Cursor.pointer,
+      userSelect: UserSelect.none,
+      transition: Transition('all', duration: 150.ms),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+      fontFamily: const FontFamily('Geologica'),
+      fontSize: 14.px,
+      fontWeight: FontWeight.w500,
+      textDecoration: TextDecoration.none,
+    ),
+    css('.topbar-route-btn-active').styles(
+      height: 36.px,
+      padding: Padding.symmetric(horizontal: 0.75.rem),
+      border: Border.all(width: 2.px, color: Colors.black),
+      radius: BorderRadius.circular(2.px),
+      shadow: BoxShadow(
+        offsetX: 6.px,
+        offsetY: 6.px,
+        blur: 0.px,
+        spread: 0.px,
+        color: Color('rgba(0,0,0,0.9)'),
+      ),
+      transform: Transform.translate(x: 0.px, y: 0.px),
+      color: Colors.white,
+      fontWeight: FontWeight.w700,
+      backgroundColor: Color('#0077ff'),
+    ),
+    css('.topbar-route-btn-active:hover').styles(
+      shadow: BoxShadow(
+        offsetX: 3.px,
+        offsetY: 3.px,
+        blur: 0.px,
+        spread: 0.px,
+        color: Colors.black,
+      ),
+      transform: Transform.translate(x: 3.px, y: 3.px),
+    ),
+    css('.topbar-route-btn-inactive').styles(
+      height: 36.px,
+      padding: Padding.symmetric(horizontal: 0.75.rem),
+      border: Border.all(width: 2.px, color: Colors.transparent),
+      radius: BorderRadius.circular(2.px),
+      color: Colors.black,
+      fontWeight: FontWeight.w700,
+      backgroundColor: Colors.transparent,
+    ),
+    css('.topbar-route-btn-inactive:hover').styles(
+      border: Border.all(width: 2.px, color: Colors.black),
+      shadow: BoxShadow(
+        offsetX: 3.px,
+        offsetY: 3.px,
+        blur: 0.px,
+        spread: 0.px,
+        color: Colors.black,
+      ),
+      backgroundColor: Color('#ffde00'),
+    ),
+  ];
 
-    // Convert "/#/about" or "#/about" to "/about"
+  static String _normalizePath(String rawLocation) {
+    var s = rawLocation.trim();
     if (s.startsWith('/#')) s = s.substring(2);
     if (s.startsWith('#')) s = s.substring(1);
-
-    // Drop querystring + fragment
     final q = s.indexOf('?');
     if (q != -1) s = s.substring(0, q);
     final h = s.indexOf('#');
     if (h != -1) s = s.substring(0, h);
-
     if (s.isEmpty) return '/';
     if (!s.startsWith('/')) s = '/$s';
     if (s.length > 1 && s.endsWith('/')) s = s.substring(0, s.length - 1);
@@ -41,67 +117,47 @@ class TopBarNeo extends StatelessComponent {
     final l10n = context.l10n;
     final activePath = _normalizePath(location);
 
-    final headerStyle = Styles(
-      display: Display.flex,
-      position: Position.sticky(top: 0.px),
-      zIndex: ZIndex(10),
-      height: 64.px,
-      padding: Padding.symmetric(horizontal: 1.5.rem),
-      border: Border.only(
-        bottom: BorderSide.solid(width: 3.px, color: theme.border),
-      ),
-      justifyContent: JustifyContent.spaceBetween,
-      alignItems: AlignItems.center,
-      gap: Gap.all(1.5.rem),
-      backgroundColor: theme.surface,
-    );
-
-    final leftSectionStyle = Styles(
-      display: Display.flex,
-      alignItems: AlignItems.center,
-      gap: Gap.all(1.5.rem),
-      flex: Flex(shrink: 0),
-    );
-
-    final navStyle = Styles(
-      display: Display.flex,
-      alignItems: AlignItems.center,
-      gap: Gap.all(0.5.rem),
-    );
-
-    final rightSectionStyle = Styles(
-      display: Display.flex,
-      justifyContent: JustifyContent.end,
-      alignItems: AlignItems.center,
-      gap: Gap.all(1.rem),
-      flex: Flex(grow: 1),
-    );
-
     return header(
-      styles: headerStyle,
+      styles: Styles(
+        display: Display.flex,
+        position: Position.sticky(top: 0.px),
+        zIndex: ZIndex(100),
+        height: 84.px,
+        padding: Padding.symmetric(horizontal: 9.5.rem),
+        justifyContent: JustifyContent.spaceBetween,
+        alignItems: AlignItems.center,
+        gap: Gap.all(1.5.rem),
+        backgroundColor: theme.surface,
+        raw: {'box-shadow': '0 2px 0 0 #000000'},
+      ),
       [
-        div(
-          styles: leftSectionStyle,
+        nav(
+          styles: Styles(
+            display: Display.flex,
+            alignItems: AlignItems.center,
+            gap: Gap.all(2.5.rem),
+          ),
           [
-            nav(
-              styles: navStyle,
-              [
-                TopBarItem(label: l10n.packages, to: '/', isActive: activePath == '/'),
-                TopBarItem(label: l10n.search, to: '/search', isActive: activePath.startsWith('/search')),
-                TopBarItem(label: l10n.authors, to: '/authors', isActive: activePath.startsWith('/authors')),
-                TopBarItem(label: l10n.favorites, to: '/favorites', isActive: activePath.startsWith('/favorites')),
-                TopBarItem(label: l10n.about, to: '/about', isActive: activePath.startsWith('/about')),
-              ],
-            ),
+            TopBarItem(label: l10n.packages, to: '/', isActive: activePath == '/'),
+            TopBarItem(label: l10n.search, to: '/search', isActive: activePath.startsWith('/search')),
+            TopBarItem(label: l10n.authors, to: '/authors', isActive: activePath.startsWith('/authors')),
+            TopBarItem(label: l10n.favorites, to: '/favorites', isActive: activePath.startsWith('/favorites')),
+            TopBarItem(label: l10n.about, to: '/about', isActive: activePath.startsWith('/about')),
           ],
         ),
         div(
-          styles: rightSectionStyle,
+          styles: Styles(
+            display: Display.flex,
+            justifyContent: JustifyContent.end,
+            alignItems: AlignItems.center,
+            gap: Gap.all(1.5.rem),
+            flex: Flex(grow: 1),
+          ),
           [
             div(
               styles: Styles(
                 position: Position.relative(),
-                width: 480.px,
+                width: 400.px,
                 maxWidth: 100.percent,
               ),
               [
@@ -110,33 +166,45 @@ class TopBarNeo extends StatelessComponent {
                   placeholder: l10n.search_packages,
                   inlineStyles: Styles(
                     width: 100.percent,
+                    height: 36.px,
                     padding: Padding.only(
-                      left: 2.75.rem,
+                      left: 57.px,
                       right: 1.rem,
-                      top: 0.6.rem,
-                      bottom: 0.6.rem,
+                      top: 0.px,
+                      bottom: 0.px,
                     ),
                     border: Border.all(width: 2.px, color: theme.border),
-                    radius: BorderRadius.circular(6.px),
-                    transition: Transition('all', duration: 200.ms),
+                    radius: BorderRadius.circular(2.px),
+                    transition: Transition('all', duration: 150.ms),
+                    fontFamily: const FontFamily('Rubik'),
+                    fontSize: 15.px,
                     fontWeight: FontWeight.w700,
-                    backgroundColor: theme.inputBg,
-                    raw: {'outline': 'none'},
+                    backgroundColor: theme.surface,
+                    raw: {'outline': 'none', 'box-shadow': 'none'},
                   ),
+                ),
+                span(
+                  styles: Styles(
+                    display: Display.flex,
+                    position: Position.absolute(top: 50.percent, left: 30.px),
+                    raw: {'transform': 'translateY(-50%)', 'pointer-events': 'none'},
+                  ),
+                  [
+                    Icon(IconPaths.search, width: 18, height: 18, strokeWidth: '2'),
+                  ],
                 ),
               ],
             ),
             button(
               classes: 'topbar-icon-btn',
-              styles: Styles(backgroundColor: theme.userBtn),
+              styles: Styles(backgroundColor: Colors.white),
               [
-                span([
-                  Icon(
-                    IconPaths.users,
-                    classes: 'h-6 w-6',
-                    strokeWidth: '2.5',
-                  ),
-                ]),
+                Icon(
+                  _userPath,
+                  width: 20,
+                  height: 20,
+                  filled: true,
+                ),
               ],
             ),
             const ThemeToggle(),
@@ -146,6 +214,9 @@ class TopBarNeo extends StatelessComponent {
     );
   }
 }
+
+const String _userPath =
+    'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 10c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z';
 
 class TopBarItem extends StatelessComponent {
   const TopBarItem({
@@ -160,29 +231,11 @@ class TopBarItem extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    const theme = AppTheme.theme;
-
     return router.Link(
       to: to,
       styles: Styles(textDecoration: TextDecoration.none, raw: {'color': 'inherit'}),
       child: span(
         classes: 'topbar-route-btn ${isActive ? 'topbar-route-btn-active' : 'topbar-route-btn-inactive'}',
-        styles: isActive
-            ? Styles(
-                border: Border.all(width: 2.px, color: theme.border),
-                shadow: BoxShadow(
-                  offsetX: 4.px,
-                  offsetY: 4.px,
-                  color: theme.border,
-                ),
-                backgroundColor: theme.primary,
-              )
-            : Styles(
-                color: theme.text,
-                raw: {
-                  'background-color': 'transparent',
-                },
-              ),
         [.text(label)],
       ),
     );

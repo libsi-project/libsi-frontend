@@ -25,6 +25,7 @@
   --theme-text: #000000;
   --theme-text-sec: #64748B;
   --theme-surface: #FFFFFF;
+  --theme-canvas: #FFEEC9;
   --theme-badge-student: #C7F9CC;
   --theme-badge-hardcore: #FFB3C6;
   --theme-badge-thematic: #A3D8FF;
@@ -42,6 +43,7 @@
   --theme-text: #FFFFFF;
   --theme-text-sec: #94A3B8;
   --theme-surface: #111827;
+  --theme-canvas: #0B1220;
   --theme-badge-student: #2D4A3E;
   --theme-badge-hardcore: #5C2B36;
   --theme-badge-thematic: #2B445C;
@@ -65,10 +67,10 @@ body {
 }
 
 body {
-  background-color: var(--theme-surface);
+  background-color: var(--theme-canvas);
   color: var(--theme-text);
   transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: 'IBM', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'IBM', ui-sans-serif, system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
 }
 
@@ -80,7 +82,7 @@ body {
 
 /* Custom background for main content area if needed */
 .nb-bg {
-  background-color: var(--theme-surface);
+  background-color: var(--theme-canvas);
 }
 
 /* Client-side fonts (place files in web/fonts/) */

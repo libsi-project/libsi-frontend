@@ -18,22 +18,9 @@ class ThemeToggle extends StatelessComponent {
 
         return button(
           id: 'theme-toggle',
+          classes: 'topbar-icon-btn topbar-theme-btn',
           styles: Styles(
-            display: Display.inlineFlex,
-            width: 44.px,
-            height: 44.px,
-            border: Border.all(width: 2.px, color: theme.border),
-            radius: BorderRadius.circular(100.px),
-            shadow: BoxShadow(
-              offsetX: 3.px,
-              offsetY: 3.px,
-              color: theme.border,
-            ),
-            justifyContent: JustifyContent.center,
-            alignItems: AlignItems.center,
-            backgroundColor: theme.accent,
-            cursor: Cursor.pointer,
-            raw: {'user-select': 'none', 'text-decoration': 'none'},
+            backgroundColor: theme.surface,
           ),
           onClick: () => BlocProvider.of<ThemeCubit>(context).toggleTheme(),
           [
