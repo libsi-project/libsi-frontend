@@ -4,6 +4,8 @@
     "authors": "Авторы",
     "favorites": "Избранное",
     "about": "О сайте",
+    "developerFaq": "Developer FAQ",
+    "developerFaqNav": "Dev FAQ",
     "searchPackages": "Поиск пакетов...",
     "added": "Добавлен",
     "topicsCount": {
@@ -18,5 +20,10 @@
     "licensing": "Лицензирование",
     "privacy": "Политика конфиденциальности",
     "copyright": "Copyright © 2026 - All right reserved by Kekers))))",
-    "addedYesterday": "добавлен вчера"
+    "addedYesterday": "добавлен вчера",
+    "loadingPacks": "Загружаем пакеты...",
+    "packsLoadError": "Не удалось загрузить пакеты",
+    "emptyPacks": "Пакеты пока не найдены",
+    "aboutDescription": "SIDB собирает пакеты для интеллектуальных игр и помогает быстро находить материалы по теме, сложности и авторам.",
+    "comingSoon": "Раздел скоро появится"
 }

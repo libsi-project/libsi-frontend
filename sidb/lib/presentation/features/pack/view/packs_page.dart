@@ -1,13 +1,13 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_bloc/jaspr_bloc.dart';
-import 'package:sidb/core/di/di.dart';
+import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/package_card.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
-import 'package:sidb/presentation/features/pack/model/pack.dart';
-import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
+import 'package:sidb/presentation/theme/app_theme.dart';
+import 'package:sidb/presentation/theme/neo_tokens.dart';
 
-class PacksPage extends StatefulComponent {
+class PacksPage extends StatelessComponent {
   const PacksPage({super.key});
 
   @css
@@ -50,36 +50,27 @@ class PacksPage extends StatefulComponent {
   ];
 
   @override
-  State<PacksPage> createState() => _PacksPageState();
-}
-
-class _PacksPageState extends State<PacksPage> {
-  late final PackBloc _packBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _packBloc = PackBloc(getIt<PackUseCase>())..add(GetPacksEvent());
-  }
-
-  @override
   Component build(BuildContext context) {
+    final l10n = context.l10n;
+
     return BlocBuilder<PackBloc, PackState>(
-      bloc: _packBloc,
       builder: (context, state) {
         if (state is PackLoadingState) {
+          return _pageShell([_stateText(l10n.loadingPacks)]);
+        }
+        if (state is PackErrorState) {
           return _pageShell([
-            p(
-              styles: Styles(fontSize: 1.1.rem, fontWeight: FontWeight.w700),
-              [.text('Загружаем пакеты...')],
-            ),
+            _stateText('${l10n.packsLoadError}: ${state.error}'),
           ]);
         }
-        if (state is PackErrorState || state is PackLoadedState) {
+        if (state is PackLoadedState) {
+          if (state.packs.isEmpty) {
+            return _pageShell([_stateText(l10n.emptyPacks)]);
+          }
           return _pageShell([
             div(
               classes: 'package-grid',
-              _mockPacks.map((pack) => PackageCard(pack: pack)).toList(),
+              state.packs.map((pack) => PackageCard(pack: pack)).toList(),
             ),
           ]);
         }
@@ -92,34 +83,19 @@ class _PacksPageState extends State<PacksPage> {
 Component _pageShell(List<Component> children) {
   return div(
     styles: Styles(
-      padding: Padding.only(left: 2.rem, right: 2.rem, top: 3.rem, bottom: 3.rem),
+      padding: NeoTokens.pagePadding(top: 3, bottom: 3),
     ),
     children,
   );
 }
 
-final _mockPacks = List<Pack>.generate(
-  8,
-  (idx) => Pack(
-    id: 'mock-$idx',
-    title: 'BUG MAJOR 3\nБуг Мажор 2',
-    gameType: 'ИСИ',
-    difficultyType: 'Школьный',
-    difficulty: 'Средне',
-    authors: const [
-      'Алексей Кураев',
-      'Иван Дрозд',
-      'Михаил Карпук',
-      'Константин Насковец',
-      'Максим Гиндеров',
-      'Григорий Зырянов',
-      'Никита Шевела',
-      'и другие...',
-    ],
-    topicsCount: 52,
-    publishDate: DateTime(2023, 5, 14),
-    playDate: DateTime(2023, 5, 20),
-    likesCount: 10,
-    dislikesCount: 2,
-  ),
-);
+Component _stateText(String text) {
+  return p(
+    styles: NeoStyles.text(
+      color: AppTheme.textColor,
+      size: 1.1,
+      weight: FontWeight.w700,
+    ),
+    [.text(text)],
+  );
+}

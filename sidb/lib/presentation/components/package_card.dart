@@ -2,54 +2,30 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/icon.dart';
+import 'package:sidb/presentation/components/neo_badge.dart';
+import 'package:sidb/presentation/components/neo_button.dart';
+import 'package:sidb/presentation/components/neo_card.dart';
 import 'package:sidb/presentation/features/pack/model/pack.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
+import 'package:sidb/presentation/theme/neo_tokens.dart';
 
 class PackageCard extends StatelessComponent {
   final Pack pack;
 
   const PackageCard({super.key, required this.pack});
 
-  static const _cyanBadge = Color('#a6feff');
-  static const _greenBadge = Color('#c3ffc7');
-  static const _yellowBadge = Color('#fff9a9');
-
   @css
   static List<StyleRule> get styles => [
     css('.pc').styles(
-      display: Display.flex,
       width: 100.percent,
       minWidth: 240.px,
       minHeight: 300.px,
       maxWidth: 300.px,
-      padding: Padding.all(1.rem),
-      border: Border.all(width: 3.px, color: AppTheme.theme.border),
-      radius: BorderRadius.circular(6.px),
-      shadow: BoxShadow(
-        offsetX: 6.px,
-        offsetY: 6.px,
-        blur: 0.px,
-        spread: 0.px,
-        color: AppTheme.theme.border,
-      ),
-      transition: Transition('all', duration: 150.ms),
-      flexDirection: FlexDirection.column,
-      backgroundColor: AppTheme.theme.surface,
-    ),
-    css('.pc:hover').styles(
-      shadow: BoxShadow(
-        offsetX: 4.px,
-        offsetY: 4.px,
-        blur: 0.px,
-        spread: 0.px,
-        color: AppTheme.theme.border,
-      ),
-      transform: Transform.translate(x: 6.px, y: 6.px),
     ),
     css('.pc-title').styles(
       overflow: Overflow.hidden,
       color: AppTheme.theme.text,
-      fontFamily: const FontFamily('Geologica'),
+      fontFamily: const FontFamily(NeoTokens.fontDisplay),
       fontSize: 18.px,
       fontWeight: FontWeight.w700,
       textTransform: TextTransform.capitalize,
@@ -64,36 +40,20 @@ class PackageCard extends StatelessComponent {
     css('.pc-badges').styles(
       display: Display.flex,
       margin: Margin.only(top: 10.px),
-      flexWrap: FlexWrap.nowrap,
-      justifyContent: JustifyContent.spaceBetween,
-      alignItems: AlignItems.center,
+      flexWrap: FlexWrap.wrap,
+      justifyContent: JustifyContent.start,
+      alignItems: AlignItems.start,
+      gap: Gap(row: 8.px, column: 8.px),
     ),
     css('.pc-badge').styles(
-      display: Display.inlineFlex,
-      height: 27.px,
-      padding: Padding.symmetric(horizontal: 7.px),
-      border: Border.all(width: 2.px, color: AppTheme.theme.border),
-      radius: BorderRadius.circular(3.px),
-      shadow: BoxShadow(
-        offsetX: 4.px,
-        offsetY: 4.px,
-        blur: 0.px,
-        spread: 0.px,
-        color: AppTheme.theme.border,
-      ),
-      justifyContent: JustifyContent.center,
-      alignItems: AlignItems.center,
-      flex: Flex(shrink: 0),
-      color: Colors.black,
-      fontFamily: const FontFamily('Inter'),
-      fontSize: 11.px,
-      fontWeight: FontWeight.w700,
-      whiteSpace: WhiteSpace.noWrap,
-      raw: {'letter-spacing': '-0.1px'},
+      maxWidth: 100.percent,
+      padding: Padding.symmetric(horizontal: 9.px),
+      flex: Flex(shrink: 1),
+      raw: {
+        'overflow-wrap': 'anywhere',
+        'white-space': 'normal',
+      },
     ),
-    css('.pc-badge-cyan').styles(backgroundColor: _cyanBadge),
-    css('.pc-badge-green').styles(backgroundColor: _greenBadge),
-    css('.pc-badge-yellow').styles(backgroundColor: _yellowBadge),
     css('.pc-meta').styles(
       display: Display.flex,
       margin: Margin.only(top: 20.px),
@@ -139,26 +99,18 @@ class PackageCard extends StatelessComponent {
       gap: Gap.all(20.px),
     ),
     css('.pc-reaction-btn').styles(
-      display: Display.inlineFlex,
       padding: Padding.zero,
-      border: Border.unset,
-      cursor: Cursor.pointer,
-      alignItems: AlignItems.center,
       gap: Gap.all(6.px),
       color: AppTheme.theme.text,
-      fontFamily: const FontFamily('Inter'),
       fontSize: 20.px,
       fontWeight: FontWeight.w400,
       lineHeight: 1.em,
-      backgroundColor: Colors.transparent,
+      raw: {'box-shadow': 'none'},
     ),
     css('.pc-bookmark-btn').styles(
-      display: Display.inlineFlex,
       padding: Padding.zero,
-      border: Border.unset,
-      cursor: Cursor.pointer,
       color: AppTheme.theme.text,
-      backgroundColor: Colors.transparent,
+      raw: {'box-shadow': 'none'},
     ),
   ];
 
@@ -166,53 +118,68 @@ class PackageCard extends StatelessComponent {
   Component build(BuildContext context) {
     final l10n = context.l10n;
 
-    return div(classes: 'pc', [
-      h3(classes: 'pc-title', [.text(pack.title)]),
-      div(classes: 'pc-badges', [
-        span(classes: 'pc-badge pc-badge-cyan', [.text(pack.gameType)]),
-        span(classes: 'pc-badge pc-badge-green', [.text(pack.difficultyType)]),
-        span(classes: 'pc-badge pc-badge-yellow', [.text(pack.difficulty)]),
-      ]),
-      div(classes: 'pc-meta', [
-        span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
-        span([.text(_monthYear(pack.publishDate))]),
-      ]),
-      p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
-      p(classes: 'pc-authors', [.text(pack.authors.join(' · '))]),
-      div(classes: 'pc-reactions', [
-        div(classes: 'pc-reactions-group', [
-          button(classes: 'pc-reaction-btn', [
-            Icon(
-              IconPaths.thumbUp,
-              width: 22,
-              height: 22,
-              filled: true,
-              fillColor: AppTheme.theme.textLink,
-            ),
-            span([.text('${pack.likesCount}')]),
-          ]),
-          button(classes: 'pc-reaction-btn', [
-            Icon(
-              IconPaths.thumbDown,
-              width: 22,
-              height: 22,
-              filled: true,
-              fillColor: AppTheme.theme.textLink,
-            ),
-            span([.text('${pack.dislikesCount}')]),
-          ]),
+    return NeoCard(
+      classes: 'pc',
+      children: [
+        h3(classes: 'pc-title', [.text(pack.title)]),
+        div(classes: 'pc-badges', [
+          NeoBadge(label: pack.gameType, tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
+          NeoBadge(label: pack.difficultyType, tone: NeoBadgeTone.student, classes: 'pc-badge'),
+          NeoBadge(label: pack.difficulty, tone: NeoBadgeTone.general, classes: 'pc-badge'),
         ]),
-        button(classes: 'pc-bookmark-btn', [
-          Icon(
-            IconPaths.bookmark,
-            width: 18,
-            height: 22,
-            filled: true,
-            fillColor: AppTheme.theme.textLink,
+        div(classes: 'pc-meta', [
+          span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
+          span([.text(_monthYear(pack.publishDate))]),
+        ]),
+        p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
+        p(classes: 'pc-authors', [.text(pack.authors.join(' · '))]),
+        div(classes: 'pc-reactions', [
+          div(classes: 'pc-reactions-group', [
+            NeoButton(
+              variant: NeoButtonVariant.ghost,
+              classes: 'pc-reaction-btn',
+              children: [
+                AppIcon(
+                  IconPaths.thumbUp,
+                  width: 22,
+                  height: 22,
+                  filled: true,
+                  fillColor: AppTheme.theme.textLink,
+                ),
+                span([.text('${pack.likesCount}')]),
+              ],
+            ),
+            NeoButton(
+              variant: NeoButtonVariant.ghost,
+              classes: 'pc-reaction-btn',
+              children: [
+                AppIcon(
+                  IconPaths.thumbDown,
+                  width: 22,
+                  height: 22,
+                  filled: true,
+                  fillColor: AppTheme.theme.textLink,
+                ),
+                span([.text('${pack.dislikesCount}')]),
+              ],
+            ),
+          ]),
+          NeoButton(
+            variant: NeoButtonVariant.ghost,
+            classes: 'pc-bookmark-btn',
+            children: [
+              AppIcon(
+                IconPaths.bookmark,
+                width: 18,
+                height: 22,
+                filled: true,
+                fillColor: AppTheme.theme.textLink,
+              ),
+            ],
           ),
         ]),
-      ]),
-    ]);
+      ],
+    );
   }
 
   static String _monthYear(DateTime date) {

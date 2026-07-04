@@ -50,6 +50,12 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// ru: 'О сайте'
 	String get about => 'О сайте';
 
+	/// ru: 'Developer FAQ'
+	String get developerFaq => 'Developer FAQ';
+
+	/// ru: 'Dev FAQ'
+	String get developerFaqNav => 'Dev FAQ';
+
 	/// ru: 'Поиск пакетов...'
 	String get searchPackages => 'Поиск пакетов...';
 
@@ -84,6 +90,21 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'добавлен вчера'
 	String get addedYesterday => 'добавлен вчера';
+
+	/// ru: 'Загружаем пакеты...'
+	String get loadingPacks => 'Загружаем пакеты...';
+
+	/// ru: 'Не удалось загрузить пакеты'
+	String get packsLoadError => 'Не удалось загрузить пакеты';
+
+	/// ru: 'Пакеты пока не найдены'
+	String get emptyPacks => 'Пакеты пока не найдены';
+
+	/// ru: 'SIDB собирает пакеты для интеллектуальных игр и помогает быстро находить материалы по теме, сложности и авторам.'
+	String get aboutDescription => 'SIDB собирает пакеты для интеллектуальных игр и помогает быстро находить материалы по теме, сложности и авторам.';
+
+	/// ru: 'Раздел скоро появится'
+	String get comingSoon => 'Раздел скоро появится';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -99,6 +120,8 @@ extension on Translations {
 			'authors' => 'Авторы',
 			'favorites' => 'Избранное',
 			'about' => 'О сайте',
+			'developerFaq' => 'Developer FAQ',
+			'developerFaqNav' => 'Dev FAQ',
 			'searchPackages' => 'Поиск пакетов...',
 			'added' => 'Добавлен',
 			'topicsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} ТЕМА', few: '${n} ТЕМЫ', many: '${n} ТЕМ', other: '${n} ТЕМ', ), 
@@ -109,6 +132,11 @@ extension on Translations {
 			'privacy' => 'Политика конфиденциальности',
 			'copyright' => 'Copyright © 2026 - All right reserved by Kekers))))',
 			'addedYesterday' => 'добавлен вчера',
+			'loadingPacks' => 'Загружаем пакеты...',
+			'packsLoadError' => 'Не удалось загрузить пакеты',
+			'emptyPacks' => 'Пакеты пока не найдены',
+			'aboutDescription' => 'SIDB собирает пакеты для интеллектуальных игр и помогает быстро находить материалы по теме, сложности и авторам.',
+			'comingSoon' => 'Раздел скоро появится',
 			_ => null,
 		};
 	}
