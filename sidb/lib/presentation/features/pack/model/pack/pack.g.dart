@@ -12,10 +12,12 @@ Pack _$PackFromJson(Map<String, dynamic> json) => Pack(
   gameType: json['gameType'] as String,
   difficultyType: json['difficultyType'] as String,
   difficulty: json['difficulty'] as String,
-  authors: (json['authors'] as List<dynamic>).map((e) => e as String).toList(),
+  authors: (json['authors'] as List<dynamic>)
+      .map((e) => Author.fromJson(e as Map<String, dynamic>))
+      .toList(),
   topicsCount: (json['topicsCount'] as num).toInt(),
-  publishDate: Pack._dateFromJson((json['publishDate'] as num).toInt()),
-  playDate: Pack._dateFromJson((json['playDate'] as num).toInt()),
+  publishDate: Pack.dateFromJson((json['publishDate'] as num).toInt()),
+  playDate: Pack.dateFromJson((json['playDate'] as num).toInt()),
   likesCount: (json['likesCount'] as num).toInt(),
   dislikesCount: (json['dislikesCount'] as num).toInt(),
 );
@@ -28,8 +30,8 @@ Map<String, dynamic> _$PackToJson(Pack instance) => <String, dynamic>{
   'difficulty': instance.difficulty,
   'authors': instance.authors,
   'topicsCount': instance.topicsCount,
-  'publishDate': Pack._dateToJson(instance.publishDate),
-  'playDate': Pack._dateToJson(instance.playDate),
+  'publishDate': Pack.dateToJson(instance.publishDate),
+  'playDate': Pack.dateToJson(instance.playDate),
   'likesCount': instance.likesCount,
   'dislikesCount': instance.dislikesCount,
 };

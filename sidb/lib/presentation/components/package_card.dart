@@ -5,7 +5,7 @@ import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_badge.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
 import 'package:sidb/presentation/components/neo_card.dart';
-import 'package:sidb/presentation/features/pack/model/pack.dart';
+import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 

@@ -1,5 +1,5 @@
 import 'package:jaspr_bloc/jaspr_bloc.dart';
-import 'package:sidb/presentation/features/pack/model/pack.dart';
+import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 
 abstract class PackEvent {}
