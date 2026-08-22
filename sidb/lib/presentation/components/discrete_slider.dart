@@ -213,22 +213,30 @@ class DiscreteSlider extends StatelessComponent {
     );
   }
 
+  int get _precision => math.max(_decimalPlaces(min), math.max(_decimalPlaces(max), _decimalPlaces(step)));
+
   double _snap(double rawValue) {
     final steps = ((rawValue - min) / step).round();
     final snapped = min + steps * step;
     final clamped = math.min(max, math.max(min, snapped));
-    final precision = math.max(_decimalPlaces(min), math.max(_decimalPlaces(max), _decimalPlaces(step)));
-    return double.parse(clamped.toStringAsFixed(precision));
+    return double.parse(clamped.toStringAsFixed(_precision));
   }
 
   String _format(double rawValue) {
-    final precision = math.max(_decimalPlaces(min), math.max(_decimalPlaces(max), _decimalPlaces(step)));
+    final precision = _precision;
     if (precision == 0) return rawValue.toStringAsFixed(0);
     return rawValue.toStringAsFixed(precision).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
   }
 
   int _decimalPlaces(double rawValue) {
-    final text = rawValue.toString();
+    final text = rawValue.toString().toLowerCase();
+    final exponentIndex = text.indexOf('e');
+    if (exponentIndex != -1) {
+      final mantissa = text.substring(0, exponentIndex);
+      final exponent = int.parse(text.substring(exponentIndex + 1));
+      final mantissaDecimals = mantissa.contains('.') ? mantissa.split('.').last.length : 0;
+      return math.max(0, mantissaDecimals - exponent);
+    }
     if (!text.contains('.')) return 0;
     return text.split('.').last.length;
   }
