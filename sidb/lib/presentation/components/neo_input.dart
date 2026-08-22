@@ -144,14 +144,29 @@ class SearchField extends StatelessComponent {
   final EventCallback? onInput;
   final EventCallback? onChange;
 
+  @css
+  static List<StyleRule> get stylesheets => [
+    css('.search-field').styles(
+      position: Position.relative(),
+      width: 100.percent,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+    ),
+    css('.search-field:focus-within').styles(
+      transform: Transform.translate(x: 1.px, y: 1.px),
+    ),
+    css('.search-field:focus-within .neo-input').styles(
+      transform: Transform.translate(x: 0.px, y: 0.px),
+    ),
+  ];
+
   @override
   Component build(BuildContext context) {
     return div(
-      classes: classes,
-      styles: Styles(
-        position: Position.relative(),
-        width: 100.percent,
-      ).combine(styles ?? Styles()),
+      classes: [
+        'search-field',
+        if (classes != null) classes!,
+      ].join(' '),
+      styles: styles,
       [
         NeoInput(
           id: id,

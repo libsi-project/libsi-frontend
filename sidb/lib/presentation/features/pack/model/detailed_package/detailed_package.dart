@@ -13,6 +13,7 @@ class DetailedPackage extends Pack {
     required super.gameType,
     required super.difficultyType,
     required super.difficulty,
+    required super.averageAnswersPercentage,
     required super.authors,
     required super.topicsCount,
     required super.publishDate,

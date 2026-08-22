@@ -13,7 +13,8 @@ import 'package:sidb/presentation/features/placeholder/view/placeholder_page.dar
 import 'package:sidb/presentation/theme/theme_cubit.dart';
 
 import 'package:sidb/presentation/components/footer_neo.dart';
-import 'package:sidb/presentation/components/top_bar_neo_circ.dart';
+import 'package:sidb/presentation/components/top_bar_neo.dart';
+import 'package:sidb/presentation/theme/neo_tokens.dart';
 
 // The main component of your application.
 class AppRunner extends StatelessComponent {
@@ -31,40 +32,37 @@ class AppRunner extends StatelessComponent {
                   display: Display.flex,
                   height: 100.vh,
                   overflow: Overflow.hidden,
+                  justifyContent: JustifyContent.center,
                 ),
                 [
                   div(
+                    classes: 'app-shell',
                     styles: Styles(
                       display: Display.flex,
                       width: 100.percent,
                       height: 100.percent,
+                      maxWidth: NeoTokens.pageMaxWidth.px,
+                      padding: Padding.symmetric(horizontal: 20.px),
+                      overflow: Overflow.only(y: Overflow.auto),
                       flexDirection: FlexDirection.column,
                     ),
                     [
                       TopBarNeo(location: state.location),
                       div(
                         styles: Styles(
+                          display: Display.flex,
                           minHeight: 0.px,
-                          overflow: Overflow.only(y: Overflow.auto),
+                          flexDirection: FlexDirection.column,
                           flex: Flex(grow: 1),
                         ),
                         [
                           div(
                             styles: Styles(
-                              display: Display.flex,
-                              minHeight: 100.percent,
-                              flexDirection: FlexDirection.column,
+                              flex: Flex(grow: 1),
                             ),
-                            [
-                              div(
-                                styles: Styles(
-                                  flex: Flex(grow: 1),
-                                ),
-                                [child],
-                              ),
-                              const FooterNeo(),
-                            ],
+                            [child],
                           ),
+                          const FooterNeo(),
                         ],
                       ),
                     ],

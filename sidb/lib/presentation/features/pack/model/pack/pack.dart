@@ -10,6 +10,7 @@ class Pack {
   final String gameType;
   final String difficultyType;
   final String difficulty;
+  final double? averageAnswersPercentage;
   final List<Author> authors;
   final int topicsCount;
   @JsonKey(
@@ -31,6 +32,7 @@ class Pack {
     required this.gameType,
     required this.difficultyType,
     required this.difficulty,
+    required this.averageAnswersPercentage,
     required this.authors,
     required this.topicsCount,
     required this.publishDate,

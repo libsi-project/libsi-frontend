@@ -26,7 +26,7 @@
   --theme-text-sec: #64748B;
   --theme-text-link: #0077FF;
   --theme-surface: #FFFFFF;
-  --theme-canvas: #FFEEC9;
+  --theme-canvas: #f0f0f0;
   --theme-badge-student: #C7F9CC;
   --theme-badge-hardcore: #FFB3C6;
   --theme-badge-thematic: #A3D8FF;
@@ -92,4 +92,13 @@ body {
 
 .nb-bg {
   background-color: var(--theme-canvas);
+}
+
+.app-shell {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.app-shell::-webkit-scrollbar {
+  display: none;
 }
