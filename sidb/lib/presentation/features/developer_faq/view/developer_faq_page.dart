@@ -274,6 +274,7 @@ Checkbox(
 )
 
 DropdownEditField<MyItem>(
+  id: 'item-dropdown',
   items: items,
   value: selectedItem,
   placeholder: 'Pick an item',
@@ -413,7 +414,7 @@ class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
       _ExampleTile(
         label: 'Checkbox',
         note:
-            'Controlled boolean input. The visual box is custom, while the native checkbox keeps label and keyboard behavior.',
+            'Controlled boolean input. The square is custom, and the whole control is a button with checkbox semantics.',
         child: Checkbox(
           checked: _checked,
           label: .text('Show experimental packs'),
@@ -428,6 +429,7 @@ class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
         label: 'DropdownEditField<T>',
         note: 'Searchable generic combobox. Class-backed items use itemAsString for display and filtering.',
         child: DropdownEditField<_FaqAudience>(
+          id: 'faq-audience-dropdown',
           items: _audiences,
           value: _selectedAudience,
           placeholder: 'Choose audience',
@@ -473,6 +475,7 @@ class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
             onChange: (_) {},
           ),
           DropdownEditField<String>(
+            id: 'faq-disabled-dropdown',
             items: const ['Alpha', 'Beta', 'Gamma'],
             value: 'Beta',
             disabled: true,

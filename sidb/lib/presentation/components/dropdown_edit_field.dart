@@ -4,21 +4,22 @@ import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 import 'package:universal_web/web.dart' as web;
 
-int _nextDropdownEditFieldId = 0;
-
 class DropdownEditField<T> extends StatefulComponent {
-  const DropdownEditField({
+  DropdownEditField({
     required this.items,
     required this.value,
     required this.onChange,
+    required this.id,
     this.itemAsString,
     this.placeholder,
     this.disabled = false,
-    this.id,
     this.classes,
     this.styles,
     super.key,
-  });
+  }) : assert(
+         itemAsString != null || T == String,
+         'DropdownEditField<$T> requires itemAsString when items are not strings.',
+       );
 
   final List<T> items;
   final T? value;
@@ -26,7 +27,7 @@ class DropdownEditField<T> extends StatefulComponent {
   final String Function(T)? itemAsString;
   final String? placeholder;
   final bool disabled;
-  final String? id;
+  final String id;
   final String? classes;
   final Styles? styles;
 
@@ -155,15 +156,15 @@ class DropdownEditField<T> extends StatefulComponent {
 }
 
 class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
-  late String _baseId;
   late String _query;
   bool _isOpen = false;
   int _highlightedIndex = 0;
 
+  String get _baseId => component.id;
+
   @override
   void initState() {
     super.initState();
-    _baseId = component.id ?? 'dropdown-edit-field-${_nextDropdownEditFieldId++}';
     _query = _selectedLabel;
   }
 
@@ -192,6 +193,9 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
         if (component.classes != null) component.classes!,
       ].join(' '),
       styles: component.styles,
+      events: {
+        'focusout': _handleFocusOut,
+      },
       [
         div(classes: 'dropdown-edit-field-control', [
           input<String>(
@@ -205,8 +209,8 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
               'autocomplete': 'off',
               'aria-autocomplete': 'list',
               'aria-expanded': _isOpen ? 'true' : 'false',
-              'aria-controls': menuId,
-              if (activeId != null) 'aria-activedescendant': activeId,
+              if (_isOpen && !component.disabled) 'aria-controls': menuId,
+              if (_isOpen && !component.disabled && activeId != null) 'aria-activedescendant': activeId,
               if (component.placeholder != null) 'placeholder': component.placeholder!,
               if (component.disabled) 'aria-disabled': 'true',
             },
@@ -277,10 +281,7 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
   String _labelFor(T item) {
     final itemAsString = component.itemAsString;
     if (itemAsString != null) return itemAsString(item);
-    if (item is String) return item;
-    throw ArgumentError(
-      'DropdownEditField<$T> requires itemAsString when items are not strings.',
-    );
+    return item as String;
   }
 
   bool _isSelected(T item) => component.value == item;
@@ -301,10 +302,26 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
     });
   }
 
+  void _handleFocusOut(web.Event event) {
+    if (!_isOpen || component.disabled) return;
+
+    final focusEvent = event as dynamic;
+    final relatedTarget = focusEvent.relatedTarget;
+    final currentTarget = focusEvent.currentTarget;
+    if (relatedTarget != null && currentTarget != null && currentTarget.contains(relatedTarget) == true) {
+      return;
+    }
+
+    setState(() {
+      _isOpen = false;
+      _query = _selectedLabel;
+    });
+  }
+
   void _handleKeyDown(web.Event event) {
     if (component.disabled) return;
 
-    final keyboardEvent = event as dynamic;
+    final keyboardEvent = event as web.KeyboardEvent;
     final items = _filteredItems;
     switch (keyboardEvent.key) {
       case 'ArrowDown':

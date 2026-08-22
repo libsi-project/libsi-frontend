@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
@@ -251,12 +252,14 @@ class DatePicker extends StatefulComponent {
 
 class _DatePickerState extends State<DatePicker> {
   late DateTime _visibleMonth;
+  late final int _fallbackCenterYear;
   _DatePickerMode _mode = _DatePickerMode.days;
 
   @override
   void initState() {
     super.initState();
     _visibleMonth = _monthStart(component.value ?? component.initialVisibleMonth ?? DateTime.now());
+    _fallbackCenterYear = _visibleMonth.year;
   }
 
   @override
@@ -287,6 +290,7 @@ class _DatePickerState extends State<DatePicker> {
             ].join(' '),
             attributes: {
               'aria-hidden': _mode == _DatePickerMode.days ? 'false' : 'true',
+              if (_mode != _DatePickerMode.days) 'inert': '',
             },
             [
               _weekdays(),
@@ -300,6 +304,7 @@ class _DatePickerState extends State<DatePicker> {
             ].join(' '),
             attributes: {
               'aria-hidden': _mode == _DatePickerMode.monthYear ? 'false' : 'true',
+              if (_mode != _DatePickerMode.monthYear) 'inert': '',
             },
             [
               _monthYearPicker(),
@@ -312,12 +317,15 @@ class _DatePickerState extends State<DatePicker> {
 
   Component _header() {
     final isMonthYearMode = _mode == _DatePickerMode.monthYear;
+    final l10n = context.l10n;
     return div(classes: 'date-picker-header', [
       button(
         classes: 'date-picker-nav-button',
         type: ButtonType.button,
         disabled: component.disabled || !_canNavigate(-1),
-        attributes: {'aria-label': isMonthYearMode ? 'Previous year' : 'Previous month'},
+        attributes: {
+          'aria-label': isMonthYearMode ? l10n.datePickerPreviousYear : l10n.datePickerPreviousMonth,
+        },
         onClick: component.disabled || !_canNavigate(-1) ? null : () => _navigate(-1),
         [.text('<')],
       ),
@@ -334,15 +342,18 @@ class _DatePickerState extends State<DatePicker> {
                 });
               },
         [
-          .text('${component.monthNames[_visibleMonth.month - 1]} ${_visibleMonth.year} г.'),
-          //span([.text(isMonthYearMode ? '^' : 'v')]),
+          .text(
+            '${component.monthNames[_visibleMonth.month - 1]} ${_visibleMonth.year} ${l10n.datePickerYearSuffix}',
+          ),
         ],
       ),
       button(
         classes: 'date-picker-nav-button',
         type: ButtonType.button,
         disabled: component.disabled || !_canNavigate(1),
-        attributes: {'aria-label': isMonthYearMode ? 'Next year' : 'Next month'},
+        attributes: {
+          'aria-label': isMonthYearMode ? l10n.datePickerNextYear : l10n.datePickerNextMonth,
+        },
         onClick: component.disabled || !_canNavigate(1) ? null : () => _navigate(1),
         [.text('>')],
       ),
@@ -358,15 +369,16 @@ class _DatePickerState extends State<DatePicker> {
   Component _days() {
     final firstDayOfMonth = _monthStart(_visibleMonth);
     final gridStart = firstDayOfMonth.subtract(Duration(days: firstDayOfMonth.weekday - DateTime.monday));
+    final today = DateTime.now();
 
     return div(classes: 'date-picker-days', [
-      for (var offset = 0; offset < 42; offset++) _dayButton(_dateOnly(gridStart.add(Duration(days: offset)))),
+      for (var offset = 0; offset < 42; offset++) _dayButton(_dateOnly(gridStart.add(Duration(days: offset))), today),
     ]);
   }
 
-  Component _dayButton(DateTime date) {
+  Component _dayButton(DateTime date, DateTime today) {
     final selected = component.value != null && _isSameDay(component.value!, date);
-    final today = _isSameDay(DateTime.now(), date);
+    final isToday = _isSameDay(today, date);
     final outside = !_isSameMonth(date, _visibleMonth);
     final disabled = component.disabled || !_isDateEnabled(date);
 
@@ -374,7 +386,7 @@ class _DatePickerState extends State<DatePicker> {
       classes: [
         'date-picker-day-button',
         if (outside) 'date-picker-day-outside',
-        if (today) 'date-picker-day-today',
+        if (isToday) 'date-picker-day-today',
         if (selected) 'date-picker-day-selected',
         if (disabled) 'date-picker-button-disabled',
       ].join(' '),
@@ -409,44 +421,46 @@ class _DatePickerState extends State<DatePicker> {
 
   Component _monthOption(DateTime monthDate) {
     final selected = monthDate.month == _visibleMonth.month;
+    final enabled = !component.disabled && _isMonthEnabled(_visibleMonth.year, monthDate.month);
 
     return button(
       classes: [
         'date-picker-wheel-option',
         if (selected) 'date-picker-wheel-selected',
-        if (component.disabled) 'date-picker-button-disabled',
+        if (!enabled) 'date-picker-button-disabled',
       ].join(' '),
       type: ButtonType.button,
-      disabled: component.disabled,
-      onClick: component.disabled
-          ? null
-          : () {
+      disabled: !enabled,
+      onClick: enabled
+          ? () {
               setState(() {
                 _visibleMonth = DateTime(_visibleMonth.year, monthDate.month);
               });
-            },
+            }
+          : null,
       [.text(component.monthNames[monthDate.month - 1])],
     );
   }
 
   Component _yearOption(int year) {
     final selected = year == _visibleMonth.year;
+    final enabled = !component.disabled && _isMonthEnabled(year, _visibleMonth.month);
 
     return button(
       classes: [
         'date-picker-wheel-option',
         if (selected) 'date-picker-wheel-selected',
-        if (component.disabled) 'date-picker-button-disabled',
+        if (!enabled) 'date-picker-button-disabled',
       ].join(' '),
       type: ButtonType.button,
-      disabled: component.disabled,
-      onClick: component.disabled
-          ? null
-          : () {
+      disabled: !enabled,
+      onClick: enabled
+          ? () {
               setState(() {
                 _visibleMonth = DateTime(year, _visibleMonth.month);
               });
-            },
+            }
+          : null,
       [.text(year.toString())],
     );
   }
@@ -480,9 +494,9 @@ class _DatePickerState extends State<DatePicker> {
     });
   }
 
-  int get _firstPickerYear => component.firstDate?.year ?? _visibleMonth.year - 100;
+  int get _firstPickerYear => component.firstDate?.year ?? _fallbackCenterYear - 100;
 
-  int get _lastPickerYear => component.lastDate?.year ?? _visibleMonth.year + 100;
+  int get _lastPickerYear => component.lastDate?.year ?? _fallbackCenterYear + 100;
 
   bool _isDateEnabled(DateTime date) {
     final firstDate = component.firstDate == null ? null : _dateOnly(component.firstDate!);

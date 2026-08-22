@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:jaspr/dom.dart';
+import 'package:jaspr/dom.dart' hide label;
+import 'package:jaspr/dom.dart' as html show label;
 import 'package:jaspr/jaspr.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
@@ -175,10 +176,13 @@ class DiscreteSlider extends StatelessComponent {
       styles: styles,
       [
         div(classes: 'discrete-slider-header', [
-          span(classes: 'discrete-slider-label', [.text(label ?? 'Value')]),
+          html.label(
+            htmlFor: id,
+            classes: 'discrete-slider-label',
+            [.text(label ?? 'Value')],
+          ),
           span(
             classes: 'discrete-slider-value',
-            attributes: {if (id != null) 'for': id!},
             [.text(formattedValue)],
           ),
         ]),
@@ -200,7 +204,6 @@ class DiscreteSlider extends StatelessComponent {
           },
           styles: Styles(raw: {'--discrete-slider-progress': '$percent%'}),
           onInput: disabled ? null : (rawValue) => onChange(_snap(rawValue.toDouble())),
-          onChange: disabled ? null : (rawValue) => onChange(_snap(rawValue.toDouble())),
         ),
         div(classes: 'discrete-slider-ticks', [
           span([.text(_format(min))]),

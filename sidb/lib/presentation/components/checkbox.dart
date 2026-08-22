@@ -40,7 +40,7 @@ class Checkbox extends StatelessComponent {
       fontSize: 1.rem,
       fontWeight: FontWeight.w800,
       backgroundColor: Colors.transparent,
-      raw: {'align-items': 'center', 'outline': 'none'},
+      raw: {'outline': 'none'},
     ),
     css('.neo-checkbox-box').styles(
       display: Display.inlineFlex,

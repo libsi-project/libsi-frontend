@@ -132,7 +132,7 @@ class PackageCard extends StatelessComponent {
           span([.text(_monthYear(pack.publishDate))]),
         ]),
         p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
-        p(classes: 'pc-authors', [.text(pack.authors.join(' · '))]),
+        p(classes: 'pc-authors', [.text(pack.authors.map((author) => author.name).join(' · '))]),
         div(classes: 'pc-reactions', [
           div(classes: 'pc-reactions-group', [
             NeoButton(
