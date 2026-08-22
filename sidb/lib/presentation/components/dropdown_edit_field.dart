@@ -305,11 +305,15 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
   void _handleFocusOut(web.Event event) {
     if (!_isOpen || component.disabled) return;
 
-    final focusEvent = event as dynamic;
+    final focusEvent = event as web.FocusEvent;
     final relatedTarget = focusEvent.relatedTarget;
     final currentTarget = focusEvent.currentTarget;
-    if (relatedTarget != null && currentTarget != null && currentTarget.contains(relatedTarget) == true) {
-      return;
+    if (relatedTarget != null && currentTarget != null) {
+      final relatedNode = relatedTarget as web.Node;
+      final currentNode = currentTarget as web.Node;
+      if (currentNode.contains(relatedNode)) {
+        return;
+      }
     }
 
     setState(() {

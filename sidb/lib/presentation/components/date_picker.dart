@@ -444,7 +444,7 @@ class _DatePickerState extends State<DatePicker> {
 
   Component _yearOption(int year) {
     final selected = year == _visibleMonth.year;
-    final enabled = !component.disabled && _isMonthEnabled(year, _visibleMonth.month);
+    final enabled = !component.disabled && _isYearEnabled(year);
 
     return button(
       classes: [
@@ -457,7 +457,7 @@ class _DatePickerState extends State<DatePicker> {
       onClick: enabled
           ? () {
               setState(() {
-                _visibleMonth = DateTime(year, _visibleMonth.month);
+                _visibleMonth = _nearestEnabledMonth(DateTime(year, _visibleMonth.month));
               });
             }
           : null,
@@ -482,7 +482,7 @@ class _DatePickerState extends State<DatePicker> {
         ? DateTime(_visibleMonth.year, _visibleMonth.month + direction)
         : DateTime(_visibleMonth.year + direction, _visibleMonth.month);
     if (_mode == _DatePickerMode.days) return _isMonthEnabled(next.year, next.month);
-    return next.year >= _firstPickerYear && next.year <= _lastPickerYear;
+    return next.year >= _firstPickerYear && next.year <= _lastPickerYear && _isYearEnabled(next.year);
   }
 
   void _navigate(int direction) {
@@ -490,7 +490,7 @@ class _DatePickerState extends State<DatePicker> {
       final next = _mode == _DatePickerMode.days
           ? DateTime(_visibleMonth.year, _visibleMonth.month + direction)
           : DateTime(_visibleMonth.year + direction, _visibleMonth.month);
-      _visibleMonth = _mode == _DatePickerMode.days ? _nearestEnabledMonth(next) : DateTime(next.year, next.month);
+      _visibleMonth = _nearestEnabledMonth(next);
     });
   }
 
@@ -510,6 +510,13 @@ class _DatePickerState extends State<DatePicker> {
     final firstDay = DateTime(year, month);
     final lastDay = DateTime(year, month + 1, 0);
     return _isDateEnabled(firstDay) || _isDateEnabled(lastDay) || _rangeContainsMonth(year, month);
+  }
+
+  bool _isYearEnabled(int year) {
+    for (var month = DateTime.january; month <= DateTime.december; month++) {
+      if (_isMonthEnabled(year, month)) return true;
+    }
+    return false;
   }
 
   bool _rangeContainsMonth(int year, int month) {
