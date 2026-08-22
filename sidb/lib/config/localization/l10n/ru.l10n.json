@@ -25,5 +25,10 @@
     "packsLoadError": "Не удалось загрузить пакеты",
     "emptyPacks": "Пакеты пока не найдены",
     "aboutDescription": "SIDB собирает пакеты для интеллектуальных игр и помогает быстро находить материалы по теме, сложности и авторам.",
-    "comingSoon": "Раздел скоро появится"
+    "comingSoon": "Раздел скоро появится",
+    "datePickerYearSuffix": "г.",
+    "datePickerPreviousMonth": "Предыдущий месяц",
+    "datePickerPreviousYear": "Предыдущий год",
+    "datePickerNextMonth": "Следующий месяц",
+    "datePickerNextYear": "Следующий год"
 }

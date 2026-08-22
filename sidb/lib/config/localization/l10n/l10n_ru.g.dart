@@ -105,6 +105,21 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Раздел скоро появится'
 	String get comingSoon => 'Раздел скоро появится';
+
+	/// ru: 'г.'
+	String get datePickerYearSuffix => 'г.';
+
+	/// ru: 'Предыдущий месяц'
+	String get datePickerPreviousMonth => 'Предыдущий месяц';
+
+	/// ru: 'Предыдущий год'
+	String get datePickerPreviousYear => 'Предыдущий год';
+
+	/// ru: 'Следующий месяц'
+	String get datePickerNextMonth => 'Следующий месяц';
+
+	/// ru: 'Следующий год'
+	String get datePickerNextYear => 'Следующий год';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -137,6 +152,11 @@ extension on Translations {
 			'emptyPacks' => 'Пакеты пока не найдены',
 			'aboutDescription' => 'SIDB собирает пакеты для интеллектуальных игр и помогает быстро находить материалы по теме, сложности и авторам.',
 			'comingSoon' => 'Раздел скоро появится',
+			'datePickerYearSuffix' => 'г.',
+			'datePickerPreviousMonth' => 'Предыдущий месяц',
+			'datePickerPreviousYear' => 'Предыдущий год',
+			'datePickerNextMonth' => 'Следующий месяц',
+			'datePickerNextYear' => 'Следующий год',
 			_ => null,
 		};
 	}

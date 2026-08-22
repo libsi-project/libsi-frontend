@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:sidb/presentation/features/pack/model/pack.dart';
+import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 
 abstract class PackRepository {
   Future<List<Pack>> getPacks();

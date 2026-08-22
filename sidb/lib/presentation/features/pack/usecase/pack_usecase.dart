@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:sidb/core/usecase/usecase.dart';
-import 'package:sidb/presentation/features/pack/model/pack.dart';
+import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 import 'package:sidb/presentation/features/pack/repository/pack_repository.dart';
 
 @LazySingleton()

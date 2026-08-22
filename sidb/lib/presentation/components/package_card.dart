@@ -5,7 +5,7 @@ import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_badge.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
 import 'package:sidb/presentation/components/neo_card.dart';
-import 'package:sidb/presentation/features/pack/model/pack.dart';
+import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
@@ -132,7 +132,7 @@ class PackageCard extends StatelessComponent {
           span([.text(_monthYear(pack.publishDate))]),
         ]),
         p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
-        p(classes: 'pc-authors', [.text(pack.authors.join(' · '))]),
+        p(classes: 'pc-authors', [.text(pack.authors.map((author) => author.name).join(' · '))]),
         div(classes: 'pc-reactions', [
           div(classes: 'pc-reactions-group', [
             NeoButton(

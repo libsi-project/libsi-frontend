@@ -1,5 +1,9 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:sidb/presentation/components/checkbox.dart';
+import 'package:sidb/presentation/components/date_picker.dart';
+import 'package:sidb/presentation/components/discrete_slider.dart';
+import 'package:sidb/presentation/components/dropdown_edit_field.dart';
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_badge.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
@@ -248,6 +252,45 @@ NeoIconButton(
         ],
       ),
       _Section(
+        title: 'Advanced Form Controls',
+        description:
+            'Use these controlled components when a feature needs typed choice, boolean state, or stepped numeric input while keeping native accessibility and neo motion.',
+        children: [
+          const _AdvancedControlsDemo(),
+          _CodeBlock(
+            '''
+DiscreteSlider(
+  value: sliderValue,
+  min: 0,
+  max: 10,
+  step: 0.5,
+  onChange: (value) => setState(() => sliderValue = value),
+)
+
+Checkbox(
+  checked: isEnabled,
+  label: .text('Enable beta mode'),
+  onChange: (checked) => setState(() => isEnabled = checked),
+)
+
+DropdownEditField<MyItem>(
+  id: 'item-dropdown',
+  items: items,
+  value: selectedItem,
+  placeholder: 'Pick an item',
+  itemAsString: (item) => item.title,
+  onChange: (item) => setState(() => selectedItem = item),
+)
+
+DatePicker(
+  value: selectedDate,
+  onChange: (date) => setState(() => selectedDate = date),
+)
+''',
+          ),
+        ],
+      ),
+      _Section(
         title: 'Badges',
         description:
             '`NeoBadge` maps semantic tones to theme variables. Feature cards should not define local badge hex colors.',
@@ -335,6 +378,127 @@ NeoCard(
     };
   }
 }
+
+class _AdvancedControlsDemo extends StatefulComponent {
+  const _AdvancedControlsDemo();
+
+  @override
+  State<_AdvancedControlsDemo> createState() => _AdvancedControlsDemoState();
+}
+
+class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
+  double _sliderValue = 4;
+  bool _checked = true;
+  _FaqAudience? _selectedAudience = _audiences.first;
+  DateTime _selectedDate = DateTime(2026, 8, 6);
+
+  @override
+  Component build(BuildContext context) {
+    return div(classes: 'dev-faq-grid', [
+      _ExampleTile(
+        label: 'Discrete slider',
+        note: 'Native range input with discrete steps, a neo thumb, progress fill, and keyboard support.',
+        child: DiscreteSlider(
+          label: 'Difficulty',
+          value: _sliderValue,
+          min: 0,
+          max: 10,
+          step: 0.5,
+          onChange: (value) {
+            setState(() {
+              _sliderValue = value;
+            });
+          },
+        ),
+      ),
+      _ExampleTile(
+        label: 'Checkbox',
+        note:
+            'Controlled boolean input. The square is custom, and the whole control is a button with checkbox semantics.',
+        child: Checkbox(
+          checked: _checked,
+          label: .text('Show experimental packs'),
+          onChange: (checked) {
+            setState(() {
+              _checked = checked;
+            });
+          },
+        ),
+      ),
+      _ExampleTile(
+        label: 'DropdownEditField<T>',
+        note: 'Searchable generic combobox. Class-backed items use itemAsString for display and filtering.',
+        child: DropdownEditField<_FaqAudience>(
+          id: 'faq-audience-dropdown',
+          items: _audiences,
+          value: _selectedAudience,
+          placeholder: 'Choose audience',
+          itemAsString: (item) => item.title,
+          onChange: (item) {
+            setState(() {
+              _selectedAudience = item;
+            });
+          },
+        ),
+      ),
+      _ExampleTile(
+        label: 'DatePicker',
+        note: 'Month arrows move the day grid. Click the month/year pill to switch into month and year selection.',
+        child: DatePicker(
+          value: _selectedDate,
+          firstDate: DateTime(2000, 1, 1),
+          lastDate: DateTime(2026, 12, 31),
+          onChange: (date) {
+            setState(() {
+              _selectedDate = date;
+            });
+          },
+        ),
+      ),
+      _ExampleTile(
+        label: 'Disabled controls',
+        note: 'Disabled styling is dimmed but keeps the same border, shadow, and typography language.',
+        child: div(classes: 'dev-faq-stack', [
+          DiscreteSlider(
+            label: 'Locked',
+            value: 6,
+            min: 0,
+            max: 10,
+            step: 1,
+            disabled: true,
+            onChange: (_) {},
+          ),
+          Checkbox(
+            checked: false,
+            disabled: true,
+            label: .text('Unavailable toggle'),
+            onChange: (_) {},
+          ),
+          DropdownEditField<String>(
+            id: 'faq-disabled-dropdown',
+            items: const ['Alpha', 'Beta', 'Gamma'],
+            value: 'Beta',
+            disabled: true,
+            onChange: (_) {},
+          ),
+        ]),
+      ),
+    ]);
+  }
+}
+
+class _FaqAudience {
+  const _FaqAudience(this.title);
+
+  final String title;
+}
+
+const _audiences = [
+  _FaqAudience('Students'),
+  _FaqAudience('Teachers'),
+  _FaqAudience('Package authors'),
+  _FaqAudience('Moderators'),
+];
 
 class _Section extends StatelessComponent {
   const _Section({

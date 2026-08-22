@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:sidb/presentation/features/pack/model/author/author.dart';
 
 part 'pack.g.dart';
 
@@ -9,16 +10,16 @@ class Pack {
   final String gameType;
   final String difficultyType;
   final String difficulty;
-  final List<String> authors;
+  final List<Author> authors;
   final int topicsCount;
   @JsonKey(
-    fromJson: _dateFromJson,
-    toJson: _dateToJson,
+    fromJson: dateFromJson,
+    toJson: dateToJson,
   )
   final DateTime publishDate;
   @JsonKey(
-    fromJson: _dateFromJson,
-    toJson: _dateToJson,
+    fromJson: dateFromJson,
+    toJson: dateToJson,
   )
   final DateTime playDate;
   final int likesCount;
@@ -41,6 +42,6 @@ class Pack {
   Map<String, dynamic> toJson() => _$PackToJson(this);
   factory Pack.fromJson(Map<String, dynamic> json) => _$PackFromJson(json);
 
-  static DateTime _dateFromJson(int dateJson) => DateTime.fromMillisecondsSinceEpoch(dateJson * 1000);
-  static int _dateToJson(DateTime date) => date.millisecondsSinceEpoch ~/ 1000;
+  static DateTime dateFromJson(int dateJson) => DateTime.fromMillisecondsSinceEpoch(dateJson * 1000);
+  static int dateToJson(DateTime date) => date.millisecondsSinceEpoch ~/ 1000;
 }
