@@ -33,7 +33,7 @@ class NeoCard extends StatelessComponent {
   Component build(BuildContext context) {
     return NeoSurface(
       interactive: interactive,
-      classes: ['neo-card', if (classes != null) classes!].join(' '),
+      classes: ['neo-card', ?classes].join(' '),
       styles: styles,
       shadowColorCss: shadowColorCss,
       children: children,

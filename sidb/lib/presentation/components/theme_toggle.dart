@@ -1,7 +1,8 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_bloc/jaspr_bloc.dart' hide Transition;
 import 'package:sidb/presentation/components/icon.dart';
-import 'package:sidb/presentation/components/neo_button.dart';
+import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/theme_cubit.dart';
 
 /// A client-side component that toggles the application theme between light and dark modes.
@@ -9,18 +10,67 @@ import 'package:sidb/presentation/theme/theme_cubit.dart';
 class ThemeToggle extends StatelessComponent {
   const ThemeToggle({super.key});
 
+  @css
+  static List<StyleRule> get stylesheets => [
+    css('.theme-toggle').styles(
+      display: Display.inlineFlex,
+      width: 36.px,
+      height: 36.px,
+      padding: Padding.zero,
+      border: Border.none,
+      radius: BorderRadius.circular(0.px),
+      cursor: Cursor.pointer,
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+      backgroundColor: Colors.transparent,
+      raw: {
+        'box-shadow': 'none',
+        'outline': 'none',
+        'transform': 'none',
+      },
+    ),
+    css('.theme-toggle:hover').styles(
+      border: Border.none,
+      backgroundColor: AppTheme.accentColor,
+      raw: {
+        'box-shadow': 'none',
+        'transform': 'none',
+      },
+    ),
+    css('[data-theme="dark"] .theme-toggle:hover').styles(
+      backgroundColor: AppTheme.primaryColor,
+    ),
+    css('.theme-toggle:active').styles(
+      raw: {
+        'box-shadow': 'none',
+        'transform': 'none',
+      },
+    ),
+    css('.theme-toggle:focus-visible').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
+    ),
+  ];
+
   @override
   Component build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, state) {
-        return NeoIconButton(
-          attributes: const {'id': 'theme-toggle', 'aria-label': 'Toggle theme'},
-          classes: 'topbar-icon-btn topbar-theme-btn',
+        return button(
+          classes: 'theme-toggle',
+          attributes: const {
+            'id': 'theme-toggle',
+            'type': 'button',
+            'aria-label': 'Toggle theme',
+          },
           onClick: () => BlocProvider.of<ThemeCubit>(context).toggleTheme(),
-          child: AppIcon(
-            state == ThemeMode.light ? _sunPath : _moonPath,
-            strokeWidth: '2.5',
-          ),
+          [
+            AppIcon(
+              state == ThemeMode.light ? _sunPath : _moonPath,
+              width: 20,
+              height: 20,
+              strokeWidth: '2.5',
+            ),
+          ],
         );
       },
     );

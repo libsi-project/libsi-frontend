@@ -1,10 +1,10 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
 import 'package:sidb/presentation/components/neo_input.dart';
-import 'package:sidb/presentation/components/neo_nav_link.dart';
 import 'package:sidb/presentation/components/theme_toggle.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
@@ -28,39 +28,80 @@ class TopBarNeo extends StatelessComponent {
     return s;
   }
 
+  @css
+  static List<StyleRule> get stylesheets => [
+    css('.top-bar-neo').styles(
+      display: Display.flex,
+      position: Position.sticky(top: 0.px),
+      zIndex: ZIndex(100),
+      padding: Padding.symmetric(vertical: 20.px),
+      border: Border.only(
+        bottom: BorderSide.dashed(width: 3.px, color: AppTheme.borderColor),
+      ),
+      backdropFilter: Filter.blur(5.px),
+      justifyContent: JustifyContent.spaceBetween,
+      alignItems: AlignItems.center,
+      gap: Gap.all(1.5.rem),
+      flex: Flex(shrink: 0),
+      backgroundColor: const Color('color-mix(in srgb, var(--theme-canvas) 90%, transparent)'),
+      raw: {'-webkit-backdrop-filter': 'blur(5px)'},
+    ),
+    css('.top-bar-neo-nav').styles(
+      display: Display.flex,
+      alignItems: AlignItems.center,
+      gap: Gap.all(20.px),
+    ),
+    css('.top-bar-neo-actions').styles(
+      display: Display.flex,
+      justifyContent: JustifyContent.end,
+      alignItems: AlignItems.center,
+      gap: Gap.all(1.rem),
+      flex: Flex(grow: 1),
+    ),
+    css('.top-bar-nav-link').styles(
+      padding: Padding.symmetric(horizontal: 10.px, vertical: 5.px),
+      border: Border.all(style: BorderStyle.solid, width: 3.px, color: Colors.transparent),
+      cursor: Cursor.pointer,
+      userSelect: UserSelect.none,
+      transition: Transition('all', duration: 300.ms),
+      color: AppTheme.textColor,
+      fontFamily: const FontFamily(NeoTokens.fontDisplay),
+      fontSize: 1.2.rem,
+      fontWeight: FontWeight.w700,
+      textDecoration: TextDecoration.none,
+      raw: {'outline': 'none'},
+    ),
+    css('.top-bar-nav-link:hover').styles(
+      transform: Transform.combine([
+        Transform.translate(y: (-5).px),
+        Transform.rotate((-2).deg),
+      ]),
+      backgroundColor: AppTheme.accentColor,
+      raw: {'border-bottom-color': 'var(--theme-border)'},
+    ),
+    css('.top-bar-nav-link:focus-visible').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
+    ),
+    css('.top-bar-nav-link-active').styles(
+      backgroundColor: AppTheme.accentColor,
+      raw: {'border-bottom-color': 'var(--theme-border)'},
+    ),
+  ];
+
   @override
   Component build(BuildContext context) {
-    const theme = AppTheme.theme;
     final l10n = context.l10n;
     final activePath = _normalizePath(location);
 
     return header(
-      styles: Styles(
-        display: Display.flex,
-        position: Position.sticky(top: 0.px),
-        zIndex: ZIndex(100),
-        height: 84.px,
-        minHeight: 84.px,
-        padding: Padding.symmetric(horizontal: 9.5.rem),
-        justifyContent: JustifyContent.spaceBetween,
-        alignItems: AlignItems.center,
-        gap: Gap.all(1.5.rem),
-        flex: Flex(shrink: 0),
-        backgroundColor: theme.surface,
-        raw: {'box-shadow': '0 2px 0 0 var(--theme-border)'},
-      ),
+      classes: 'top-bar-neo',
       [
         nav(
-          styles: Styles(
-            display: Display.flex,
-            alignItems: AlignItems.center,
-            gap: Gap.all(2.5.rem),
-          ),
+          classes: 'top-bar-neo-nav',
           [
             TopBarItem(label: l10n.packages, to: '/', isActive: activePath == '/'),
             TopBarItem(label: l10n.search, to: '/search', isActive: activePath.startsWith('/search')),
             TopBarItem(label: l10n.authors, to: '/authors', isActive: activePath.startsWith('/authors')),
-            TopBarItem(label: l10n.favorites, to: '/favorites', isActive: activePath.startsWith('/favorites')),
             TopBarItem(label: l10n.about, to: '/about', isActive: activePath.startsWith('/about')),
             TopBarItem(
               label: l10n.developerFaqNav,
@@ -70,57 +111,46 @@ class TopBarNeo extends StatelessComponent {
           ],
         ),
         div(
-          styles: Styles(
-            display: Display.flex,
-            justifyContent: JustifyContent.end,
-            alignItems: AlignItems.center,
-            gap: Gap.all(1.5.rem),
-            flex: Flex(grow: 1),
-          ),
+          classes: 'top-bar-neo-actions',
           [
             div(
               styles: Styles(
                 position: Position.relative(),
-                width: 400.px,
+                width: 380.px,
                 maxWidth: 100.percent,
               ),
               [
                 SearchField(
                   placeholder: l10n.searchPackages,
-                  iconStyles: Styles(
-                    position: Position.absolute(top: 50.percent, left: 30.px),
-                  ),
                   inputStyles: Styles(
                     height: 36.px,
                     padding: Padding.only(
-                      left: 57.px,
+                      left: 2.75.rem,
                       right: 1.rem,
                       top: 0.px,
                       bottom: 0.px,
                     ),
-                    border: NeoTokens.border(color: theme.border),
                     radius: NeoTokens.radius(NeoTokens.radiusSm),
-                    transition: NeoTokens.transition(),
-                    fontFamily: const FontFamily('Rubik'),
+                    transition: NeoTokens.transition(NeoTokens.motionSlowMs),
                     fontSize: 15.px,
                     fontWeight: FontWeight.w700,
-                    backgroundColor: theme.surface,
-                    raw: {'box-shadow': 'none'},
+                    backgroundColor: AppTheme.surfaceColor,
                   ),
                 ),
               ],
             ),
-            const NeoIconButton(
-              variant: NeoButtonVariant.surface,
-              shape: NeoIconButtonShape.square,
-              size: 36,
-              child: AppIcon(
-                _userPath,
-                width: 20,
-                height: 20,
-                filled: true,
-              ),
-            ),
+            //TODO: uncomment when user is implemented
+            // const NeoIconButton(
+            //   variant: NeoButtonVariant.surface,
+            //   shape: NeoIconButtonShape.square,
+            //   size: 36,
+            //   child: AppIcon(
+            //     _userPath,
+            //     width: 20,
+            //     height: 20,
+            //     filled: true,
+            //   ),
+            // ),
             const ThemeToggle(),
           ],
         ),
@@ -144,6 +174,13 @@ class TopBarItem extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return NeoNavLink(label: label, to: to, isActive: isActive, square: true);
+    return router.Link(
+      to: to,
+      classes: [
+        'top-bar-nav-link',
+        if (isActive) 'top-bar-nav-link-active',
+      ].join(' '),
+      child: Component.text(label),
+    );
   }
 }

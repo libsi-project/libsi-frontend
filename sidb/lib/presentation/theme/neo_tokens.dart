@@ -2,6 +2,7 @@ import 'package:jaspr/dom.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 
 abstract final class NeoTokens {
+  static const double pageMaxWidth = 1200;
   static const double pagePaddingX = 2;
 
   static const double radiusSm = 2;

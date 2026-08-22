@@ -83,7 +83,7 @@ class PacksPage extends StatelessComponent {
 Component _pageShell(List<Component> children) {
   return div(
     styles: Styles(
-      padding: NeoTokens.pagePadding(top: 3, bottom: 3),
+      padding: Padding.symmetric(vertical: 3.rem),
     ),
     children,
   );
