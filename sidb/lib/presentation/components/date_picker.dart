@@ -355,6 +355,7 @@ class _DatePickerState extends State<DatePicker> {
       styles: component.styles,
       events: {
         'focusout': _handleFocusOut,
+        'keydown': _handleKeyDown,
       },
       [
         button(
@@ -368,9 +369,6 @@ class _DatePickerState extends State<DatePicker> {
             'aria-label': component.placeholder,
             if (_isOpen) 'aria-controls': calendarId,
             if (component.disabled) 'aria-disabled': 'true',
-          },
-          events: {
-            'keydown': _handleKeyDown,
           },
           onClick: component.disabled ? null : _toggle,
           [

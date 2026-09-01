@@ -192,6 +192,7 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
       styles: component.styles,
       events: {
         'focusout': _handleFocusOut,
+        'keydown': _handleKeyDown,
       },
       [
         button(
@@ -207,9 +208,6 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
             if (_isOpen && !component.disabled) 'aria-controls': menuId,
             if (_isOpen && !component.disabled && activeId != null) 'aria-activedescendant': activeId,
             if (component.disabled) 'aria-disabled': 'true',
-          },
-          events: {
-            'keydown': _handleKeyDown,
           },
           onClick: component.disabled ? null : _toggle,
           [
