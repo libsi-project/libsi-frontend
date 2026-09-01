@@ -1,8 +1,10 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:sidb/config/localization/extension.dart';
+import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
+import 'package:universal_web/web.dart' as web;
 
 const _defaultMonthNames = [
   'январь',
@@ -32,6 +34,7 @@ class DatePicker extends StatefulComponent {
     this.initialVisibleMonth,
     this.monthNames = _defaultMonthNames,
     this.weekdayLabels = _defaultWeekdayLabels,
+    this.placeholder = 'pick a date',
     this.disabled = false,
     this.id,
     this.classes,
@@ -47,6 +50,7 @@ class DatePicker extends StatefulComponent {
   final DateTime? initialVisibleMonth;
   final List<String> monthNames;
   final List<String> weekdayLabels;
+  final String placeholder;
   final bool disabled;
   final String? id;
   final String? classes;
@@ -55,19 +59,79 @@ class DatePicker extends StatefulComponent {
   @css
   static List<StyleRule> get stylesheets => [
     css('.date-picker').styles(
-      display: Display.flex,
+      position: Position.relative(),
       width: 100.percent,
       minWidth: 0.px,
-      maxWidth: 20.rem,
+      color: AppTheme.textColor,
+      fontFamily: const FontFamily(NeoTokens.fontBody),
+      fontWeight: FontWeight.w800,
+    ),
+    css('.date-picker-open').styles(
+      zIndex: ZIndex(50),
+    ),
+    css('.date-picker-field').styles(
+      display: Display.flex,
+      width: 100.percent,
+      padding: Padding.symmetric(horizontal: 1.rem, vertical: 0.6.rem),
+      border: NeoTokens.border(color: const Color('var(--date-picker-border-color)')),
+      radius: NeoTokens.radius(NeoTokens.radiusMd),
+      appearance: Appearance.none,
+      cursor: Cursor.pointer,
+      userSelect: UserSelect.none,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      alignItems: AlignItems.center,
+      gap: Gap.all(0.65.rem),
+      color: AppTheme.textColor,
+      textAlign: TextAlign.left,
+      fontFamily: const FontFamily(NeoTokens.fontBody),
+      fontSize: 1.rem,
+      fontWeight: FontWeight.w700,
+      backgroundColor: AppTheme.inputBackground,
+      raw: {
+        '--date-picker-border-color': 'var(--theme-border)',
+        '--date-picker-shadow-color': 'var(--theme-border)',
+        'border-width': '2px',
+        'box-shadow': '4px 4px 0 0 var(--date-picker-shadow-color)',
+        'outline': 'none',
+      },
+    ),
+    css('.date-picker-field:focus-visible, .date-picker-open .date-picker-field').styles(
+      transform: Transform.translate(x: 1.px, y: 1.px),
+      raw: {'box-shadow': '3px 3px 0 0 var(--date-picker-shadow-color)'},
+    ),
+    css('.date-picker-field-value').styles(
+      display: Display.flex,
+      minWidth: 0.px,
+      overflow: Overflow.hidden,
+      pointerEvents: PointerEvents.none,
+      alignItems: AlignItems.center,
+      flex: Flex(grow: 1, shrink: 1),
+      raw: {'text-overflow': 'ellipsis'},
+    ),
+    css('.date-picker-field-placeholder').styles(
+      opacity: 0.75,
+      color: AppTheme.textSecondary,
+    ),
+    css('.date-picker-field-icon').styles(
+      display: Display.flex,
+      pointerEvents: PointerEvents.none,
+      flex: Flex(shrink: 0),
+      color: AppTheme.textSecondary,
+    ),
+    css('.date-picker-calendar').styles(
+      display: Display.flex,
+      position: Position.absolute(top: 100.percent, left: 0.px),
+      zIndex: ZIndex(50),
+      width: 20.rem,
+      minWidth: 0.px,
+      maxWidth: 100.percent,
       padding: Padding.all(0.75.rem),
+      margin: Margin.only(top: 0.35.rem),
       border: NeoTokens.border(width: NeoTokens.borderThick),
       radius: NeoTokens.radius(NeoTokens.radiusLg),
       shadow: NeoTokens.shadow(offset: NeoTokens.shadowMd),
       flexDirection: FlexDirection.column,
       gap: Gap.all(0.75.rem),
-      color: AppTheme.textColor,
-      fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontWeight: FontWeight.w800,
       backgroundColor: AppTheme.surfaceColor,
       raw: {'box-sizing': 'border-box'},
     ),
@@ -241,6 +305,9 @@ class DatePicker extends StatefulComponent {
     css('.date-picker-disabled').styles(
       opacity: 0.5,
     ),
+    css('.date-picker-disabled .date-picker-field').styles(
+      cursor: Cursor.notAllowed,
+    ),
     css('.date-picker-disabled button, .date-picker-button-disabled').styles(
       cursor: Cursor.notAllowed,
     ),
@@ -254,6 +321,7 @@ class _DatePickerState extends State<DatePicker> {
   late DateTime _visibleMonth;
   late final int _fallbackCenterYear;
   _DatePickerMode _mode = _DatePickerMode.days;
+  bool _isOpen = false;
 
   @override
   void initState() {
@@ -272,45 +340,95 @@ class _DatePickerState extends State<DatePicker> {
 
   @override
   Component build(BuildContext context) {
+    final formatted = _formattedValue;
+    final hasValue = formatted != null;
+    final calendarId = '${component.id ?? 'date-picker'}-calendar';
+
     return div(
       id: component.id,
       classes: [
         'date-picker',
+        if (_isOpen) 'date-picker-open',
         if (component.disabled) 'date-picker-disabled',
         if (component.classes != null) component.classes!,
       ].join(' '),
       styles: component.styles,
+      events: {
+        'focusout': _handleFocusOut,
+        'keydown': _handleKeyDown,
+      },
       [
-        _header(),
-        div(classes: 'date-picker-body', [
+        button(
+          classes: 'date-picker-field',
+          type: ButtonType.button,
+          disabled: component.disabled,
+          attributes: {
+            'role': 'combobox',
+            'aria-haspopup': 'dialog',
+            'aria-expanded': _isOpen ? 'true' : 'false',
+            'aria-label': component.placeholder,
+            if (_isOpen) 'aria-controls': calendarId,
+            if (component.disabled) 'aria-disabled': 'true',
+          },
+          onClick: component.disabled ? null : _toggle,
+          [
+            span(classes: 'date-picker-field-icon', [
+              const AppIcon(
+                IconPaths.calendar,
+                width: 18,
+                height: 18,
+                strokeColor: AppTheme.textSecondary,
+              ),
+            ]),
+            span(
+              classes: [
+                'date-picker-field-value',
+                if (!hasValue) 'date-picker-field-placeholder',
+              ].join(' '),
+              [
+                .text(hasValue ? formatted : component.placeholder),
+              ],
+            ),
+          ],
+        ),
+        if (_isOpen && !component.disabled)
           div(
-            classes: [
-              'date-picker-panel',
-              if (_mode != _DatePickerMode.days) 'date-picker-panel-hidden',
-            ].join(' '),
-            attributes: {
-              'aria-hidden': _mode == _DatePickerMode.days ? 'false' : 'true',
-              if (_mode != _DatePickerMode.days) 'inert': '',
-            },
+            id: calendarId,
+            classes: 'date-picker-calendar',
+            attributes: {'role': 'dialog'},
             [
-              _weekdays(),
-              _days(),
+              _header(),
+              div(classes: 'date-picker-body', [
+                div(
+                  classes: [
+                    'date-picker-panel',
+                    if (_mode != _DatePickerMode.days) 'date-picker-panel-hidden',
+                  ].join(' '),
+                  attributes: {
+                    'aria-hidden': _mode == _DatePickerMode.days ? 'false' : 'true',
+                    if (_mode != _DatePickerMode.days) 'inert': '',
+                  },
+                  [
+                    _weekdays(),
+                    _days(),
+                  ],
+                ),
+                div(
+                  classes: [
+                    'date-picker-panel',
+                    if (_mode != _DatePickerMode.monthYear) 'date-picker-panel-hidden',
+                  ].join(' '),
+                  attributes: {
+                    'aria-hidden': _mode == _DatePickerMode.monthYear ? 'false' : 'true',
+                    if (_mode != _DatePickerMode.monthYear) 'inert': '',
+                  },
+                  [
+                    _monthYearPicker(),
+                  ],
+                ),
+              ]),
             ],
           ),
-          div(
-            classes: [
-              'date-picker-panel',
-              if (_mode != _DatePickerMode.monthYear) 'date-picker-panel-hidden',
-            ].join(' '),
-            attributes: {
-              'aria-hidden': _mode == _DatePickerMode.monthYear ? 'false' : 'true',
-              if (_mode != _DatePickerMode.monthYear) 'inert': '',
-            },
-            [
-              _monthYearPicker(),
-            ],
-          ),
-        ]),
       ],
     );
   }
@@ -343,7 +461,7 @@ class _DatePickerState extends State<DatePicker> {
               },
         [
           .text(
-            '${component.monthNames[_visibleMonth.month - 1]} ${_visibleMonth.year} ${l10n.datePickerYearSuffix}',
+            '${component.monthNames[_visibleMonth.month - 1]} ${_visibleMonth.year}',
           ),
         ],
       ),
@@ -401,6 +519,8 @@ class _DatePickerState extends State<DatePicker> {
           : () {
               setState(() {
                 _visibleMonth = _monthStart(date);
+                _isOpen = false;
+                _mode = _DatePickerMode.days;
               });
               component.onChange(date);
             },
@@ -546,4 +666,74 @@ class _DatePickerState extends State<DatePicker> {
   bool _isSameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
 
   bool _isSameMonth(DateTime a, DateTime b) => a.year == b.year && a.month == b.month;
+
+  String? get _formattedValue {
+    final value = component.value;
+    if (value == null) return null;
+    final day = value.day.toString().padLeft(2, '0');
+    final month = value.month.toString().padLeft(2, '0');
+    return '$day.$month.${value.year}';
+  }
+
+  void _toggle() {
+    if (_isOpen) {
+      _close();
+    } else {
+      _open();
+    }
+  }
+
+  void _open() {
+    if (component.disabled || _isOpen) return;
+    setState(() {
+      _isOpen = true;
+      _mode = _DatePickerMode.days;
+      if (component.value != null) {
+        _visibleMonth = _monthStart(component.value!);
+      }
+    });
+  }
+
+  void _close() {
+    if (!_isOpen) return;
+    setState(() {
+      _isOpen = false;
+      _mode = _DatePickerMode.days;
+    });
+  }
+
+  void _handleFocusOut(web.Event event) {
+    if (!_isOpen || component.disabled) return;
+
+    final focusEvent = event as web.FocusEvent;
+    final relatedTarget = focusEvent.relatedTarget;
+    final currentTarget = focusEvent.currentTarget;
+    if (relatedTarget != null && currentTarget != null) {
+      final relatedNode = relatedTarget as web.Node;
+      final currentNode = currentTarget as web.Node;
+      if (currentNode.contains(relatedNode)) {
+        return;
+      }
+    }
+
+    _close();
+  }
+
+  void _handleKeyDown(web.Event event) {
+    if (component.disabled) return;
+
+    final keyboardEvent = event as web.KeyboardEvent;
+    switch (keyboardEvent.key) {
+      case 'Escape':
+        if (_isOpen) {
+          keyboardEvent.preventDefault();
+          _close();
+        }
+      case 'ArrowDown':
+        if (!_isOpen) {
+          keyboardEvent.preventDefault();
+          _open();
+        }
+    }
+  }
 }

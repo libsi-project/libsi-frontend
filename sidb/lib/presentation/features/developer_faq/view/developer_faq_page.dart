@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:sidb/presentation/components/app_dialog.dart';
 import 'package:sidb/presentation/components/checkbox.dart';
 import 'package:sidb/presentation/components/date_picker.dart';
 import 'package:sidb/presentation/components/discrete_slider.dart';
@@ -11,6 +12,7 @@ import 'package:sidb/presentation/components/neo_card.dart';
 import 'package:sidb/presentation/components/neo_input.dart';
 import 'package:sidb/presentation/components/neo_nav_link.dart';
 import 'package:sidb/presentation/components/neo_surface.dart';
+import 'package:sidb/presentation/components/switch_toggle.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
@@ -21,7 +23,7 @@ class DeveloperFaqPage extends StatelessComponent {
   static List<StyleRule> get styles => [
     css('.dev-faq').styles(
       display: Display.flex,
-      padding: NeoTokens.pagePadding(top: 3, bottom: 3),
+      padding: Padding.symmetric(vertical: 3.rem),
       flexDirection: FlexDirection.column,
       gap: Gap.all(2.rem),
     ),
@@ -58,6 +60,10 @@ class DeveloperFaqPage extends StatelessComponent {
       display: Display.flex,
       flexDirection: FlexDirection.column,
       gap: Gap.all(0.75.rem),
+    ),
+    css('.dev-faq-label').styles(
+      display: Display.inlineFlex,
+      margin: Margin.only(bottom: 0.75.rem),
     ),
     css('.dev-faq-note').styles(
       color: AppTheme.textSecondary,
@@ -222,7 +228,7 @@ NeoIconButton(
       _Section(
         title: 'Inputs',
         description:
-            '`NeoInput` is generic. `SearchField` is composition over `NeoInput` with a leading icon. Do not bake search behavior into edit fields.',
+            '`NeoInput` is generic. `SearchField` is the top-bar search control: a `NeoInput` with a leading icon. Do not bake search behavior into edit fields.',
         children: [
           div(classes: 'dev-faq-grid', [
             _ExampleTile(
@@ -232,7 +238,7 @@ NeoIconButton(
             ),
             _ExampleTile(
               label: 'Search field',
-              note: 'Search-specific composition with icon and aria label.',
+              note: 'The same SearchField used in the top bar: 36px tall, leading icon, surface fill.',
               child: const SearchField(placeholder: 'Поиск пакетов...'),
             ),
             _ExampleTile(
@@ -286,6 +292,12 @@ DatePicker(
   value: selectedDate,
   onChange: (date) => setState(() => selectedDate = date),
 )
+
+SwitchToggle(
+  checked: isYearly,
+  ariaLabel: 'Bill yearly',
+  onChange: (checked) => setState(() => isYearly = checked),
+)
 ''',
           ),
         ],
@@ -316,6 +328,87 @@ DatePicker(
             const NeoNavLink(label: 'Inactive square', to: '/developer-faq', square: true),
             const NeoNavLink(label: 'Active square', to: '/developer-faq', isActive: true, square: true),
           ]),
+        ],
+      ),
+      _Section(
+        title: 'Dialogs',
+        description:
+            '`context.showDialog` is a fixed title and message modal with at least a cancel button. `context.showComponent` hosts any child; omit both callbacks if you want no buttons.',
+        children: [
+          div(classes: 'dev-faq-row', [
+            NeoButton(
+              onClick: () {
+                context.showDialog(
+                  title: 'Demo dialog',
+                  message: 'This is a global modal.',
+                  onCancel: () {},
+                );
+              },
+              children: [.text('showDialog')],
+            ),
+            NeoButton(
+              variant: NeoButtonVariant.primary,
+              onClick: () {
+                context.showDialog(
+                  title: 'Delete pack?',
+                  message: 'This cannot be undone.',
+                  onCancel: () {},
+                  onOk: () {},
+                  cancelLabel: 'Keep',
+                  okLabel: 'Delete',
+                );
+              },
+              children: [.text('showDialog + Ok')],
+            ),
+            NeoButton(
+              variant: NeoButtonVariant.accent,
+              onClick: () {
+                context.showComponent(
+                  title: 'Filters',
+                  child: div(classes: 'dev-faq-stack', [
+                    p(
+                      classes: 'dev-faq-note',
+                      [.text('Pass any Component instead of a message string.')],
+                    ),
+                    const NeoInput(placeholder: 'Filter by title'),
+                  ]),
+                  onCancel: () {},
+                  onOk: () {},
+                );
+              },
+              children: [.text('showComponent')],
+            ),
+            NeoButton(
+              variant: NeoButtonVariant.ghost,
+              onClick: () {
+                context.showComponent(
+                  title: 'No buttons',
+                  child: p(
+                    classes: 'dev-faq-note',
+                    [.text('Click the dimmed barrier to close.')],
+                  ),
+                );
+              },
+              children: [.text('showComponent, no buttons')],
+            ),
+          ]),
+          _CodeBlock(
+            '''
+context.showDialog(
+  title: 'Delete pack?',
+  message: 'This cannot be undone.',
+  onCancel: () {},
+  onOk: () {},
+)
+
+context.showComponent(
+  title: 'Filters',
+  child: DatePicker(/* ... */),
+  onCancel: () {},
+  onOk: () {},
+)
+''',
+          ),
         ],
       ),
       _Section(
@@ -389,8 +482,11 @@ class _AdvancedControlsDemo extends StatefulComponent {
 class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
   double _sliderValue = 4;
   bool _checked = true;
+  bool _switchOn = true;
+  bool _smallSwitchOn = false;
+  bool _yearlyBilling = false;
   _FaqAudience? _selectedAudience = _audiences.first;
-  DateTime _selectedDate = DateTime(2026, 8, 6);
+  DateTime? _selectedDate;
 
   @override
   Component build(BuildContext context) {
@@ -413,8 +509,7 @@ class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
       ),
       _ExampleTile(
         label: 'Checkbox',
-        note:
-            'Controlled boolean input. The square is custom, and the whole control is a button with checkbox semantics.',
+        note: 'Clickable square with a lucide check. Unchecked is an empty bordered box; checked fills with primary.',
         child: Checkbox(
           checked: _checked,
           label: .text('Show experimental packs'),
@@ -427,7 +522,7 @@ class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
       ),
       _ExampleTile(
         label: 'DropdownEditField<T>',
-        note: 'Searchable generic combobox. Class-backed items use itemAsString for display and filtering.',
+        note: 'Generic select. Click the trigger to pick an item; class-backed items use itemAsString for labels.',
         child: DropdownEditField<_FaqAudience>(
           id: 'faq-audience-dropdown',
           items: _audiences,
@@ -442,8 +537,65 @@ class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
         ),
       ),
       _ExampleTile(
+        label: 'SwitchToggle',
+        note:
+            'Square-track switch with a sliding thumb. Checked fills the track with primary and slides the thumb; unchecked stays empty.',
+        child: div(classes: 'dev-faq-stack', [
+          SwitchToggle(
+            checked: _switchOn,
+            label: .text('Email alerts'),
+            onChange: (checked) {
+              setState(() {
+                _switchOn = checked;
+              });
+            },
+          ),
+          div(classes: 'dev-faq-row', [
+            span(
+              styles: NeoStyles.text(
+                family: NeoTokens.fontDisplay,
+                size: 0.875,
+                weight: FontWeight.w700,
+                color: _yearlyBilling ? AppTheme.textSecondary : AppTheme.textColor,
+              ),
+              [.text('Monthly')],
+            ),
+            SwitchToggle(
+              checked: _yearlyBilling,
+              ariaLabel: 'Bill yearly',
+              onChange: (checked) {
+                setState(() {
+                  _yearlyBilling = checked;
+                });
+              },
+            ),
+            span(
+              styles: NeoStyles.text(
+                family: NeoTokens.fontDisplay,
+                size: 0.875,
+                weight: FontWeight.w700,
+                color: _yearlyBilling ? AppTheme.textColor : AppTheme.textSecondary,
+              ),
+              [.text('Yearly')],
+            ),
+            const NeoBadge(label: 'Save 30%', tone: NeoBadgeTone.thematic),
+          ]),
+          SwitchToggle(
+            checked: _smallSwitchOn,
+            size: SwitchToggleSize.sm,
+            label: .text('Small size'),
+            onChange: (checked) {
+              setState(() {
+                _smallSwitchOn = checked;
+              });
+            },
+          ),
+        ]),
+      ),
+      _ExampleTile(
         label: 'DatePicker',
-        note: 'Month arrows move the day grid. Click the month/year pill to switch into month and year selection.',
+        note:
+            'Date field with a calendar icon. Click to open a floating calendar; picking a day closes it and fills DD.MM.YYYY.',
         child: DatePicker(
           value: _selectedDate,
           firstDate: DateTime(2000, 1, 1),
@@ -472,6 +624,12 @@ class _AdvancedControlsDemoState extends State<_AdvancedControlsDemo> {
             checked: false,
             disabled: true,
             label: .text('Unavailable toggle'),
+            onChange: (_) {},
+          ),
+          SwitchToggle(
+            checked: true,
+            disabled: true,
+            label: .text('Locked switch'),
             onChange: (_) {},
           ),
           DropdownEditField<String>(
@@ -545,6 +703,7 @@ class _ExampleTile extends StatelessComponent {
   Component build(BuildContext context) {
     return NeoCard(
       interactive: false,
+      styles: Styles(gap: Gap.all(0.75.rem)),
       children: [
         _Label(label),
         child,
@@ -562,7 +721,7 @@ class _Label extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return span(
-      styles: Styles(display: Display.inlineFlex),
+      classes: 'dev-faq-label',
       [
         NeoBadge(label: text, tone: NeoBadgeTone.neutral),
       ],

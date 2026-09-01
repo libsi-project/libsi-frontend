@@ -49,7 +49,7 @@ class NeoSurface extends StatelessComponent {
       classes: [
         'neo-surface',
         if (interactive) 'neo-surface-interactive',
-        if (classes != null) classes!,
+        ?classes,
       ].join(' '),
       styles: Styles(raw: {'--neo-surface-shadow-color': shadowColorCss}).combine(styles ?? Styles()),
       attributes: attributes,

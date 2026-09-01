@@ -2,7 +2,7 @@ import 'package:talker/talker.dart';
 
 final Talker logger = Talker();
 
-setupLogger({LogLevel? level}) {
+void setupLogger({LogLevel? level}) {
   logger.settings = TalkerSettings(enabled: level != null);
   // EasyLocalization.logger.printer = (object, {level, name, stackTrace}) {
   //   logger.log(

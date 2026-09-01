@@ -78,7 +78,7 @@ class NeoNavLink extends StatelessComponent {
           'neo-nav-link',
           if (isActive) 'neo-nav-link-active',
           if (!isActive) 'neo-nav-link-inactive',
-          if (classes != null) classes!,
+          ?classes,
         ].join(' '),
         styles: Styles(
           padding: Padding.symmetric(

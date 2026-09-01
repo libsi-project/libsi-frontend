@@ -43,7 +43,7 @@ class NeoBadge extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return span(
-      classes: ['neo-badge', if (classes != null) classes!].join(' '),
+      classes: ['neo-badge', ?classes].join(' '),
       styles: Styles(backgroundColor: _toneColor(tone)).combine(styles ?? Styles()),
       [.text(label)],
     );

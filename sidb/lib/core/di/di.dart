@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'di.config.dart';
 import 'package:injectable/injectable.dart';
+import 'di.config.dart';
 
 const _baseUrl = 'https://69a708632cd1d055268fac16.mockapi.io/api';
 final getIt = GetIt.instance;

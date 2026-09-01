@@ -89,7 +89,7 @@ class NeoButton extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final resolvedAttributes = <String, String>{
-      if (attributes != null) ...attributes!,
+      ...?attributes,
       'type': attributes?['type'] ?? 'button',
       if (disabled) 'disabled': '',
       if (disabled) 'aria-disabled': 'true',
@@ -101,7 +101,7 @@ class NeoButton extends StatelessComponent {
         'neo-button-${size.name}',
         if (variant == NeoButtonVariant.ghost) 'neo-button-ghost',
         if (disabled) 'neo-button-disabled',
-        if (classes != null) classes!,
+        ?classes,
       ].join(' '),
       styles: _variantStyles(variant).combine(styles ?? Styles()),
       attributes: resolvedAttributes,
@@ -187,7 +187,7 @@ class NeoIconButton extends StatelessComponent {
       disabled: disabled,
       onClick: onClick,
       attributes: attributes,
-      classes: ['neo-icon-button', if (classes != null) classes!].join(' '),
+      classes: ['neo-icon-button', ?classes].join(' '),
       styles: Styles(
         width: size.px,
         height: size.px,

@@ -2,8 +2,6 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
-import 'package:sidb/presentation/components/icon.dart';
-import 'package:sidb/presentation/components/neo_button.dart';
 import 'package:sidb/presentation/components/neo_input.dart';
 import 'package:sidb/presentation/components/theme_toggle.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
@@ -120,23 +118,7 @@ class TopBarNeo extends StatelessComponent {
                 maxWidth: 100.percent,
               ),
               [
-                SearchField(
-                  placeholder: l10n.searchPackages,
-                  inputStyles: Styles(
-                    height: 36.px,
-                    padding: Padding.only(
-                      left: 2.75.rem,
-                      right: 1.rem,
-                      top: 0.px,
-                      bottom: 0.px,
-                    ),
-                    radius: NeoTokens.radius(NeoTokens.radiusSm),
-                    transition: NeoTokens.transition(NeoTokens.motionSlowMs),
-                    fontSize: 15.px,
-                    fontWeight: FontWeight.w700,
-                    backgroundColor: AppTheme.surfaceColor,
-                  ),
-                ),
+                SearchField(placeholder: l10n.searchPackages),
               ],
             ),
             //TODO: uncomment when user is implemented
@@ -158,8 +140,9 @@ class TopBarNeo extends StatelessComponent {
     );
   }
 }
-
-const String _userPath = 'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 10c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z';
+//TODO: uncomment when user is implemented
+// const NeoIconButton(
+//const String _userPath = 'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 10c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z';
 
 class TopBarItem extends StatelessComponent {
   const TopBarItem({

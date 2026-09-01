@@ -22,6 +22,7 @@ dependencies:
   injectable: ^3.0.0
   json_annotation: ^4.9.0
   slang: ^4.16.0
+  collection: ^1.19.1
 
 
 dev_dependencies:
