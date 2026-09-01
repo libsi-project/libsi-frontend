@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 import 'package:universal_web/web.dart' as web;
@@ -40,113 +41,117 @@ class DropdownEditField<T> extends StatefulComponent {
       fontFamily: const FontFamily(NeoTokens.fontBody),
       fontWeight: FontWeight.w800,
     ),
-    css('.dropdown-edit-field-control').styles(
+    css('.dropdown-edit-field-trigger').styles(
       display: Display.flex,
       width: 100.percent,
-      border: NeoTokens.border(color: const Color('var(--dropdown-edit-field-border-color)')),
+      minHeight: 2.5.rem,
+      padding: Padding.only(left: 0.625.rem, right: 0.5.rem),
+      border: NeoTokens.border(),
       radius: NeoTokens.radius(NeoTokens.radiusMd),
+      appearance: Appearance.none,
+      shadow: NeoTokens.shadow(offset: NeoTokens.shadowXs),
+      cursor: Cursor.pointer,
+      userSelect: UserSelect.none,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      justifyContent: JustifyContent.spaceBetween,
       alignItems: AlignItems.center,
-      gap: Gap.all(0.5.rem),
-      backgroundColor: AppTheme.inputBackground,
-      raw: {
-        '--dropdown-edit-field-border-color': 'var(--theme-border)',
-        '--dropdown-edit-field-shadow-color': 'var(--theme-border)',
-        'box-shadow': '4px 4px 0 0 var(--dropdown-edit-field-shadow-color)',
-      },
-    ),
-    css('.dropdown-edit-field-control:focus-within').styles(
-      transform: Transform.translate(x: 1.px, y: 1.px),
-      raw: {'box-shadow': '3px 3px 0 0 var(--dropdown-edit-field-shadow-color)'},
-    ),
-    css('.dropdown-edit-field-input').styles(
-      width: 100.percent,
-      minWidth: 0.px,
-      padding: Padding.symmetric(horizontal: 1.rem, vertical: 0.6.rem),
-      border: Border.none,
+      gap: Gap.all(0.375.rem),
       color: AppTheme.textColor,
+      textAlign: TextAlign.left,
       fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontSize: 1.rem,
+      fontSize: 0.875.rem,
       fontWeight: FontWeight.w700,
-      backgroundColor: Colors.transparent,
+      whiteSpace: WhiteSpace.noWrap,
+      backgroundColor: AppTheme.inputBackground,
       raw: {'outline': 'none'},
     ),
-    css('.dropdown-edit-field-input::placeholder').styles(
-      opacity: 0.75,
+    css('.dropdown-edit-field-trigger:focus-visible').styles(
+      outline: Outline(
+        color: AppTheme.primaryColor,
+        style: OutlineStyle.solid,
+        width: OutlineWidth(2.px),
+        offset: 2.px,
+      ),
+    ),
+    css('.dropdown-edit-field-value').styles(
+      display: Display.flex,
+      minWidth: 0.px,
+      overflow: Overflow.hidden,
+      pointerEvents: PointerEvents.none,
+      alignItems: AlignItems.center,
+      flex: Flex(grow: 1, shrink: 1),
+      raw: {'text-overflow': 'ellipsis'},
+    ),
+    css('.dropdown-edit-field-placeholder').styles(
       color: AppTheme.textSecondary,
     ),
-    css('.dropdown-edit-field-clear').styles(
-      display: Display.inlineFlex,
-      width: 2.rem,
-      height: 2.rem,
-      padding: Padding.zero,
-      margin: Margin.only(right: 0.35.rem),
-      border: NeoTokens.border(),
-      radius: NeoTokens.radius(NeoTokens.radiusSm),
-      cursor: Cursor.pointer,
-      transition: NeoTokens.transition(NeoTokens.motionFastMs),
-      justifyContent: JustifyContent.center,
-      alignItems: AlignItems.center,
-      color: AppTheme.textColor,
-      fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontSize: 1.rem,
-      fontWeight: FontWeight.w900,
-      backgroundColor: AppTheme.surfaceColor,
+    css('.dropdown-edit-field-chevron').styles(
+      pointerEvents: PointerEvents.none,
+      transition: Transition('transform', duration: NeoTokens.motionFastMs.ms),
+      flex: Flex(shrink: 0),
+      color: AppTheme.textSecondary,
     ),
-    css('.dropdown-edit-field-clear:hover').styles(
-      backgroundColor: AppTheme.accentColor,
+    css('.dropdown-edit-field-open .dropdown-edit-field-chevron').styles(
+      transform: Transform.rotate(180.deg),
     ),
     css('.dropdown-edit-field-menu').styles(
       display: Display.flex,
       position: Position.absolute(top: 100.percent, left: 0.px, right: 0.px),
-      zIndex: ZIndex(20),
-      maxHeight: 14.rem,
-      padding: Padding.all(0.35.rem),
-      margin: Margin.only(top: 0.55.rem),
-      border: NeoTokens.border(width: NeoTokens.borderThick),
+      zIndex: ZIndex(50),
+      minWidth: 9.rem,
+      maxHeight: 16.rem,
+      padding: Padding.all(0.25.rem),
+      margin: Margin.only(top: 0.25.rem),
+      border: NeoTokens.border(),
       radius: NeoTokens.radius(NeoTokens.radiusMd),
       shadow: NeoTokens.shadow(offset: NeoTokens.shadowMd),
       flexDirection: FlexDirection.column,
-      gap: Gap.all(0.25.rem),
+      color: AppTheme.textColor,
       backgroundColor: AppTheme.surfaceColor,
-      raw: {'overflow-y': 'auto', 'list-style': 'none'},
+      raw: {'overflow-x': 'hidden', 'overflow-y': 'auto', 'list-style': 'none'},
     ),
     css('.dropdown-edit-field-option').styles(
       display: Display.flex,
+      position: Position.relative(),
       width: 100.percent,
-      padding: Padding.symmetric(horizontal: 0.75.rem, vertical: 0.55.rem),
-      border: NeoTokens.border(color: Colors.transparent),
+      padding: Padding.only(left: 0.375.rem, right: 2.rem, top: 0.25.rem, bottom: 0.25.rem),
+      border: Border.none,
       radius: NeoTokens.radius(NeoTokens.radiusSm),
+      appearance: Appearance.none,
       cursor: Cursor.pointer,
+      userSelect: UserSelect.none,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
-      justifyContent: JustifyContent.spaceBetween,
       alignItems: AlignItems.center,
+      gap: Gap.all(0.375.rem),
       color: AppTheme.textColor,
       textAlign: TextAlign.left,
       fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontSize: 0.95.rem,
-      fontWeight: FontWeight.w800,
+      fontSize: 0.875.rem,
+      fontWeight: FontWeight.w700,
       backgroundColor: Colors.transparent,
+      raw: {'outline': 'none'},
     ),
     css('.dropdown-edit-field-option:hover, .dropdown-edit-field-option-highlighted').styles(
-      border: NeoTokens.border(),
-      shadow: NeoTokens.shadow(offset: NeoTokens.shadowXs),
-      transform: Transform.translate(x: 1.px, y: 1.px),
-      backgroundColor: AppTheme.inputBackground,
+      color: AppTheme.textColor,
+      backgroundColor: AppTheme.accentColor,
     ),
-    css('.dropdown-edit-field-option-selected').styles(
-      color: AppTheme.onPrimaryColor,
-      backgroundColor: AppTheme.primaryColor,
+    css('.dropdown-edit-field-option-check').styles(
+      display: Display.flex,
+      position: Position.absolute(top: 0.px, right: 0.5.rem, bottom: 0.px),
+      width: 1.rem,
+      pointerEvents: PointerEvents.none,
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
     ),
     css('.dropdown-edit-field-empty').styles(
       padding: Padding.symmetric(horizontal: 0.75.rem, vertical: 0.7.rem),
       color: AppTheme.textSecondary,
-      fontSize: 0.9.rem,
+      fontSize: 0.875.rem,
     ),
     css('.dropdown-edit-field-disabled').styles(
       opacity: 0.5,
     ),
-    css('.dropdown-edit-field-disabled .dropdown-edit-field-input').styles(
+    css('.dropdown-edit-field-disabled .dropdown-edit-field-trigger').styles(
       cursor: Cursor.notAllowed,
     ),
   ];
@@ -156,39 +161,31 @@ class DropdownEditField<T> extends StatefulComponent {
 }
 
 class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
-  late String _query;
   bool _isOpen = false;
   int _highlightedIndex = 0;
 
   String get _baseId => component.id;
 
   @override
-  void initState() {
-    super.initState();
-    _query = _selectedLabel;
-  }
-
-  @override
   void didUpdateComponent(DropdownEditField<T> oldComponent) {
     super.didUpdateComponent(oldComponent);
-    if (!_isOpen && oldComponent.value != component.value) {
-      _query = _selectedLabel;
-    }
-    if (_highlightedIndex >= _filteredItems.length) {
+    if (_highlightedIndex >= component.items.length) {
       _highlightedIndex = 0;
     }
   }
 
   @override
   Component build(BuildContext context) {
-    final items = _filteredItems;
+    final items = component.items;
     final menuId = '$_baseId-menu';
     final activeId = items.isEmpty ? null : '$_baseId-option-$_highlightedIndex';
-    final hasValue = component.value != null;
+    final selectedLabel = _selectedLabel;
+    final hasValue = selectedLabel.isNotEmpty;
 
     return div(
       classes: [
         'dropdown-edit-field',
+        if (_isOpen) 'dropdown-edit-field-open',
         if (component.disabled) 'dropdown-edit-field-disabled',
         if (component.classes != null) component.classes!,
       ].join(' '),
@@ -197,38 +194,44 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
         'focusout': _handleFocusOut,
       },
       [
-        div(classes: 'dropdown-edit-field-control', [
-          input<String>(
-            id: _baseId,
-            type: InputType.text,
-            value: _query,
-            disabled: component.disabled,
-            classes: 'dropdown-edit-field-input',
-            attributes: {
-              'role': 'combobox',
-              'autocomplete': 'off',
-              'aria-autocomplete': 'list',
-              'aria-expanded': _isOpen ? 'true' : 'false',
-              if (_isOpen && !component.disabled) 'aria-controls': menuId,
-              if (_isOpen && !component.disabled && activeId != null) 'aria-activedescendant': activeId,
-              if (component.placeholder != null) 'placeholder': component.placeholder!,
-              if (component.disabled) 'aria-disabled': 'true',
-            },
-            events: {
-              'focus': (_) => _open(),
-              'keydown': _handleKeyDown,
-            },
-            onInput: component.disabled ? null : _handleInput,
-          ),
-          if (hasValue && !component.disabled)
-            button(
-              classes: 'dropdown-edit-field-clear',
-              type: ButtonType.button,
-              attributes: {'aria-label': 'Clear selection'},
-              onClick: _clear,
-              [.text('×')],
+        button(
+          id: _baseId,
+          type: ButtonType.button,
+          disabled: component.disabled,
+          classes: 'dropdown-edit-field-trigger',
+          attributes: {
+            'role': 'combobox',
+            'aria-expanded': _isOpen ? 'true' : 'false',
+            'aria-autocomplete': 'none',
+            'aria-haspopup': 'listbox',
+            if (_isOpen && !component.disabled) 'aria-controls': menuId,
+            if (_isOpen && !component.disabled && activeId != null) 'aria-activedescendant': activeId,
+            if (component.disabled) 'aria-disabled': 'true',
+          },
+          events: {
+            'keydown': _handleKeyDown,
+          },
+          onClick: component.disabled ? null : _toggle,
+          [
+            span(
+              classes: [
+                'dropdown-edit-field-value',
+                if (!hasValue) 'dropdown-edit-field-placeholder',
+              ].join(' '),
+              [
+                .text(hasValue ? selectedLabel : (component.placeholder ?? '')),
+              ],
             ),
-        ]),
+            span(classes: 'dropdown-edit-field-chevron', [
+              const AppIcon(
+                IconPaths.chevronDown,
+                width: 16,
+                height: 16,
+                strokeColor: AppTheme.textSecondary,
+              ),
+            ]),
+          ],
+        ),
         if (_isOpen && !component.disabled)
           ul(
             id: menuId,
@@ -236,7 +239,7 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
             attributes: {'role': 'listbox'},
             items.isEmpty
                 ? [
-                    li(classes: 'dropdown-edit-field-empty', [.text('No matches')]),
+                    li(classes: 'dropdown-edit-field-empty', [.text('No items')]),
                   ]
                 : [
                     for (var index = 0; index < items.length; index++)
@@ -246,7 +249,6 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
                           classes: [
                             'dropdown-edit-field-option',
                             if (index == _highlightedIndex) 'dropdown-edit-field-option-highlighted',
-                            if (_isSelected(items[index])) 'dropdown-edit-field-option-selected',
                           ].join(' '),
                           type: ButtonType.button,
                           attributes: {
@@ -256,7 +258,14 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
                           onClick: () => _select(items[index]),
                           [
                             span([.text(_labelFor(items[index]))]),
-                            if (_isSelected(items[index])) span([.text('Selected')]),
+                            if (_isSelected(items[index]))
+                              span(classes: 'dropdown-edit-field-option-check', [
+                                const AppIcon(
+                                  IconPaths.check,
+                                  width: 16,
+                                  height: 16,
+                                ),
+                              ]),
                           ],
                         ),
                       ]),
@@ -264,12 +273,6 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
           ),
       ],
     );
-  }
-
-  List<T> get _filteredItems {
-    final query = _query.trim().toLowerCase();
-    if (query.isEmpty) return component.items;
-    return component.items.where((item) => _labelFor(item).toLowerCase().contains(query)).toList();
   }
 
   String get _selectedLabel {
@@ -286,19 +289,27 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
 
   bool _isSelected(T item) => component.value == item;
 
+  void _toggle() {
+    if (_isOpen) {
+      _close();
+    } else {
+      _open();
+    }
+  }
+
   void _open() {
     if (component.disabled || _isOpen) return;
+    final selectedIndex = component.items.indexWhere(_isSelected);
     setState(() {
       _isOpen = true;
-      _highlightedIndex = 0;
+      _highlightedIndex = selectedIndex >= 0 ? selectedIndex : 0;
     });
   }
 
-  void _handleInput(String value) {
+  void _close() {
+    if (!_isOpen) return;
     setState(() {
-      _query = value;
-      _isOpen = true;
-      _highlightedIndex = 0;
+      _isOpen = false;
     });
   }
 
@@ -316,68 +327,64 @@ class _DropdownEditFieldState<T> extends State<DropdownEditField<T>> {
       }
     }
 
-    setState(() {
-      _isOpen = false;
-      _query = _selectedLabel;
-    });
+    _close();
   }
 
   void _handleKeyDown(web.Event event) {
     if (component.disabled) return;
 
     final keyboardEvent = event as web.KeyboardEvent;
-    final items = _filteredItems;
+    final items = component.items;
     switch (keyboardEvent.key) {
       case 'ArrowDown':
         keyboardEvent.preventDefault();
-        setState(() {
-          _isOpen = true;
-          if (items.isNotEmpty) {
+        if (!_isOpen) {
+          _open();
+        } else if (items.isNotEmpty) {
+          setState(() {
             _highlightedIndex = (_highlightedIndex + 1) % items.length;
-          }
-        });
+          });
+        }
       case 'ArrowUp':
         keyboardEvent.preventDefault();
-        setState(() {
-          _isOpen = true;
-          if (items.isNotEmpty) {
+        if (!_isOpen) {
+          _open();
+        } else if (items.isNotEmpty) {
+          setState(() {
             _highlightedIndex = (_highlightedIndex - 1 + items.length) % items.length;
-          }
-        });
+          });
+        }
+      case 'Home':
+        if (_isOpen && items.isNotEmpty) {
+          keyboardEvent.preventDefault();
+          setState(() => _highlightedIndex = 0);
+        }
+      case 'End':
+        if (_isOpen && items.isNotEmpty) {
+          keyboardEvent.preventDefault();
+          setState(() => _highlightedIndex = items.length - 1);
+        }
       case 'Enter':
+      case ' ':
         if (_isOpen && items.isNotEmpty) {
           keyboardEvent.preventDefault();
           _select(items[_highlightedIndex.clamp(0, items.length - 1).toInt()]);
         }
       case 'Escape':
-        keyboardEvent.preventDefault();
-        setState(() {
-          _isOpen = false;
-          _query = _selectedLabel;
-        });
+        if (_isOpen) {
+          keyboardEvent.preventDefault();
+          _close();
+        }
       case 'Tab':
-        setState(() {
-          _isOpen = false;
-        });
+        _close();
     }
   }
 
   void _select(T item) {
-    final label = _labelFor(item);
     setState(() {
-      _query = label;
       _isOpen = false;
       _highlightedIndex = 0;
     });
     component.onChange(item);
-  }
-
-  void _clear() {
-    setState(() {
-      _query = '';
-      _isOpen = false;
-      _highlightedIndex = 0;
-    });
-    component.onChange(null);
   }
 }

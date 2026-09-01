@@ -4,7 +4,7 @@ part 'author.g.dart';
 
 @JsonSerializable()
 class Author {
-  final int id;
+  final String id;
   final String name;
 
   Author({required this.id, required this.name});

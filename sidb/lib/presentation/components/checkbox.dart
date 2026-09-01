@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
@@ -29,11 +30,12 @@ class Checkbox extends StatelessComponent {
       display: Display.inlineFlex,
       padding: Padding.zero,
       border: Border.none,
+      appearance: Appearance.none,
       cursor: Cursor.pointer,
       userSelect: UserSelect.none,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       alignItems: AlignItems.center,
-      gap: Gap.all(0.7.rem),
+      gap: Gap.all(0.75.rem),
       color: AppTheme.textColor,
       textAlign: TextAlign.left,
       fontFamily: const FontFamily(NeoTokens.fontBody),
@@ -44,42 +46,43 @@ class Checkbox extends StatelessComponent {
     ),
     css('.neo-checkbox-box').styles(
       display: Display.inlineFlex,
-      width: 1.75.rem,
-      height: 1.75.rem,
-      border: NeoTokens.border(width: NeoTokens.borderStrong),
-      radius: NeoTokens.radius(NeoTokens.radiusSm),
-      shadow: NeoTokens.shadow(offset: NeoTokens.shadowMd),
+      width: 1.5.rem,
+      height: 1.5.rem,
+      boxSizing: BoxSizing.borderBox,
+      border: NeoTokens.border(),
+      radius: NeoTokens.radius(0),
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
-      transform: Transform.translate(x: 0.px, y: 0.px),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
+      flex: Flex(shrink: 0),
       color: AppTheme.onPrimaryColor,
-      backgroundColor: AppTheme.inputBackground,
-      raw: {'align-self': 'center', 'flex-shrink': '0'},
+      backgroundColor: AppTheme.surfaceColor,
     ),
     css('.neo-checkbox:hover .neo-checkbox-box').styles(
-      shadow: NeoTokens.shadow(offset: NeoTokens.shadowSm),
-      transform: Transform.translate(x: 1.px, y: 1.px),
-    ),
-    css('.neo-checkbox:active .neo-checkbox-box').styles(
-      shadow: NeoTokens.shadow(offset: NeoTokens.shadowXs),
-      transform: Transform.translate(x: 3.px, y: 3.px),
+      backgroundColor: AppTheme.inputBackground,
     ),
     css('.neo-checkbox:focus-visible .neo-checkbox-box').styles(
-      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
+      outline: Outline(
+        color: AppTheme.primaryColor,
+        style: OutlineStyle.solid,
+        width: OutlineWidth(2.px),
+        offset: 2.px,
+      ),
     ),
     css('.neo-checkbox-checked .neo-checkbox-box').styles(
-      shadow: NeoTokens.shadow(offset: NeoTokens.shadowXs),
-      transform: Transform.translate(x: 2.px, y: 2.px),
+      backgroundColor: AppTheme.primaryColor,
+    ),
+    css('.neo-checkbox-checked:hover .neo-checkbox-box').styles(
       backgroundColor: AppTheme.primaryColor,
     ),
     css('.neo-checkbox-check').styles(
+      display: Display.flex,
       opacity: 0,
+      pointerEvents: PointerEvents.none,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
-      transform: Transform.scale(0.6),
-      fontSize: 1.1.rem,
-      fontWeight: FontWeight.w900,
-      lineHeight: 1.em,
+      transform: Transform.scale(0.7),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
     ),
     css('.neo-checkbox-checked .neo-checkbox-check').styles(
       opacity: 1,
@@ -95,9 +98,11 @@ class Checkbox extends StatelessComponent {
       opacity: 0.5,
       cursor: Cursor.notAllowed,
     ),
-    css('.neo-checkbox-disabled .neo-checkbox-box').styles(
-      shadow: NeoTokens.shadow(offset: NeoTokens.shadowSm),
-      transform: Transform.translate(x: 0.px, y: 0.px),
+    css('.neo-checkbox-disabled:hover .neo-checkbox-box').styles(
+      backgroundColor: AppTheme.surfaceColor,
+    ),
+    css('.neo-checkbox-disabled.neo-checkbox-checked:hover .neo-checkbox-box').styles(
+      backgroundColor: AppTheme.primaryColor,
     ),
   ];
 
@@ -111,7 +116,7 @@ class Checkbox extends StatelessComponent {
         'neo-checkbox',
         if (checked) 'neo-checkbox-checked',
         if (disabled) 'neo-checkbox-disabled',
-        if (classes != null) classes!,
+        ?classes,
       ].join(' '),
       styles: styles,
       attributes: {
@@ -122,7 +127,15 @@ class Checkbox extends StatelessComponent {
       onClick: disabled ? null : () => onChange(!checked),
       [
         span(classes: 'neo-checkbox-box', [
-          span(classes: 'neo-checkbox-check', [.text('✓')]),
+          span(classes: 'neo-checkbox-check', [
+            const AppIcon(
+              IconPaths.check,
+              width: 16,
+              height: 16,
+              strokeWidth: '3',
+              strokeColor: AppTheme.onPrimaryColor,
+            ),
+          ]),
         ]),
         if (label != null) span(classes: 'neo-checkbox-label', [label!]),
       ],

@@ -89,10 +89,10 @@ class NeoInput extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final resolvedAttributes = <String, String>{
-      if (attributes != null) ...attributes!,
+      ...?attributes,
       'type': type,
-      if (placeholder != null) 'placeholder': placeholder!,
-      if (value != null) 'value': value!,
+      'placeholder': ?placeholder,
+      'value': ?value,
       if (disabled) 'disabled': '',
       if (disabled) 'aria-disabled': 'true',
       if (readOnly) 'readonly': '',
@@ -109,7 +109,7 @@ class NeoInput extends StatelessComponent {
         if (disabled) 'neo-input-disabled',
         if (state == NeoInputState.error) 'neo-input-error',
         if (state == NeoInputState.success) 'neo-input-success',
-        if (classes != null) classes!,
+        ?classes,
       ].join(' '),
       styles: styles,
       attributes: resolvedAttributes,
@@ -149,13 +149,34 @@ class SearchField extends StatelessComponent {
     css('.search-field').styles(
       position: Position.relative(),
       width: 100.percent,
-      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      transition: NeoTokens.transition(NeoTokens.motionSlowMs),
+    ),
+    css('.search-field .neo-input').styles(
+      height: 36.px,
+      padding: Padding.only(
+        left: 2.75.rem,
+        right: 1.rem,
+        top: 0.px,
+        bottom: 0.px,
+      ),
+      radius: NeoTokens.radius(NeoTokens.radiusSm),
+      transition: NeoTokens.transition(NeoTokens.motionSlowMs),
+      fontSize: 15.px,
+      fontWeight: FontWeight.w700,
+      backgroundColor: AppTheme.surfaceColor,
     ),
     css('.search-field:focus-within').styles(
       transform: Transform.translate(x: 1.px, y: 1.px),
     ),
     css('.search-field:focus-within .neo-input').styles(
       transform: Transform.translate(x: 0.px, y: 0.px),
+    ),
+    css('.search-field-icon').styles(
+      display: Display.flex,
+      position: Position.absolute(top: 50.percent, left: 0.9.rem),
+      pointerEvents: PointerEvents.none,
+      transform: Transform.translate(y: (-50).percent),
+      color: AppTheme.textSecondary,
     ),
   ];
 
@@ -164,7 +185,7 @@ class SearchField extends StatelessComponent {
     return div(
       classes: [
         'search-field',
-        if (classes != null) classes!,
+        ?classes,
       ].join(' '),
       styles: styles,
       [
@@ -175,26 +196,15 @@ class SearchField extends StatelessComponent {
           value: value,
           attributes: {
             'aria-label': placeholder ?? 'Search',
-            if (attributes != null) ...attributes!,
+            ...?attributes,
           },
-          styles: Styles(
-            padding: Padding.only(
-              left: 2.75.rem,
-              right: 1.rem,
-              top: 0.6.rem,
-              bottom: 0.6.rem,
-            ),
-          ).combine(inputStyles ?? Styles()),
+          styles: inputStyles,
           onInput: onInput,
           onChange: onChange,
         ),
         span(
-          styles: Styles(
-            display: Display.flex,
-            position: Position.absolute(top: 50.percent, left: 0.9.rem),
-            color: AppTheme.textSecondary,
-            raw: {'transform': 'translateY(-50%)', 'pointer-events': 'none'},
-          ).combine(iconStyles ?? Styles()),
+          classes: 'search-field-icon',
+          styles: iconStyles,
           [
             const AppIcon(
               IconPaths.search,

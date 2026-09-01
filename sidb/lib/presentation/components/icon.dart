@@ -89,4 +89,8 @@ class IconPaths {
   static const String mail = 'M3 5h18v14H3V5zm2 3.2 7 4.6 7-4.6';
   static const String telegram =
       'M17.89 7.15c.2-.86-.42-1.24-1.01-1.02L5.2 10.66c-.79.31-.78.76-.13.96l2.98.93 6.92-4.36c.33-.22.63-.1.38.13l-5.6 5.06-.22 3.1c.31 0 .45-.14.61-.3l1.46-1.41 3.03 2.24c.56.31.96.15 1.1-.51l1.99-9.35z';
+  static const String chevronDown = 'm6 9 6 6 6-6';
+  static const String check = 'M20 6 9 17l-5-5';
+  static const String calendar =
+      'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z';
 }
