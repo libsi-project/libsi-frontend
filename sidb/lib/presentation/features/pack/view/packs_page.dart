@@ -14,7 +14,8 @@ class PacksPage extends StatelessComponent {
   static List<StyleRule> get styles => [
     css('.package-grid').styles(
       display: Display.grid,
-      justifyContent: JustifyContent.start,
+      width: 100.percent,
+      justifyContent: JustifyContent.center,
       gridTemplate: GridTemplate(
         columns: GridTracks(
           [
@@ -22,16 +23,22 @@ class PacksPage extends StatelessComponent {
               TrackRepeat.autoFit,
               [
                 GridTrack(
-                  TrackSize.minmax(TrackSize(240.px), .fr(1)),
+                  TrackSize.minmax(TrackSize(220.px), TrackSize(300.px)),
                 ),
               ],
             ),
           ],
         ),
       ),
-      justifyItems: JustifyItems.start,
+      justifyItems: JustifyItems.center,
       gap: Gap(row: 1.5.rem, column: 30.px),
     ),
+    css.media(MediaQuery.screen(minWidth: 768.px), [
+      css('.package-grid').styles(
+        justifyContent: JustifyContent.start,
+        justifyItems: JustifyItems.start,
+      ),
+    ]),
     css.media(MediaQuery.screen(minWidth: 768.px), [
       css('.package-grid').styles(
         gap: Gap(row: 1.5.rem, column: 30.px),

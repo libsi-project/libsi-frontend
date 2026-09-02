@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:universal_web/web.dart' as web;
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
@@ -118,6 +119,12 @@ class NeoInput extends StatelessComponent {
   }
 }
 
+/// Search input with a clickable lupe icon.
+///
+/// Search is triggered only on `Enter` (form submit) or a click on the
+/// lupe icon — never on every keystroke. Fully controlled: the parent
+/// owns [value] and gets keystroke updates via [onChange], and the
+/// final submitted query via [onSubmit].
 class SearchField extends StatelessComponent {
   const SearchField({
     this.placeholder,
@@ -128,8 +135,9 @@ class SearchField extends StatelessComponent {
     this.inputStyles,
     this.iconStyles,
     this.attributes,
-    this.onInput,
+    this.onSubmit,
     this.onChange,
+    this.searchLabel = 'Search',
     super.key,
   });
 
@@ -141,14 +149,17 @@ class SearchField extends StatelessComponent {
   final Styles? inputStyles;
   final Styles? iconStyles;
   final Map<String, String>? attributes;
-  final EventCallback? onInput;
-  final EventCallback? onChange;
+  final ValueChanged<String>? onSubmit;
+  final ValueChanged<String>? onChange;
+  final String searchLabel;
 
   @css
   static List<StyleRule> get stylesheets => [
     css('.search-field').styles(
+      display: Display.block,
       position: Position.relative(),
       width: 100.percent,
+      margin: Margin.zero,
       transition: NeoTokens.transition(NeoTokens.motionSlowMs),
     ),
     css('.search-field .neo-input').styles(
@@ -173,38 +184,77 @@ class SearchField extends StatelessComponent {
     ),
     css('.search-field-icon').styles(
       display: Display.flex,
-      position: Position.absolute(top: 50.percent, left: 0.9.rem),
-      pointerEvents: PointerEvents.none,
+      position: Position.absolute(top: 50.percent, left: 0.45.rem),
+      width: 28.px,
+      height: 28.px,
+      padding: Padding.zero,
+      border: Border.none,
+      radius: NeoTokens.radius(NeoTokens.radiusSm),
+      cursor: Cursor.pointer,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
       transform: Transform.translate(y: (-50).percent),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
       color: AppTheme.textSecondary,
+      backgroundColor: Colors.transparent,
+      raw: {'outline': 'none'},
+    ),
+    css('.search-field-icon:hover').styles(
+      color: AppTheme.textColor,
+      backgroundColor: AppTheme.accentColor,
+    ),
+    css('.search-field-icon:focus-visible').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '2px'},
     ),
   ];
 
+  void _onInput(web.Event event) {
+    final target = event.target as web.HTMLInputElement;
+    onChange?.call(target.value);
+  }
+
+  void _onSubmit(web.Event event) {
+    event.preventDefault();
+    onSubmit?.call((value ?? '').trim());
+  }
+
+  void _onIconClick() {
+    onSubmit?.call((value ?? '').trim());
+  }
+
   @override
   Component build(BuildContext context) {
-    return div(
+    final currentValue = value ?? '';
+    return form(
       classes: [
         'search-field',
         ?classes,
       ].join(' '),
       styles: styles,
+      attributes: const {'role': 'search'},
+      events: {'submit': _onSubmit},
       [
         NeoInput(
           id: id,
           type: 'search',
           placeholder: placeholder,
-          value: value,
+          value: currentValue.isEmpty ? null : currentValue,
           attributes: {
-            'aria-label': placeholder ?? 'Search',
+            'aria-label': placeholder ?? searchLabel,
+            'name': 'q',
+            'autocomplete': 'off',
+            'enterkeyhint': 'search',
             ...?attributes,
           },
           styles: inputStyles,
-          onInput: onInput,
-          onChange: onChange,
+          onInput: _onInput,
         ),
-        span(
+        button(
           classes: 'search-field-icon',
+          type: ButtonType.submit,
           styles: iconStyles,
+          attributes: {'aria-label': searchLabel},
+          onClick: _onIconClick,
           [
             const AppIcon(
               IconPaths.search,

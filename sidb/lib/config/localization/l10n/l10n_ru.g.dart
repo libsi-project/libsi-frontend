@@ -120,6 +120,24 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Следующий год'
 	String get datePickerNextYear => 'Следующий год';
+
+	/// ru: 'Меню'
+	String get menu => 'Меню';
+
+	/// ru: 'Открыть меню'
+	String get openMenu => 'Открыть меню';
+
+	/// ru: 'Закрыть меню'
+	String get closeMenu => 'Закрыть меню';
+
+	/// ru: 'Введите запрос и нажмите Enter, чтобы найти пакет'
+	String get searchPrompt => 'Введите запрос и нажмите Enter, чтобы найти пакет';
+
+	/// ru: 'По запросу ничего не найдено'
+	String get searchNoResults => 'По запросу ничего не найдено';
+
+	/// ru: 'Результаты поиска: «${query}»'
+	String searchResultsFor({required Object query}) => 'Результаты поиска: «${query}»';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -157,6 +175,12 @@ extension on Translations {
 			'datePickerPreviousYear' => 'Предыдущий год',
 			'datePickerNextMonth' => 'Следующий месяц',
 			'datePickerNextYear' => 'Следующий год',
+			'menu' => 'Меню',
+			'openMenu' => 'Открыть меню',
+			'closeMenu' => 'Закрыть меню',
+			'searchPrompt' => 'Введите запрос и нажмите Enter, чтобы найти пакет',
+			'searchNoResults' => 'По запросу ничего не найдено',
+			'searchResultsFor' => ({required Object query}) => 'Результаты поиска: «${query}»',
 			_ => null,
 		};
 	}
