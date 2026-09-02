@@ -41,15 +41,14 @@ class TopBarNeo extends StatefulComponent {
       zIndex: ZIndex(100),
       padding: Padding.symmetric(vertical: 20.px),
       border: Border.only(
-        bottom: BorderSide.dashed(width: 3.px, color: AppTheme.borderColor),
+        bottom: BorderSide.solid(width: NeoTokens.borderThin.px, color: AppTheme.borderColor),
       ),
-      backdropFilter: Filter.blur(5.px),
       justifyContent: JustifyContent.spaceBetween,
       alignItems: AlignItems.center,
       gap: Gap.all(1.rem),
       flex: Flex(shrink: 0),
-      backgroundColor: const Color('color-mix(in srgb, var(--theme-canvas) 90%, transparent)'),
-      raw: {'-webkit-backdrop-filter': 'blur(5px)'},
+      backgroundColor: AppTheme.canvasColor,
+      raw: {'box-shadow': '0 2px 0 0 var(--theme-border)'},
     ),
     css('.top-bar-neo-nav').styles(
       display: Display.none,
