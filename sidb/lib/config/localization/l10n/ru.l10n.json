@@ -30,5 +30,11 @@
     "datePickerPreviousMonth": "Предыдущий месяц",
     "datePickerPreviousYear": "Предыдущий год",
     "datePickerNextMonth": "Следующий месяц",
-    "datePickerNextYear": "Следующий год"
+    "datePickerNextYear": "Следующий год",
+    "menu": "Меню",
+    "openMenu": "Открыть меню",
+    "closeMenu": "Закрыть меню",
+    "searchPrompt": "Введите запрос и нажмите Enter, чтобы найти пакет",
+    "searchNoResults": "По запросу ничего не найдено",
+    "searchResultsFor": "Результаты поиска: «${query}»"
 }

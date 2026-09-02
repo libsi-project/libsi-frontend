@@ -11,6 +11,7 @@ import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 import 'package:sidb/presentation/features/pack/view/packs_page.dart';
 import 'package:sidb/presentation/features/placeholder/view/placeholder_page.dart';
+import 'package:sidb/presentation/features/search/view/search_page.dart';
 import 'package:sidb/presentation/theme/theme_cubit.dart';
 
 import 'package:sidb/presentation/components/footer_neo.dart';
@@ -49,7 +50,10 @@ class AppRunner extends StatelessComponent {
                         flexDirection: FlexDirection.column,
                       ),
                       [
-                        TopBarNeo(location: state.location),
+                        TopBarNeo(
+                          location: state.location,
+                          initialSearchQuery: state.queryParams['q'],
+                        ),
                         div(
                           styles: Styles(
                             display: Display.flex,
@@ -83,7 +87,7 @@ class AppRunner extends StatelessComponent {
                 router.Route(
                   path: '/search',
                   title: 'Search',
-                  builder: (context, state) => PlaceholderPage(title: context.l10n.search),
+                  builder: (context, state) => const SearchPage(),
                 ),
                 router.Route(
                   path: '/authors',

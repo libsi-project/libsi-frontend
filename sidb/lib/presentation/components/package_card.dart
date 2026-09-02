@@ -18,7 +18,7 @@ class PackageCard extends StatelessComponent {
   static List<StyleRule> get styles => [
     css('.pc').styles(
       width: 100.percent,
-      minWidth: 240.px,
+      minWidth: 220.px,
       minHeight: 300.px,
       maxWidth: 300.px,
     ),
