@@ -133,6 +133,11 @@ class NeoDrawer extends StatelessComponent {
       ].join(' '),
       attributes: {
         'aria-hidden': isOpen ? 'false' : 'true',
+        // `inert` while closed removes the panel from tab order and
+        // makes its subtree fully non-interactive — aria-hidden alone
+        // does not, so the close button and links would still be
+        // tabbable behind the scenes.
+        if (!isOpen) 'inert': '',
       },
       events: {'keydown': _onKeyDown},
       [

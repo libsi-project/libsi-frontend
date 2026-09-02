@@ -218,10 +218,6 @@ class SearchField extends StatelessComponent {
     onSubmit?.call((value ?? '').trim());
   }
 
-  void _onIconClick() {
-    onSubmit?.call((value ?? '').trim());
-  }
-
   @override
   Component build(BuildContext context) {
     final currentValue = value ?? '';
@@ -254,7 +250,6 @@ class SearchField extends StatelessComponent {
           type: ButtonType.submit,
           styles: iconStyles,
           attributes: {'aria-label': searchLabel},
-          onClick: _onIconClick,
           [
             const AppIcon(
               IconPaths.search,

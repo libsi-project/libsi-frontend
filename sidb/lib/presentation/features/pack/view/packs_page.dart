@@ -23,7 +23,7 @@ class PacksPage extends StatelessComponent {
               TrackRepeat.autoFit,
               [
                 GridTrack(
-                  TrackSize.minmax(TrackSize(220.px), TrackSize(300.px)),
+                  TrackSize.minmax(TrackSize(220.px), .fr(1)),
                 ),
               ],
             ),
