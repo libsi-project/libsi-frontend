@@ -148,9 +148,6 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// ru: 'Ссылка могла устареть, или путь написан с ошибкой.'
 	String get notFoundMessage => 'Ссылка могла устареть, или путь написан с ошибкой.';
 
-	/// ru: 'Путь: ${path}'
-	String notFoundPath({required Object path}) => 'Путь: ${path}';
-
 	/// ru: 'На главную'
 	String get notFoundGoHome => 'На главную';
 
@@ -202,7 +199,6 @@ extension on Translations {
 			'notFoundBadge' => 'НЕ НАЙДЕНО',
 			'notFoundHeading' => 'Страница потерялась',
 			'notFoundMessage' => 'Ссылка могла устареть, или путь написан с ошибкой.',
-			'notFoundPath' => ({required Object path}) => 'Путь: ${path}',
 			'notFoundGoHome' => 'На главную',
 			'notFoundGoSearch' => 'Искать пакеты',
 			_ => null,

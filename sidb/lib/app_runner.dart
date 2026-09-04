@@ -30,7 +30,7 @@ class AppRunner extends StatelessComponent {
         child: router.Router(
           errorBuilder: (context, state) => _AppShell(
             location: state.location,
-            child: NotFoundPage(path: state.location),
+            child: NotFoundPage(),
           ),
           routes: [
             router.ShellRoute(
@@ -80,7 +80,7 @@ class AppRunner extends StatelessComponent {
                 router.Route(
                   path: '/:rest(.*)',
                   title: '404',
-                  builder: (context, state) => NotFoundPage(path: state.location),
+                  builder: (context, state) => NotFoundPage(),
                 ),
               ],
             ),

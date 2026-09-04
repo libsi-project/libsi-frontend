@@ -218,11 +218,11 @@ class _SearchFieldState extends State<SearchField> {
   @override
   void didUpdateComponent(covariant SearchField oldComponent) {
     super.didUpdateComponent(oldComponent);
-    // Keep the input synced with the URL when a search is actually
-    // active. Leaving /search must not reset what the user typed, so
-    // we only overwrite when the incoming query is non-null.
     final incoming = component.initialValue;
-    if (incoming != null && incoming != oldComponent.initialValue && incoming != _query) {
+    if (incoming == oldComponent.initialValue) return;
+    if (incoming == null) {
+      _query = '';
+    } else if (incoming != _query) {
       _query = incoming;
     }
   }

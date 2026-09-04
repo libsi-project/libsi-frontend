@@ -40,7 +40,6 @@
     "notFoundBadge": "НЕ НАЙДЕНО",
     "notFoundHeading": "Страница потерялась",
     "notFoundMessage": "Ссылка могла устареть, или путь написан с ошибкой.",
-    "notFoundPath": "Путь: ${path}",
     "notFoundGoHome": "На главную",
     "notFoundGoSearch": "Искать пакеты"
 }
