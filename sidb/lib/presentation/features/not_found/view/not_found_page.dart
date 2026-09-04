@@ -9,11 +9,8 @@ import 'package:sidb/presentation/theme/neo_tokens.dart';
 
 class NotFoundPage extends StatelessComponent {
   const NotFoundPage({
-    this.path,
     super.key,
   });
-
-  final String? path;
 
   @css
   static List<StyleRule> get styles => [
