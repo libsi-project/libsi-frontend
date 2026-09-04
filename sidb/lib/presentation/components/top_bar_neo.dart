@@ -2,14 +2,13 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
-import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_drawer.dart';
 import 'package:sidb/presentation/components/neo_input.dart';
 import 'package:sidb/presentation/components/theme_toggle.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
-class TopBarNeo extends StatefulComponent {
+class TopBarNeo extends StatelessComponent {
   const TopBarNeo({
     required this.location,
     this.initialSearchQuery,
@@ -33,22 +32,26 @@ class TopBarNeo extends StatefulComponent {
     return s;
   }
 
+  static String _searchLocation(String query) =>
+      query.isEmpty ? '/search' : Uri(path: '/search', queryParameters: {'q': query}).toString();
+
   @css
   static List<StyleRule> get stylesheets => [
     css('.top-bar-neo').styles(
       display: Display.flex,
       position: Position.sticky(top: 0.px),
       zIndex: ZIndex(100),
-      padding: Padding.symmetric(vertical: 20.px),
+      padding: Padding.symmetric(horizontal: 20.px, vertical: 20.px),
+      margin: Margin.symmetric(horizontal: (-20).px),
       border: Border.only(
-        bottom: BorderSide.solid(width: NeoTokens.borderThin.px, color: AppTheme.borderColor),
+        bottom: BorderSide.solid(width: 1.px, color: AppTheme.borderColor),
       ),
       justifyContent: JustifyContent.spaceBetween,
       alignItems: AlignItems.center,
       gap: Gap.all(1.rem),
       flex: Flex(shrink: 0),
       backgroundColor: AppTheme.canvasColor,
-      raw: {'box-shadow': '0 2px 0 0 var(--theme-border)'},
+      raw: {'box-shadow': 'none'},
     ),
     css('.top-bar-neo-nav').styles(
       display: Display.none,
@@ -97,25 +100,36 @@ class TopBarNeo extends StatefulComponent {
     ),
     css('.top-bar-burger').styles(
       display: Display.inlineFlex,
-      width: 40.px,
-      height: 40.px,
+      width: 36.px,
+      height: 36.px,
       padding: Padding.zero,
-      border: NeoTokens.border(width: NeoTokens.borderThick),
+      border: NeoTokens.border(),
       radius: NeoTokens.radius(NeoTokens.radiusSm),
+      appearance: Appearance.none,
+      shadow: NeoTokens.shadow(offset: NeoTokens.shadowSm),
       cursor: Cursor.pointer,
-      transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
       flex: Flex(shrink: 0),
-      color: AppTheme.textColor,
       backgroundColor: AppTheme.surfaceColor,
-      raw: {'box-shadow': '3px 3px 0 0 var(--theme-border)', 'outline': 'none'},
+      raw: {
+        'outline': 'none',
+        'line-height': '0',
+      },
     ),
     css('.top-bar-burger:hover').styles(
       backgroundColor: AppTheme.accentColor,
     ),
+    css('.top-bar-burger:active').styles(
+      transform: Transform.translate(x: 1.px, y: 1.px),
+      raw: {'box-shadow': '3px 3px 0 0 var(--theme-border)'},
+    ),
     css('.top-bar-burger:focus-visible').styles(
       raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
+    ),
+    css('.top-bar-burger-icon').styles(
+      display: Display.block,
+      raw: {'shape-rendering': 'crispEdges'},
     ),
     css('.top-bar-drawer-link').styles(
       display: Display.block,
@@ -139,6 +153,14 @@ class TopBarNeo extends StatefulComponent {
       backgroundColor: AppTheme.accentColor,
     ),
     css.media(MediaQuery.screen(minWidth: 768.px), [
+      css('.top-bar-neo').styles(
+        padding: Padding.symmetric(horizontal: 0.px, vertical: 20.px),
+        margin: Margin.zero,
+        border: Border.only(
+          bottom: BorderSide.solid(width: NeoTokens.borderThin.px, color: AppTheme.borderColor),
+        ),
+        raw: {'box-shadow': '0 2px 0 0 var(--theme-border)'},
+      ),
       css('.top-bar-neo-nav').styles(display: Display.flex),
       css('.top-bar-burger').styles(display: Display.none),
       css('.top-bar-neo-actions').styles(
@@ -152,49 +174,51 @@ class TopBarNeo extends StatefulComponent {
   ];
 
   @override
-  State<TopBarNeo> createState() => _TopBarNeoState();
-}
+  Component build(BuildContext context) {
+    final l10n = context.l10n;
+    final activePath = _normalizePath(location);
+    final items = _items(context, activePath);
 
-class _TopBarNeoState extends State<TopBarNeo> {
-  bool _drawerOpen = false;
-  late String _query = component.initialSearchQuery ?? '';
-
-  @override
-  void didUpdateComponent(covariant TopBarNeo oldComponent) {
-    super.didUpdateComponent(oldComponent);
-    if (_drawerOpen && oldComponent.location != component.location) {
-      _drawerOpen = false;
-    }
-    // Keep the input synced with the URL when a search is actually
-    // active. Leaving /search must not reset what the user typed, so
-    // we only overwrite when the incoming query is non-null.
-    final incoming = component.initialSearchQuery;
-    if (incoming != null && incoming != oldComponent.initialSearchQuery && incoming != _query) {
-      _query = incoming;
-    }
+    return header(
+      classes: 'top-bar-neo',
+      [
+        _TopBarDrawerButton(
+          location: location,
+          items: items,
+          openLabel: l10n.openMenu,
+          title: l10n.menu,
+          closeLabel: l10n.closeMenu,
+        ),
+        nav(
+          classes: 'top-bar-neo-nav',
+          [
+            for (final item in items) _TopBarNavLink(label: item.label, to: item.to, isActive: item.isActive),
+          ],
+        ),
+        div(
+          classes: 'top-bar-neo-actions',
+          [
+            div(
+              classes: 'top-bar-neo-search',
+              [
+                SearchField(
+                  placeholder: l10n.searchPackages,
+                  initialValue: initialSearchQuery,
+                  searchLabel: l10n.search,
+                  onSubmit: (query) => router.Router.of(context).push(_searchLocation(query)),
+                ),
+              ],
+            ),
+            const ThemeToggle(),
+          ],
+        ),
+      ],
+    );
   }
-
-  void _openDrawer() => setState(() => _drawerOpen = true);
-  void _closeDrawer() => setState(() => _drawerOpen = false);
-
-  void _onQueryChange(String value) {
-    if (value == _query) return;
-    setState(() => _query = value);
-  }
-
-  void _submitSearch(BuildContext context) {
-    _closeDrawer();
-    final trimmed = _query.trim();
-    router.Router.of(context).push(_searchLocation(trimmed));
-  }
-
-  static String _searchLocation(String query) => query.isEmpty
-      ? '/search'
-      : Uri(path: '/search', queryParameters: {'q': query}).toString();
 
   List<_NavItem> _items(BuildContext context, String activePath) {
     final l10n = context.l10n;
-    final searchTarget = _searchLocation(_query.trim());
+    final searchTarget = _searchLocation((initialSearchQuery ?? '').trim());
     return [
       _NavItem(label: l10n.packages, to: '/', isActive: activePath == '/'),
       _NavItem(label: l10n.search, to: searchTarget, isActive: activePath.startsWith('/search')),
@@ -207,57 +231,84 @@ class _TopBarNeoState extends State<TopBarNeo> {
       ),
     ];
   }
+}
+
+class _TopBarDrawerButton extends StatefulComponent {
+  const _TopBarDrawerButton({
+    required this.location,
+    required this.items,
+    required this.openLabel,
+    required this.title,
+    required this.closeLabel,
+  });
+
+  final String location;
+  final List<_NavItem> items;
+  final String openLabel;
+  final String title;
+  final String closeLabel;
+
+  @override
+  State<_TopBarDrawerButton> createState() => _TopBarDrawerButtonState();
+}
+
+class _TopBarDrawerButtonState extends State<_TopBarDrawerButton> {
+  bool _drawerOpen = false;
+
+  @override
+  void didUpdateComponent(covariant _TopBarDrawerButton oldComponent) {
+    super.didUpdateComponent(oldComponent);
+    if (_drawerOpen && oldComponent.location != component.location) {
+      _drawerOpen = false;
+    }
+  }
+
+  void _openDrawer() => setState(() => _drawerOpen = true);
+  void _closeDrawer() => setState(() => _drawerOpen = false);
 
   @override
   Component build(BuildContext context) {
-    final l10n = context.l10n;
-    final activePath = TopBarNeo._normalizePath(component.location);
-    final items = _items(context, activePath);
-
     return Component.fragment([
-      header(
-        classes: 'top-bar-neo',
+      button(
+        classes: 'top-bar-burger',
+        type: ButtonType.button,
+        attributes: {
+          'aria-label': component.openLabel,
+          'aria-expanded': _drawerOpen ? 'true' : 'false',
+        },
+        onClick: _openDrawer,
         [
-          button(
-            classes: 'top-bar-burger',
-            type: ButtonType.button,
-            attributes: {
-              'aria-label': l10n.openMenu,
-              'aria-expanded': _drawerOpen ? 'true' : 'false',
-            },
-            onClick: _openDrawer,
+          svg(
+            classes: 'top-bar-burger-icon',
+            viewBox: '0 0 18 14',
+            width: 18.px,
+            height: 14.px,
+            attributes: const {'aria-hidden': 'true', 'focusable': 'false'},
             [
-              const AppIcon(
-                IconPaths.menu,
-                width: 22,
-                height: 22,
-                strokeWidth: '3',
+              rect(
+                x: '0',
+                y: '0',
+                width: '18',
+                height: '2',
+                fill: AppTheme.textColor,
+                [],
               ),
-            ],
-          ),
-          nav(
-            classes: 'top-bar-neo-nav',
-            [
-              for (final item in items)
-                _TopBarNavLink(label: item.label, to: item.to, isActive: item.isActive),
-            ],
-          ),
-          div(
-            classes: 'top-bar-neo-actions',
-            [
-              div(
-                classes: 'top-bar-neo-search',
-                [
-                  SearchField(
-                    placeholder: l10n.searchPackages,
-                    value: _query,
-                    searchLabel: l10n.search,
-                    onChange: _onQueryChange,
-                    onSubmit: (_) => _submitSearch(context),
-                  ),
-                ],
+              rect(
+                x: '0',
+                y: '6',
+                width: '18',
+                height: '2',
+                fill: AppTheme.textColor,
+                [],
               ),
-              const ThemeToggle(),
+              rect(
+                x: '0',
+                y: '12',
+                width: '18',
+                height: '2',
+                fill: AppTheme.textColor,
+                [],
+              ),
             ],
           ),
         ],
@@ -265,10 +316,10 @@ class _TopBarNeoState extends State<TopBarNeo> {
       NeoDrawer(
         isOpen: _drawerOpen,
         onClose: _closeDrawer,
-        title: l10n.menu,
-        closeLabel: l10n.closeMenu,
+        title: component.title,
+        closeLabel: component.closeLabel,
         children: [
-          for (final item in items)
+          for (final item in component.items)
             router.Link(
               to: item.to,
               classes: [

@@ -7,6 +7,7 @@ import 'package:sidb/core/di/di.dart';
 import 'package:sidb/presentation/components/app_dialog.dart';
 import 'package:sidb/presentation/features/about/view/about.dart';
 import 'package:sidb/presentation/features/developer_faq/view/developer_faq_page.dart';
+import 'package:sidb/presentation/features/not_found/view/not_found_page.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 import 'package:sidb/presentation/features/pack/view/packs_page.dart';
@@ -27,54 +28,16 @@ class AppRunner extends StatelessComponent {
     return _BlocProviders(
       child: AppDialogHost(
         child: router.Router(
+          errorBuilder: (context, state) => _AppShell(
+            location: state.location,
+            child: NotFoundPage(path: state.location),
+          ),
           routes: [
             router.ShellRoute(
-              builder: (context, state, child) => BlocBuilder<ThemeCubit, ThemeMode>(
-                builder: (context, mode) => div(
-                  styles: Styles(
-                    display: Display.flex,
-                    height: 100.vh,
-                    overflow: Overflow.hidden,
-                    justifyContent: JustifyContent.center,
-                  ),
-                  [
-                    div(
-                      classes: 'app-shell',
-                      styles: Styles(
-                        display: Display.flex,
-                        width: 100.percent,
-                        height: 100.percent,
-                        maxWidth: NeoTokens.pageMaxWidth.px,
-                        padding: Padding.symmetric(horizontal: 20.px),
-                        overflow: Overflow.only(y: Overflow.auto),
-                        flexDirection: FlexDirection.column,
-                      ),
-                      [
-                        TopBarNeo(
-                          location: state.location,
-                          initialSearchQuery: state.queryParams['q'],
-                        ),
-                        div(
-                          styles: Styles(
-                            display: Display.flex,
-                            minHeight: 0.px,
-                            flexDirection: FlexDirection.column,
-                            flex: Flex(grow: 1),
-                          ),
-                          [
-                            div(
-                              styles: Styles(
-                                flex: Flex(grow: 1),
-                              ),
-                              [child],
-                            ),
-                            const FooterNeo(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              builder: (context, state, child) => _AppShell(
+                location: state.location,
+                initialSearchQuery: state.queryParams['q'],
+                child: child,
               ),
               routes: [
                 router.Route(path: '/', title: 'Home', builder: (context, state) => const PacksPage()),
@@ -114,10 +77,78 @@ class AppRunner extends StatelessComponent {
                   title: 'License',
                   builder: (context, state) => PlaceholderPage(title: context.l10n.licensing),
                 ),
+                router.Route(
+                  path: '/:rest(.*)',
+                  title: '404',
+                  builder: (context, state) => NotFoundPage(path: state.location),
+                ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AppShell extends StatelessComponent {
+  const _AppShell({
+    required this.location,
+    this.initialSearchQuery,
+    required this.child,
+  });
+
+  final String location;
+  final String? initialSearchQuery;
+  final Component child;
+
+  @override
+  Component build(BuildContext context) {
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, mode) => div(
+        styles: Styles(
+          display: Display.flex,
+          height: 100.vh,
+          overflow: Overflow.hidden,
+          justifyContent: JustifyContent.center,
+        ),
+        [
+          div(
+            classes: 'app-shell',
+            styles: Styles(
+              display: Display.flex,
+              width: 100.percent,
+              height: 100.percent,
+              maxWidth: NeoTokens.pageMaxWidth.px,
+              padding: Padding.symmetric(horizontal: 20.px),
+              overflow: Overflow.only(y: Overflow.auto),
+              flexDirection: FlexDirection.column,
+            ),
+            [
+              TopBarNeo(
+                location: location,
+                initialSearchQuery: initialSearchQuery,
+              ),
+              div(
+                styles: Styles(
+                  display: Display.flex,
+                  minHeight: 0.px,
+                  flexDirection: FlexDirection.column,
+                  flex: Flex(grow: 1),
+                ),
+                [
+                  div(
+                    styles: Styles(
+                      flex: Flex(grow: 1),
+                    ),
+                    [child],
+                  ),
+                  const FooterNeo(),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

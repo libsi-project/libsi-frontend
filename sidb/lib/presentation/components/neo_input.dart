@@ -55,7 +55,7 @@ class NeoInput extends StatelessComponent {
         '--neo-input-shadow-color': 'var(--theme-border)',
         '--neo-input-border-width': '2px',
         'border-width': 'var(--neo-input-border-width)',
-        'box-shadow': '4px 4px 0 0 var(--neo-input-shadow-color)',
+        'box-shadow': '3px 3px 0 0 var(--neo-input-shadow-color)',
         'outline': 'none',
       },
     ),
@@ -122,13 +122,13 @@ class NeoInput extends StatelessComponent {
 /// Search input with a clickable lupe icon.
 ///
 /// Search is triggered only on `Enter` (form submit) or a click on the
-/// lupe icon — never on every keystroke. Fully controlled: the parent
-/// owns [value] and gets keystroke updates via [onChange], and the
-/// final submitted query via [onSubmit].
-class SearchField extends StatelessComponent {
+/// lupe icon — never on every keystroke. Owns its query text; seed it
+/// with [initialValue] (for example from the URL) and read the submitted
+/// query via [onSubmit]. Optional [onChange] observes keystrokes.
+class SearchField extends StatefulComponent {
   const SearchField({
     this.placeholder,
-    this.value,
+    this.initialValue,
     this.id,
     this.classes,
     this.styles,
@@ -142,7 +142,7 @@ class SearchField extends StatelessComponent {
   });
 
   final String? placeholder;
-  final String? value;
+  final String? initialValue;
   final String? id;
   final String? classes;
   final Styles? styles;
@@ -208,48 +208,68 @@ class SearchField extends StatelessComponent {
     ),
   ];
 
+  @override
+  State<SearchField> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends State<SearchField> {
+  late String _query = component.initialValue ?? '';
+
+  @override
+  void didUpdateComponent(covariant SearchField oldComponent) {
+    super.didUpdateComponent(oldComponent);
+    // Keep the input synced with the URL when a search is actually
+    // active. Leaving /search must not reset what the user typed, so
+    // we only overwrite when the incoming query is non-null.
+    final incoming = component.initialValue;
+    if (incoming != null && incoming != oldComponent.initialValue && incoming != _query) {
+      _query = incoming;
+    }
+  }
+
   void _onInput(web.Event event) {
-    final target = event.target as web.HTMLInputElement;
-    onChange?.call(target.value);
+    final value = (event.target as web.HTMLInputElement).value;
+    if (value == _query) return;
+    setState(() => _query = value);
+    component.onChange?.call(value);
   }
 
   void _onSubmit(web.Event event) {
     event.preventDefault();
-    onSubmit?.call((value ?? '').trim());
+    component.onSubmit?.call(_query.trim());
   }
 
   @override
   Component build(BuildContext context) {
-    final currentValue = value ?? '';
     return form(
       classes: [
         'search-field',
-        ?classes,
+        ?component.classes,
       ].join(' '),
-      styles: styles,
+      styles: component.styles,
       attributes: const {'role': 'search'},
       events: {'submit': _onSubmit},
       [
         NeoInput(
-          id: id,
+          id: component.id,
           type: 'search',
-          placeholder: placeholder,
-          value: currentValue.isEmpty ? null : currentValue,
+          placeholder: component.placeholder,
+          value: _query.isEmpty ? null : _query,
           attributes: {
-            'aria-label': placeholder ?? searchLabel,
+            'aria-label': component.placeholder ?? component.searchLabel,
             'name': 'q',
             'autocomplete': 'off',
             'enterkeyhint': 'search',
-            ...?attributes,
+            ...?component.attributes,
           },
-          styles: inputStyles,
+          styles: component.inputStyles,
           onInput: _onInput,
         ),
         button(
           classes: 'search-field-icon',
           type: ButtonType.submit,
-          styles: iconStyles,
-          attributes: {'aria-label': searchLabel},
+          styles: component.iconStyles,
+          attributes: {'aria-label': component.searchLabel},
           [
             const AppIcon(
               IconPaths.search,
