@@ -162,6 +162,21 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Взрослые'
 	String get audienceAdult => 'Взрослые';
+
+	/// ru: 'Эрудит-Квартет'
+	String get gameTypeEruditeQuartet => 'Эрудит-Квартет';
+
+	/// ru: 'Эрудит-Сикстет'
+	String get gameTypeEruditeSextet => 'Эрудит-Сикстет';
+
+	/// ru: 'ИСИ'
+	String get gameTypeIsi => 'ИСИ';
+
+	/// ru: 'КСИ'
+	String get gameTypeKsi => 'КСИ';
+
+	/// ru: 'Иное'
+	String get gameTypeOther => 'Иное';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -213,6 +228,11 @@ extension on Translations {
 			'audienceSchooler' => 'Школьники',
 			'audienceStudent' => 'Студенты',
 			'audienceAdult' => 'Взрослые',
+			'gameTypeEruditeQuartet' => 'Эрудит-Квартет',
+			'gameTypeEruditeSextet' => 'Эрудит-Сикстет',
+			'gameTypeIsi' => 'ИСИ',
+			'gameTypeKsi' => 'КСИ',
+			'gameTypeOther' => 'Иное',
 			_ => null,
 		};
 	}

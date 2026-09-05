@@ -44,5 +44,10 @@
     "notFoundGoSearch": "Искать пакеты",
     "audienceSchooler": "Школьники",
     "audienceStudent": "Студенты",
-    "audienceAdult": "Взрослые"
+    "audienceAdult": "Взрослые",
+    "gameTypeEruditeQuartet": "Эрудит-Квартет",
+    "gameTypeEruditeSextet": "Эрудит-Сикстет",
+    "gameTypeIsi": "ИСИ",
+    "gameTypeKsi": "КСИ",
+    "gameTypeOther": "Иное"
 }

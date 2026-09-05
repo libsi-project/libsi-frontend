@@ -13,9 +13,9 @@ class ApiPackRepository implements PackRepository {
   ApiPackRepository(this.dio);
 
   // TODO: drop the placeholder swap once mockapi stops returning
-  // strings like "gameType 3". The backend will send real values and
-  // this cycle can go.
-  static const _mockGameTypes = ['Эрудит-Сикстет', 'КСИ', 'ИСИ'];
+  // strings like "gameType 3". The backend will send GameType enum
+  // slugs directly and this cycle can go.
+  static const _mockGameTypes = ['erudite_sextet', 'ksi', 'isi'];
 
   @override
   Future<List<Pack>> getPacks() async {

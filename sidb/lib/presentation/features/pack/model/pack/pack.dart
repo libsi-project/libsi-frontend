@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:sidb/presentation/features/pack/model/author/author.dart';
+import 'package:sidb/presentation/features/pack/model/game_type/game_type.dart';
 import 'package:sidb/presentation/features/pack/model/target_audience/target_audience.dart';
 
 part 'pack.g.dart';
@@ -8,7 +9,11 @@ part 'pack.g.dart';
 class Pack {
   final String id;
   final String title;
-  final String gameType;
+  // TODO: drop the tolerant fallback once the backend stops returning
+  // free-form / placeholder strings like "gameType 3" and switches to
+  // the enum slugs (`erudite_quartet`, `isi`, ...).
+  @JsonKey(fromJson: gameTypeFromJson, toJson: gameTypeToJson)
+  final GameType gameType;
   // TODO: drop the fallback once the backend returns `audiences`. Until
   // then we surface every possible tag so the badges are visible on
   // the packs list without touching the mock server.
@@ -75,5 +80,25 @@ class Pack {
     TargetAudience.schooler => 'schooler',
     TargetAudience.student => 'student',
     TargetAudience.adult => 'adult',
+  };
+
+  static GameType gameTypeFromJson(dynamic json) {
+    if (json is! String) return GameType.other;
+    return switch (json.trim().toLowerCase()) {
+      'erudite_quartet' || 'эрудит-квартет' => GameType.eruditeQuartet,
+      'erudite_sextet' || 'эрудит-сикстет' => GameType.eruditeSextet,
+      'isi' || 'иси' => GameType.isi,
+      'ksi' || 'кси' => GameType.ksi,
+      'other' || 'иное' => GameType.other,
+      _ => GameType.other,
+    };
+  }
+
+  static String gameTypeToJson(GameType type) => switch (type) {
+    GameType.eruditeQuartet => 'erudite_quartet',
+    GameType.eruditeSextet => 'erudite_sextet',
+    GameType.isi => 'isi',
+    GameType.ksi => 'ksi',
+    GameType.other => 'other',
   };
 }

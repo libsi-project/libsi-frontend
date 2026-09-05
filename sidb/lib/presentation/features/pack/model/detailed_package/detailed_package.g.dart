@@ -10,7 +10,7 @@ DetailedPackage _$DetailedPackageFromJson(Map<String, dynamic> json) =>
     DetailedPackage(
       id: json['id'] as String,
       title: json['title'] as String,
-      gameType: json['gameType'] as String,
+      gameType: Pack.gameTypeFromJson(json['gameType']),
       audiences: Pack.audiencesFromJson(json['audiences']),
       averageAnswersPercentage: (json['averageAnswersPercentage'] as num?)
           ?.toDouble(),
@@ -32,7 +32,7 @@ Map<String, dynamic> _$DetailedPackageToJson(DetailedPackage instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'gameType': instance.gameType,
+      'gameType': Pack.gameTypeToJson(instance.gameType),
       'audiences': Pack.audiencesToJson(instance.audiences),
       'averageAnswersPercentage': instance.averageAnswersPercentage,
       'authors': instance.authors,
