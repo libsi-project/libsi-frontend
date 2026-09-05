@@ -10,8 +10,7 @@ Pack _$PackFromJson(Map<String, dynamic> json) => Pack(
   id: json['id'] as String,
   title: json['title'] as String,
   gameType: json['gameType'] as String,
-  difficultyType: json['difficultyType'] as String,
-  difficulty: json['difficulty'] as String,
+  audiences: Pack.audiencesFromJson(json['audiences']),
   averageAnswersPercentage: (json['averageAnswersPercentage'] as num?)
       ?.toDouble(),
   authors: (json['authors'] as List<dynamic>)
@@ -28,8 +27,7 @@ Map<String, dynamic> _$PackToJson(Pack instance) => <String, dynamic>{
   'id': instance.id,
   'title': instance.title,
   'gameType': instance.gameType,
-  'difficultyType': instance.difficultyType,
-  'difficulty': instance.difficulty,
+  'audiences': Pack.audiencesToJson(instance.audiences),
   'averageAnswersPercentage': instance.averageAnswersPercentage,
   'authors': instance.authors,
   'topicsCount': instance.topicsCount,

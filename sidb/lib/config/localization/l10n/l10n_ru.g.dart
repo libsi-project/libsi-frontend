@@ -153,6 +153,15 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Искать пакеты'
 	String get notFoundGoSearch => 'Искать пакеты';
+
+	/// ru: 'Школьники'
+	String get audienceSchooler => 'Школьники';
+
+	/// ru: 'Студенты'
+	String get audienceStudent => 'Студенты';
+
+	/// ru: 'Взрослые'
+	String get audienceAdult => 'Взрослые';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -201,6 +210,9 @@ extension on Translations {
 			'notFoundMessage' => 'Ссылка могла устареть, или путь написан с ошибкой.',
 			'notFoundGoHome' => 'На главную',
 			'notFoundGoSearch' => 'Искать пакеты',
+			'audienceSchooler' => 'Школьники',
+			'audienceStudent' => 'Студенты',
+			'audienceAdult' => 'Взрослые',
 			_ => null,
 		};
 	}

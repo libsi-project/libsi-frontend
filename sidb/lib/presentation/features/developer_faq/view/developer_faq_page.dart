@@ -314,7 +314,7 @@ SwitchToggle(
             const NeoBadge(label: 'general', tone: NeoBadgeTone.general),
             const NeoBadge(label: 'neutral', tone: NeoBadgeTone.neutral),
           ]),
-          _CodeBlock("NeoBadge(label: pack.difficultyType, tone: NeoBadgeTone.student)"),
+          _CodeBlock("NeoBadge(label: audience.label(l10n), tone: NeoBadgeTone.student)"),
         ],
       ),
       _Section(
