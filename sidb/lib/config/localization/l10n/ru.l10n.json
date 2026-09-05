@@ -41,5 +41,13 @@
     "notFoundHeading": "Страница потерялась",
     "notFoundMessage": "Ссылка могла устареть, или путь написан с ошибкой.",
     "notFoundGoHome": "На главную",
-    "notFoundGoSearch": "Искать пакеты"
+    "notFoundGoSearch": "Искать пакеты",
+    "audienceSchooler": "Школьники",
+    "audienceStudent": "Студенты",
+    "audienceAdult": "Взрослые",
+    "gameTypeEruditeQuartet": "Эрудит-Квартет",
+    "gameTypeEruditeSextet": "Эрудит-Сикстет",
+    "gameTypeIsi": "ИСИ",
+    "gameTypeKsi": "КСИ",
+    "gameTypeOther": "Иное"
 }

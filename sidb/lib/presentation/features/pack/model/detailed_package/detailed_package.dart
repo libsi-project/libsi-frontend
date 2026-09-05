@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:sidb/presentation/features/pack/model/author/author.dart';
+import 'package:sidb/presentation/features/pack/model/game_type/game_type.dart';
 import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
+import 'package:sidb/presentation/features/pack/model/target_audience/target_audience.dart';
 import 'package:sidb/presentation/features/pack/model/topic/topic.dart';
 
 part 'detailed_package.g.dart';
@@ -11,8 +13,7 @@ class DetailedPackage extends Pack {
     required super.id,
     required super.title,
     required super.gameType,
-    required super.difficultyType,
-    required super.difficulty,
+    required super.audiences,
     required super.averageAnswersPercentage,
     required super.authors,
     required super.topicsCount,

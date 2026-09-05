@@ -153,6 +153,30 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Искать пакеты'
 	String get notFoundGoSearch => 'Искать пакеты';
+
+	/// ru: 'Школьники'
+	String get audienceSchooler => 'Школьники';
+
+	/// ru: 'Студенты'
+	String get audienceStudent => 'Студенты';
+
+	/// ru: 'Взрослые'
+	String get audienceAdult => 'Взрослые';
+
+	/// ru: 'Эрудит-Квартет'
+	String get gameTypeEruditeQuartet => 'Эрудит-Квартет';
+
+	/// ru: 'Эрудит-Сикстет'
+	String get gameTypeEruditeSextet => 'Эрудит-Сикстет';
+
+	/// ru: 'ИСИ'
+	String get gameTypeIsi => 'ИСИ';
+
+	/// ru: 'КСИ'
+	String get gameTypeKsi => 'КСИ';
+
+	/// ru: 'Иное'
+	String get gameTypeOther => 'Иное';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -201,6 +225,14 @@ extension on Translations {
 			'notFoundMessage' => 'Ссылка могла устареть, или путь написан с ошибкой.',
 			'notFoundGoHome' => 'На главную',
 			'notFoundGoSearch' => 'Искать пакеты',
+			'audienceSchooler' => 'Школьники',
+			'audienceStudent' => 'Студенты',
+			'audienceAdult' => 'Взрослые',
+			'gameTypeEruditeQuartet' => 'Эрудит-Квартет',
+			'gameTypeEruditeSextet' => 'Эрудит-Сикстет',
+			'gameTypeIsi' => 'ИСИ',
+			'gameTypeKsi' => 'КСИ',
+			'gameTypeOther' => 'Иное',
 			_ => null,
 		};
 	}

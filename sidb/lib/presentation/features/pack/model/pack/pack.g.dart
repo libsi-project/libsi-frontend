@@ -9,9 +9,10 @@ part of 'pack.dart';
 Pack _$PackFromJson(Map<String, dynamic> json) => Pack(
   id: json['id'] as String,
   title: json['title'] as String,
-  gameType: json['gameType'] as String,
-  difficultyType: json['difficultyType'] as String,
-  difficulty: json['difficulty'] as String,
+  gameType: $enumDecode(_$GameTypeEnumMap, json['gameType']),
+  audiences: (json['audiences'] as List<dynamic>)
+      .map((e) => $enumDecode(_$TargetAudienceEnumMap, e))
+      .toList(),
   averageAnswersPercentage: (json['averageAnswersPercentage'] as num?)
       ?.toDouble(),
   authors: (json['authors'] as List<dynamic>)
@@ -27,9 +28,10 @@ Pack _$PackFromJson(Map<String, dynamic> json) => Pack(
 Map<String, dynamic> _$PackToJson(Pack instance) => <String, dynamic>{
   'id': instance.id,
   'title': instance.title,
-  'gameType': instance.gameType,
-  'difficultyType': instance.difficultyType,
-  'difficulty': instance.difficulty,
+  'gameType': _$GameTypeEnumMap[instance.gameType]!,
+  'audiences': instance.audiences
+      .map((e) => _$TargetAudienceEnumMap[e]!)
+      .toList(),
   'averageAnswersPercentage': instance.averageAnswersPercentage,
   'authors': instance.authors,
   'topicsCount': instance.topicsCount,
@@ -37,4 +39,18 @@ Map<String, dynamic> _$PackToJson(Pack instance) => <String, dynamic>{
   'playDate': Pack.dateToJson(instance.playDate),
   'likesCount': instance.likesCount,
   'dislikesCount': instance.dislikesCount,
+};
+
+const _$GameTypeEnumMap = {
+  GameType.eruditeQuartet: 'eruditeQuartet',
+  GameType.eruditeSextet: 'eruditeSextet',
+  GameType.isi: 'isi',
+  GameType.ksi: 'ksi',
+  GameType.other: 'other',
+};
+
+const _$TargetAudienceEnumMap = {
+  TargetAudience.schooler: 'schooler',
+  TargetAudience.student: 'student',
+  TargetAudience.adult: 'adult',
 };

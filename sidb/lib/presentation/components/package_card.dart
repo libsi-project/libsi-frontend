@@ -5,7 +5,9 @@ import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_badge.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
 import 'package:sidb/presentation/components/neo_card.dart';
+import 'package:sidb/presentation/features/pack/model/game_type/game_type.dart';
 import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
+import 'package:sidb/presentation/features/pack/model/target_audience/target_audience.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
@@ -123,9 +125,13 @@ class PackageCard extends StatelessComponent {
       children: [
         h3(classes: 'pc-title', [.text(pack.title)]),
         div(classes: 'pc-badges', [
-          NeoBadge(label: pack.gameType, tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
-          NeoBadge(label: pack.difficultyType, tone: NeoBadgeTone.student, classes: 'pc-badge'),
-          NeoBadge(label: pack.difficulty, tone: NeoBadgeTone.general, classes: 'pc-badge'),
+          NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
+          for (final audience in pack.audiences)
+            NeoBadge(
+              label: audience.label(l10n),
+              tone: _audienceTone(audience),
+              classes: 'pc-badge',
+            ),
         ]),
         div(classes: 'pc-meta', [
           span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
@@ -181,6 +187,12 @@ class PackageCard extends StatelessComponent {
       ],
     );
   }
+
+  static NeoBadgeTone _audienceTone(TargetAudience audience) => switch (audience) {
+    TargetAudience.schooler => NeoBadgeTone.thematic,
+    TargetAudience.student => NeoBadgeTone.student,
+    TargetAudience.adult => NeoBadgeTone.hardcore,
+  };
 
   static String _monthYear(DateTime date) {
     const months = [
