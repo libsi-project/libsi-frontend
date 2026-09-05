@@ -1,6 +1,8 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
+import 'package:sidb/config/localization/l10n/l10n.g.dart';
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_badge.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
@@ -18,6 +20,11 @@ class PackageCard extends StatelessComponent {
 
   @css
   static List<StyleRule> get styles => [
+    css('.pc-link').styles(
+      display: Display.block,
+      color: AppTheme.textColor,
+      textDecoration: TextDecoration.none,
+    ),
     css('.pc').styles(
       width: 100.percent,
       minWidth: 220.px,
@@ -120,9 +127,22 @@ class PackageCard extends StatelessComponent {
   Component build(BuildContext context) {
     final l10n = context.l10n;
 
-    return NeoCard(
-      classes: 'pc',
-      children: [
+    return router.Link(
+      to: '/pack/${pack.id}',
+      classes: 'pc-link',
+      styles: Styles(
+        textDecoration: TextDecoration.none,
+        raw: {'color': 'inherit'},
+      ),
+      child: NeoCard(
+        classes: 'pc',
+        children: _cardBody(l10n),
+      ),
+    );
+  }
+
+  List<Component> _cardBody(Translations l10n) {
+    return [
         h3(classes: 'pc-title', [.text(pack.title)]),
         div(classes: 'pc-badges', [
           NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
@@ -184,8 +204,7 @@ class PackageCard extends StatelessComponent {
             ],
           ),
         ]),
-      ],
-    );
+    ];
   }
 
   static NeoBadgeTone _audienceTone(TargetAudience audience) => switch (audience) {
