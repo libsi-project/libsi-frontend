@@ -11,6 +11,7 @@ import 'package:sidb/presentation/features/not_found/view/not_found_page.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 import 'package:sidb/presentation/features/pack/view/packs_page.dart';
+import 'package:sidb/presentation/features/pack_details/view/pack_details_page.dart';
 import 'package:sidb/presentation/features/placeholder/view/placeholder_page.dart';
 import 'package:sidb/presentation/features/search/view/search_page.dart';
 import 'package:sidb/presentation/theme/theme_cubit.dart';
@@ -41,6 +42,11 @@ class AppRunner extends StatelessComponent {
               ),
               routes: [
                 router.Route(path: '/', title: 'Home', builder: (context, state) => const PacksPage()),
+                router.Route(
+                  path: '/pack/:id',
+                  title: 'Pack',
+                  builder: (context, state) => PackDetailsPage(id: state.params['id'] ?? ''),
+                ),
                 router.Route(path: '/about', title: 'About', builder: (context, state) => const About()),
                 router.Route(
                   path: '/developer-faq',
