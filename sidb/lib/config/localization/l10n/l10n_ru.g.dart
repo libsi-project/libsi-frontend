@@ -138,6 +138,21 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Результаты поиска: «${query}»'
 	String searchResultsFor({required Object query}) => 'Результаты поиска: «${query}»';
+
+	/// ru: 'НЕ НАЙДЕНО'
+	String get notFoundBadge => 'НЕ НАЙДЕНО';
+
+	/// ru: 'Страница потерялась'
+	String get notFoundHeading => 'Страница потерялась';
+
+	/// ru: 'Ссылка могла устареть, или путь написан с ошибкой.'
+	String get notFoundMessage => 'Ссылка могла устареть, или путь написан с ошибкой.';
+
+	/// ru: 'На главную'
+	String get notFoundGoHome => 'На главную';
+
+	/// ru: 'Искать пакеты'
+	String get notFoundGoSearch => 'Искать пакеты';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -181,6 +196,11 @@ extension on Translations {
 			'searchPrompt' => 'Введите запрос и нажмите Enter, чтобы найти пакет',
 			'searchNoResults' => 'По запросу ничего не найдено',
 			'searchResultsFor' => ({required Object query}) => 'Результаты поиска: «${query}»',
+			'notFoundBadge' => 'НЕ НАЙДЕНО',
+			'notFoundHeading' => 'Страница потерялась',
+			'notFoundMessage' => 'Ссылка могла устареть, или путь написан с ошибкой.',
+			'notFoundGoHome' => 'На главную',
+			'notFoundGoSearch' => 'Искать пакеты',
 			_ => null,
 		};
 	}

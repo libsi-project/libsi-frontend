@@ -36,5 +36,10 @@
     "closeMenu": "Закрыть меню",
     "searchPrompt": "Введите запрос и нажмите Enter, чтобы найти пакет",
     "searchNoResults": "По запросу ничего не найдено",
-    "searchResultsFor": "Результаты поиска: «${query}»"
+    "searchResultsFor": "Результаты поиска: «${query}»",
+    "notFoundBadge": "НЕ НАЙДЕНО",
+    "notFoundHeading": "Страница потерялась",
+    "notFoundMessage": "Ссылка могла устареть, или путь написан с ошибкой.",
+    "notFoundGoHome": "На главную",
+    "notFoundGoSearch": "Искать пакеты"
 }

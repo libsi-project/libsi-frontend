@@ -5,6 +5,7 @@ abstract final class NeoTokens {
   static const double pageMaxWidth = 1200;
   static const double pagePaddingX = 2;
 
+  static const double radiusNone = 0;
   static const double radiusSm = 2;
   static const double radiusMd = 6;
   static const double radiusLg = 15;
