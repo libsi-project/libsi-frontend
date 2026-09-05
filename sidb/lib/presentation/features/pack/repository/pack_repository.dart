@@ -12,10 +12,18 @@ class ApiPackRepository implements PackRepository {
 
   ApiPackRepository(this.dio);
 
-  // TODO: drop the placeholder swap once mockapi stops returning
-  // strings like "gameType 3". The backend will send GameType enum
-  // slugs directly and this cycle can go.
-  static const _mockGameTypes = ['erudite_sextet', 'ksi', 'isi'];
+  // TODO: drop the mock coercion once the backend returns enum slugs
+  // for `gameType` and populates `audiences`. Until then we normalise
+  // mockapi's free-form strings so `Pack.fromJson` can parse them.
+  static const _gameTypeCycle = ['eruditeSextet', 'ksi', 'isi'];
+  static const _russianGameTypeToSlug = {
+    'Эрудит-Квартет': 'eruditeQuartet',
+    'Эрудит-Сикстет': 'eruditeSextet',
+    'ИСИ': 'isi',
+    'КСИ': 'ksi',
+    'Иное': 'other',
+  };
+  static const _defaultAudiences = ['schooler', 'student', 'adult'];
 
   @override
   Future<List<Pack>> getPacks() async {
@@ -23,11 +31,21 @@ class ApiPackRepository implements PackRepository {
     final data = response.data ?? const [];
     return data.asMap().entries.map((entry) {
       final json = Map<String, dynamic>.from(entry.value as Map);
-      final gameType = json['gameType'] as String? ?? '';
-      if (gameType.startsWith('gameType ')) {
-        json['gameType'] = _mockGameTypes[entry.key % _mockGameTypes.length];
-      }
+      _normaliseGameType(json, entry.key);
+      json['audiences'] ??= _defaultAudiences;
       return Pack.fromJson(json);
     }).toList();
+  }
+
+  static void _normaliseGameType(Map<String, dynamic> json, int index) {
+    final raw = (json['gameType'] as String?)?.trim() ?? '';
+    if (raw.startsWith('gameType ')) {
+      json['gameType'] = _gameTypeCycle[index % _gameTypeCycle.length];
+      return;
+    }
+    final mapped = _russianGameTypeToSlug[raw];
+    if (mapped != null) {
+      json['gameType'] = mapped;
+    }
   }
 }

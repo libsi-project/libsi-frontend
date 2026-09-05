@@ -10,8 +10,10 @@ DetailedPackage _$DetailedPackageFromJson(Map<String, dynamic> json) =>
     DetailedPackage(
       id: json['id'] as String,
       title: json['title'] as String,
-      gameType: Pack.gameTypeFromJson(json['gameType']),
-      audiences: Pack.audiencesFromJson(json['audiences']),
+      gameType: $enumDecode(_$GameTypeEnumMap, json['gameType']),
+      audiences: (json['audiences'] as List<dynamic>)
+          .map((e) => $enumDecode(_$TargetAudienceEnumMap, e))
+          .toList(),
       averageAnswersPercentage: (json['averageAnswersPercentage'] as num?)
           ?.toDouble(),
       authors: (json['authors'] as List<dynamic>)
@@ -32,8 +34,10 @@ Map<String, dynamic> _$DetailedPackageToJson(DetailedPackage instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'gameType': Pack.gameTypeToJson(instance.gameType),
-      'audiences': Pack.audiencesToJson(instance.audiences),
+      'gameType': _$GameTypeEnumMap[instance.gameType]!,
+      'audiences': instance.audiences
+          .map((e) => _$TargetAudienceEnumMap[e]!)
+          .toList(),
       'averageAnswersPercentage': instance.averageAnswersPercentage,
       'authors': instance.authors,
       'topicsCount': instance.topicsCount,
@@ -44,3 +48,17 @@ Map<String, dynamic> _$DetailedPackageToJson(DetailedPackage instance) =>
       'description': instance.description,
       'topics': instance.topics,
     };
+
+const _$GameTypeEnumMap = {
+  GameType.eruditeQuartet: 'eruditeQuartet',
+  GameType.eruditeSextet: 'eruditeSextet',
+  GameType.isi: 'isi',
+  GameType.ksi: 'ksi',
+  GameType.other: 'other',
+};
+
+const _$TargetAudienceEnumMap = {
+  TargetAudience.schooler: 'schooler',
+  TargetAudience.student: 'student',
+  TargetAudience.adult: 'adult',
+};
