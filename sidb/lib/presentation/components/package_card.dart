@@ -25,6 +25,10 @@ class PackageCard extends StatelessComponent {
       color: AppTheme.textColor,
       textDecoration: TextDecoration.none,
     ),
+    css('.pc-body').styles(
+      display: Display.flex,
+      flexDirection: FlexDirection.column,
+    ),
     css('.pc').styles(
       width: 100.percent,
       minWidth: 220.px,
@@ -127,84 +131,93 @@ class PackageCard extends StatelessComponent {
   Component build(BuildContext context) {
     final l10n = context.l10n;
 
-    return router.Link(
-      to: '/pack/${pack.id}',
-      classes: 'pc-link',
-      styles: Styles(
-        textDecoration: TextDecoration.none,
-        raw: {'color': 'inherit'},
-      ),
-      child: NeoCard(
-        classes: 'pc',
-        children: _cardBody(l10n),
-      ),
+    // Keep the reaction row OUTSIDE the router.Link — nesting <button>
+    // inside an <a> is invalid HTML and lets reaction clicks bubble
+    // into a navigation. Only the metadata block is anchor-wrapped.
+    return NeoCard(
+      classes: 'pc',
+      children: [
+        router.Link(
+          to: '/pack/${pack.id}',
+          classes: 'pc-link',
+          styles: Styles(
+            textDecoration: TextDecoration.none,
+            raw: {'color': 'inherit'},
+          ),
+          child: div(classes: 'pc-body', _cardBody(l10n)),
+        ),
+        _reactions(),
+      ],
     );
   }
 
   List<Component> _cardBody(Translations l10n) {
     return [
-        h3(classes: 'pc-title', [.text(pack.title)]),
-        div(classes: 'pc-badges', [
-          NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
-          for (final audience in pack.audiences)
-            NeoBadge(
-              label: audience.label(l10n),
-              tone: _audienceTone(audience),
-              classes: 'pc-badge',
-            ),
-        ]),
-        div(classes: 'pc-meta', [
-          span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
-          span([.text(_monthYear(pack.publishDate))]),
-        ]),
-        p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
-        p(classes: 'pc-authors', [.text(pack.authors.map((author) => author.name).join(' · '))]),
-        div(classes: 'pc-reactions', [
-          div(classes: 'pc-reactions-group', [
-            NeoButton(
-              variant: NeoButtonVariant.ghost,
-              classes: 'pc-reaction-btn',
-              children: [
-                AppIcon(
-                  IconPaths.thumbUp,
-                  width: 22,
-                  height: 22,
-                  filled: true,
-                  fillColor: AppTheme.theme.textLink,
-                ),
-                span([.text('${pack.likesCount}')]),
-              ],
-            ),
-            NeoButton(
-              variant: NeoButtonVariant.ghost,
-              classes: 'pc-reaction-btn',
-              children: [
-                AppIcon(
-                  IconPaths.thumbDown,
-                  width: 22,
-                  height: 22,
-                  filled: true,
-                  fillColor: AppTheme.theme.textLink,
-                ),
-                span([.text('${pack.dislikesCount}')]),
-              ],
-            ),
-          ]),
-          NeoButton(
-            variant: NeoButtonVariant.ghost,
-            classes: 'pc-bookmark-btn',
-            children: [
-              AppIcon(
-                IconPaths.bookmark,
-                width: 22,
-                height: 22,
-                filled: true,
-                fillColor: AppTheme.theme.textLink,
-              ),
-            ],
+      h3(classes: 'pc-title', [.text(pack.title)]),
+      div(classes: 'pc-badges', [
+        NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
+        for (final audience in pack.audiences)
+          NeoBadge(
+            label: audience.label(l10n),
+            tone: _audienceTone(audience),
+            classes: 'pc-badge',
           ),
-        ]),
+      ]),
+      div(classes: 'pc-meta', [
+        span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
+        span([.text(_monthYear(pack.publishDate))]),
+      ]),
+      p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
+      p(classes: 'pc-authors', [.text(pack.authors.map((author) => author.name).join(' · '))]),
     ];
+  }
+
+  Component _reactions() {
+    return div(classes: 'pc-reactions', [
+      div(classes: 'pc-reactions-group', [
+        NeoButton(
+          variant: NeoButtonVariant.ghost,
+          classes: 'pc-reaction-btn',
+          children: [
+            AppIcon(
+              IconPaths.thumbUp,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
+            span([.text('${pack.likesCount}')]),
+          ],
+        ),
+        NeoButton(
+          variant: NeoButtonVariant.ghost,
+          classes: 'pc-reaction-btn',
+          children: [
+            AppIcon(
+              IconPaths.thumbDown,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
+            span([.text('${pack.dislikesCount}')]),
+          ],
+        ),
+      ]),
+      NeoButton(
+        variant: NeoButtonVariant.ghost,
+        classes: 'pc-bookmark-btn',
+        children: [
+          AppIcon(
+            IconPaths.bookmark,
+            width: 22,
+            height: 22,
+            filled: true,
+            fillColor: AppTheme.theme.textLink,
+          ),
+        ],
+      ),
+    ]);
   }
 
   static NeoBadgeTone _audienceTone(TargetAudience audience) => switch (audience) {

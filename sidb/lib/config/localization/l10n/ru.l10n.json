@@ -79,5 +79,6 @@
     "questionSource": "Источник",
     "topicShare": "Скопировать ссылку на тему",
     "topicBookmark": "Добавить тему в избранное",
-    "topicLinkCopied": "Ссылка на тему скопирована"
+    "topicLinkCopied": "Ссылка на тему скопирована",
+    "topicLinkCopyFailed": "Не получилось скопировать ссылку"
 }

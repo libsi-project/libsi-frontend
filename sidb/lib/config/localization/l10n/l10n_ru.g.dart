@@ -267,6 +267,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Ссылка на тему скопирована'
 	String get topicLinkCopied => 'Ссылка на тему скопирована';
+
+	/// ru: 'Не получилось скопировать ссылку'
+	String get topicLinkCopyFailed => 'Не получилось скопировать ссылку';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -353,6 +356,7 @@ extension on Translations {
 			'topicShare' => 'Скопировать ссылку на тему',
 			'topicBookmark' => 'Добавить тему в избранное',
 			'topicLinkCopied' => 'Ссылка на тему скопирована',
+			'topicLinkCopyFailed' => 'Не получилось скопировать ссылку',
 			_ => null,
 		};
 	}

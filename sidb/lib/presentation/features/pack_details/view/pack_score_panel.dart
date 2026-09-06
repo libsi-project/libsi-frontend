@@ -342,7 +342,9 @@ class _PackScorePanelState extends State<PackScorePanel> {
     if (_players.length <= 1) return;
     setState(() {
       _players.removeAt(index);
-      if (_selectedIndex >= _players.length) {
+      if (index < _selectedIndex) {
+        _selectedIndex -= 1;
+      } else if (_selectedIndex >= _players.length) {
         _selectedIndex = _players.length - 1;
       }
     });
@@ -378,9 +380,11 @@ class _PackScorePanelState extends State<PackScorePanel> {
     final isOpen = _controller?.isOpen ?? false;
     return div(
       classes: ['pd-scoreboard', if (isOpen) 'pd-scoreboard-open'].join(' '),
-      attributes: {
-        'aria-hidden': isOpen ? 'false' : 'true',
-      },
+      // No aria-hidden here — on desktop the panel is always visible
+      // via CSS regardless of `isOpen`, so hiding it from assistive
+      // tech would misrepresent the state. Mobile visibility is
+      // controlled by the transform (offscreen elements aren't
+      // reached by pointer or focus anyway).
       [
         div(classes: 'pd-scoreboard-header', [
           h3(classes: 'pd-scoreboard-title', [.text(l10n.scoreboardTitle)]),

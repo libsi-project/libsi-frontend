@@ -270,13 +270,17 @@ class _PackDetailsLoadedState extends State<_PackDetailsLoaded> {
         ? basePath.substring(0, basePath.length - 1)
         : basePath;
     final target = '$origin$normalised/pack/${component.pack.id}#topic-$topicId';
-    // Fire and forget: the clipboard write returns a JS promise but
-    // we can't await it without pulling in `dart:js_interop`, which
-    // isn't available during Jaspr's CSS generation phase. If the
-    // browser blocks the write (insecure context / permissions), the
-    // toast still fires so the user gets visible feedback.
-    web.window.navigator.clipboard.writeText(target);
-    ToastScope.of(context).show(l10n.topicLinkCopied);
+    final toast = ToastScope.of(context);
+    try {
+      // TODO: once we can pull in `dart:js_interop` without breaking
+      // Jaspr's CSS-generation phase, await this JS promise and
+      // surface the actual success/failure instead of relying on
+      // synchronous exceptions.
+      web.window.navigator.clipboard.writeText(target);
+      toast.show(l10n.topicLinkCopied);
+    } catch (_) {
+      toast.show(l10n.topicLinkCopyFailed);
+    }
   }
 
   Future<void> _promptLogin(BuildContext context) {

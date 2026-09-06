@@ -83,7 +83,7 @@ class ApiPackRepository implements PackRepository {
       'Пакет собран из авторских вопросов, отыгранных на профильных турнирах. Ниже — темы и вопросы; ответ раскрывается по клику.';
 
   static List<Topic> _mockTopics(Pack base) {
-    final topicCount = base.topicsCount.clamp(1, 6);
+    final topicCount = base.topicsCount.clamp(1, 6).toInt();
     return List<Topic>.generate(topicCount, (i) {
       final index = i + 1;
       return Topic(
