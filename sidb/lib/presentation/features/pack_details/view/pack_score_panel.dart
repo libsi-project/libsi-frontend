@@ -27,15 +27,26 @@ class PackScorePanel extends StatefulComponent {
       border: Border.only(
         top: BorderSide.solid(width: NeoTokens.borderThick.px, color: AppTheme.borderColor),
       ),
-      transition: Transition('transform', duration: NeoTokens.motionSlowMs.ms),
+      // `visibility: hidden` removes the panel from the keyboard focus
+      // order even while its transform slides it back on. Delay the
+      // visibility flip until after the slide-out completes so the
+      // animation stays visible.
+      visibility: Visibility.hidden,
       transform: Transform.translate(y: 100.percent),
       flexDirection: FlexDirection.column,
       gap: Gap.all(1.rem),
       color: AppTheme.textColor,
       backgroundColor: AppTheme.canvasColor,
+      raw: {
+        'transition': 'transform ${NeoTokens.motionSlowMs}ms, visibility 0s linear ${NeoTokens.motionSlowMs}ms',
+      },
     ),
     css('.pd-scoreboard-open').styles(
+      visibility: Visibility.visible,
       transform: Transform.translate(y: 0.percent),
+      raw: {
+        'transition': 'transform ${NeoTokens.motionSlowMs}ms, visibility 0s linear 0s',
+      },
     ),
     css('.pd-scoreboard-header').styles(
       display: Display.flex,
@@ -277,9 +288,14 @@ class PackScorePanel extends StatefulComponent {
         padding: Padding.all(1.25.rem),
         border: NeoTokens.border(width: NeoTokens.borderThick),
         radius: NeoTokens.radius(NeoTokens.radiusNone),
+        // Desktop: panel is always in place and always in the tab order.
+        visibility: Visibility.visible,
         transform: Transform.translate(y: 0.percent),
         backgroundColor: AppTheme.surfaceColor,
-        raw: {'box-shadow': '6px 6px 0 0 var(--theme-border)'},
+        raw: {
+          'box-shadow': '6px 6px 0 0 var(--theme-border)',
+          'transition': 'none',
+        },
       ),
       css('.pd-scoreboard-close').styles(display: Display.none),
       css('.pd-scoreboard-picker').styles(display: Display.none),
