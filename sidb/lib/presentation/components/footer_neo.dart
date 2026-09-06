@@ -13,12 +13,7 @@ class FooterNeo extends StatelessComponent {
   static List<StyleRule> get styles => [
     css('.footer').styles(
       display: Display.flex,
-      padding: Padding.only(
-        left: NeoTokens.pagePaddingX.rem,
-        right: NeoTokens.pagePaddingX.rem,
-        top: 1.75.rem,
-        bottom: 1.5.rem,
-      ),
+      padding: Padding.only(top: 1.75.rem, bottom: 1.5.rem),
       margin: Margin.only(top: 2.5.rem),
       border: Border.only(
         top: BorderSide.solid(width: NeoTokens.borderThick.px, color: AppTheme.borderColor),
@@ -30,8 +25,12 @@ class FooterNeo extends StatelessComponent {
       fontFamily: const FontFamily(NeoTokens.fontBody),
       backgroundColor: AppTheme.theme.canvas,
     ),
-    css('.footer-row').styles(
+    css('.footer-inner').styles(
       display: Display.flex,
+      width: 100.percent,
+      maxWidth: NeoTokens.pageMaxWidth.px,
+      padding: Padding.symmetric(horizontal: NeoTokens.pagePaddingX.rem),
+      margin: Margin.symmetric(horizontal: Unit.auto),
       flexDirection: FlexDirection.column,
       justifyContent: JustifyContent.spaceBetween,
       alignItems: AlignItems.center,
@@ -73,19 +72,14 @@ class FooterNeo extends StatelessComponent {
     css('.footer-social:focus-visible').styles(
       raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
     ),
-    css('.footer-copyright').styles(
-      padding: Padding.only(
-        left: NeoTokens.pagePaddingX.rem,
-        right: NeoTokens.pagePaddingX.rem,
-        top: 1.rem,
-      ),
-      margin: Margin.only(
-        left: (-NeoTokens.pagePaddingX).rem,
-        right: (-NeoTokens.pagePaddingX).rem,
-      ),
+    css('.footer-copyright-wrap').styles(
+      padding: Padding.only(top: 1.rem),
       border: Border.only(
         top: BorderSide.solid(width: NeoTokens.borderThin.px, color: AppTheme.borderColor),
       ),
+    ),
+    css('.footer-copyright').styles(
+      margin: Margin.zero,
       color: AppTheme.textSecondary,
       textAlign: TextAlign.center,
       fontSize: 13.px,
@@ -95,7 +89,7 @@ class FooterNeo extends StatelessComponent {
       css('.footer').styles(
         gap: Gap.all(1.5.rem),
       ),
-      css('.footer-row').styles(
+      css('.footer-inner').styles(
         flexDirection: FlexDirection.row,
       ),
       css('.footer-nav').styles(
@@ -111,7 +105,7 @@ class FooterNeo extends StatelessComponent {
   Component build(BuildContext context) {
     final l10n = context.l10n;
     return footer(classes: 'footer', [
-      div(classes: 'footer-row', [
+      div(classes: 'footer-inner', [
         nav(classes: 'footer-nav', [
           NeoNavLink(label: l10n.aboutSite, to: '/about', square: true),
           NeoNavLink(label: l10n.faq, to: '/faq', square: true),
@@ -149,8 +143,10 @@ class FooterNeo extends StatelessComponent {
           ),
         ]),
       ]),
-      p(classes: 'footer-copyright', [
-        .text(l10n.copyright),
+      div(classes: 'footer-copyright-wrap', [
+        div(classes: 'footer-inner', [
+          p(classes: 'footer-copyright', [.text(l10n.copyright)]),
+        ]),
       ]),
     ]);
   }

@@ -32,23 +32,23 @@ class PackQuestionCard extends StatefulComponent {
       display: Display.flex,
       flexDirection: FlexDirection.row,
       alignItems: AlignItems.start,
-      gap: Gap.all(1.rem),
+      gap: Gap.all(0.75.rem),
     ),
     css('.pd-question-points').styles(
       display: Display.inlineFlex,
-      width: 56.px,
-      height: 56.px,
-      border: NeoTokens.border(width: NeoTokens.borderThick),
+      width: 40.px,
+      height: 40.px,
+      border: NeoTokens.border(width: NeoTokens.borderThin),
       radius: NeoTokens.radius(NeoTokens.radiusSm),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
       flex: Flex(shrink: 0),
       color: AppTheme.textColor,
       fontFamily: const FontFamily(NeoTokens.fontDisplay),
-      fontSize: 1.35.rem,
+      fontSize: 1.rem,
       fontWeight: FontWeight.w800,
       backgroundColor: AppTheme.accentColor,
-      raw: {'box-shadow': '3px 3px 0 0 var(--theme-border)'},
+      raw: {'box-shadow': '2px 2px 0 0 var(--theme-border)'},
     ),
     css('.pd-question-text').styles(
       margin: Margin.zero,
@@ -91,6 +91,16 @@ class PackQuestionCard extends StatefulComponent {
       textTransform: TextTransform.upperCase,
       letterSpacing: 0.05.em,
     ),
+    css.media(MediaQuery.screen(minWidth: 768.px), [
+      css('.pd-question-row').styles(gap: Gap.all(1.rem)),
+      css('.pd-question-points').styles(
+        width: 56.px,
+        height: 56.px,
+        border: NeoTokens.border(width: NeoTokens.borderThick),
+        fontSize: 1.35.rem,
+        raw: {'box-shadow': '3px 3px 0 0 var(--theme-border)'},
+      ),
+    ]),
   ];
 
   @override

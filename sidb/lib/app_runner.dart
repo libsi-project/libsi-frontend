@@ -18,7 +18,6 @@ import 'package:sidb/presentation/theme/theme_cubit.dart';
 
 import 'package:sidb/presentation/components/footer_neo.dart';
 import 'package:sidb/presentation/components/top_bar_neo.dart';
-import 'package:sidb/presentation/theme/neo_tokens.dart';
 
 // The main component of your application.
 class AppRunner extends StatelessComponent {
@@ -125,8 +124,6 @@ class _AppShell extends StatelessComponent {
               display: Display.flex,
               width: 100.percent,
               height: 100.percent,
-              maxWidth: NeoTokens.pageMaxWidth.px,
-              padding: Padding.symmetric(horizontal: 20.px),
               overflow: Overflow.only(y: Overflow.auto),
               flexDirection: FlexDirection.column,
             ),

@@ -15,6 +15,7 @@ import 'package:sidb/presentation/features/pack_details/bloc/pack_details_bloc.d
 import 'package:sidb/presentation/features/pack_details/view/pack_action_bar.dart';
 import 'package:sidb/presentation/features/pack_details/view/pack_question_card.dart';
 import 'package:sidb/presentation/features/pack_details/view/pack_score_panel.dart';
+import 'package:sidb/presentation/features/pack_details/view/pack_scoreboard_scope.dart';
 import 'package:sidb/presentation/features/pack_details/view/pack_topic_sidebar.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
@@ -28,9 +29,24 @@ class PackDetailsPage extends StatelessComponent {
   static List<StyleRule> get styles => [
     css('.pd').styles(
       display: Display.flex,
-      padding: Padding.symmetric(vertical: 2.5.rem),
+      width: 100.percent,
+      maxWidth: 1600.px,
+      padding: Padding.symmetric(horizontal: 1.25.rem, vertical: 2.5.rem),
+      margin: Margin.symmetric(horizontal: Unit.auto),
       flexDirection: FlexDirection.column,
       gap: Gap.all(2.rem),
+    ),
+    css('.pd-layout').styles(
+      display: Display.flex,
+      flexDirection: FlexDirection.column,
+      gap: Gap.all(2.rem),
+    ),
+    css('.pd-main').styles(
+      display: Display.flex,
+      minWidth: 0.px,
+      flexDirection: FlexDirection.column,
+      gap: Gap.all(2.rem),
+      flex: Flex(grow: 1),
     ),
     css('.pd-header').styles(
       display: Display.flex,
@@ -85,18 +101,6 @@ class PackDetailsPage extends StatelessComponent {
       backgroundColor: AppTheme.canvasColor,
       raw: {'box-shadow': '4px 4px 0 0 var(--theme-border)'},
     ),
-    css('.pd-layout').styles(
-      display: Display.flex,
-      flexDirection: FlexDirection.column,
-      gap: Gap.all(2.rem),
-    ),
-    css('.pd-main').styles(
-      display: Display.flex,
-      minWidth: 0.px,
-      flexDirection: FlexDirection.column,
-      gap: Gap.all(2.rem),
-      flex: Flex(grow: 1),
-    ),
     css('.pd-topic').styles(
       padding: Padding.all(1.5.rem),
       raw: {'scroll-margin-top': '100px'},
@@ -137,12 +141,21 @@ class PackDetailsPage extends StatelessComponent {
       fontWeight: FontWeight.w700,
     ),
     css.media(MediaQuery.screen(minWidth: 1024.px), [
+      css('.pd').styles(
+        padding: Padding.symmetric(horizontal: 2.rem, vertical: 2.5.rem),
+      ),
       css('.pd-layout').styles(
-        flexDirection: FlexDirection.row,
+        display: Display.grid,
         alignItems: AlignItems.start,
+        gridTemplate: GridTemplate(
+          columns: GridTracks([
+            GridTrack(TrackSize(240.px)),
+            GridTrack(TrackSize.minmax(TrackSize(0.px), .fr(1))),
+            GridTrack(TrackSize(320.px)),
+          ]),
+        ),
         gap: Gap.all(2.rem),
       ),
-      css('.pd-sidebar').styles(width: 240.px),
     ]),
   ];
 
@@ -166,7 +179,7 @@ class _PackDetailsView extends StatelessComponent {
         PackDetailsLoadingState() => _state(l10n.loadingPacks),
         PackDetailsErrorState(:final error) => _state('${l10n.packsLoadError}: $error'),
         PackDetailsNotFoundState() => const NotFoundPage(),
-        PackDetailsLoadedState(:final pack) => _PackDetailsLoaded(pack: pack),
+        PackDetailsLoadedState(:final pack) => ScoreboardHost(child: _PackDetailsLoaded(pack: pack)),
       },
     );
   }
@@ -174,59 +187,45 @@ class _PackDetailsView extends StatelessComponent {
   static Component _state(String text) => p(classes: 'pd-state', [.text(text)]);
 }
 
-class _PackDetailsLoaded extends StatefulComponent {
+class _PackDetailsLoaded extends StatelessComponent {
   const _PackDetailsLoaded({required this.pack});
 
   final DetailedPackage pack;
 
   @override
-  State<_PackDetailsLoaded> createState() => _PackDetailsLoadedState();
-}
-
-class _PackDetailsLoadedState extends State<_PackDetailsLoaded> {
-  bool _scoreOpen = false;
-
-  void _toggleScoreboard() => setState(() => _scoreOpen = !_scoreOpen);
-  void _closeScoreboard() => setState(() => _scoreOpen = false);
-
-  @override
   Component build(BuildContext context) {
-    final pack = component.pack;
     final l10n = context.l10n;
-    return Component.fragment([
-      div(classes: 'pd', [
-        section(classes: 'pd-header', [
-          h1(classes: 'pd-title', [.text(pack.title)]),
-          div(classes: 'pd-badges', [
-            NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic),
-            for (final audience in pack.audiences)
-              NeoBadge(label: audience.label(l10n), tone: _tone(audience)),
+    return div(classes: 'pd', [
+      div(classes: 'pd-layout', [
+        PackTopicSidebar(topics: pack.topics),
+        div(classes: 'pd-main', [
+          section(classes: 'pd-header', [
+            h1(classes: 'pd-title', [.text(pack.title)]),
+            div(classes: 'pd-badges', [
+              NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic),
+              for (final audience in pack.audiences)
+                NeoBadge(label: audience.label(l10n), tone: _tone(audience)),
+            ]),
+            div(classes: 'pd-meta', [
+              span([.text(l10n.topicsCount(n: pack.topicsCount))]),
+              span([.text('${l10n.added.toLowerCase()} · ${_shortDate(pack.publishDate)}')]),
+            ]),
+            if (pack.authors.isNotEmpty)
+              p(
+                classes: 'pd-authors',
+                [.text(pack.authors.map((author) => author.name).join(' · '))],
+              ),
           ]),
-          div(classes: 'pd-meta', [
-            span([.text(l10n.topicsCount(n: pack.topicsCount))]),
-            span([.text('${l10n.added.toLowerCase()} · ${_shortDate(pack.publishDate)}')]),
-          ]),
-          if (pack.authors.isNotEmpty)
-            p(
-              classes: 'pd-authors',
-              [.text(pack.authors.map((author) => author.name).join(' · '))],
-            ),
+          PackActionBar(
+            likesCount: pack.likesCount,
+            dislikesCount: pack.dislikesCount,
+          ),
+          p(classes: 'pd-description', [.text(pack.description)]),
+          for (final topic in pack.topics) _topic(topic),
         ]),
-        PackActionBar(
-          likesCount: pack.likesCount,
-          dislikesCount: pack.dislikesCount,
-          isScoreboardOpen: _scoreOpen,
-          onToggleScoreboard: _toggleScoreboard,
-        ),
-        p(classes: 'pd-description', [.text(pack.description)]),
-        div(classes: 'pd-layout', [
-          PackTopicSidebar(topics: pack.topics),
-          div(classes: 'pd-main', [
-            for (final topic in pack.topics) _topic(topic),
-          ]),
-        ]),
+        const PackScorePanel(),
       ]),
-      PackScorePanel(isOpen: _scoreOpen, onClose: _closeScoreboard),
+      const PackScoreboardTrigger(),
     ]);
   }
 

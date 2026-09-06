@@ -8,19 +8,18 @@ import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
 /// Row of pack-level actions rendered under the header.
+///
+/// Like / dislike / bookmark are placeholders: the user isn't
+/// authenticated yet, so every click opens a modal prompting login.
 class PackActionBar extends StatelessComponent {
   const PackActionBar({
     required this.likesCount,
     required this.dislikesCount,
-    required this.isScoreboardOpen,
-    required this.onToggleScoreboard,
     super.key,
   });
 
   final int likesCount;
   final int dislikesCount;
-  final bool isScoreboardOpen;
-  final VoidCallback onToggleScoreboard;
 
   @css
   static List<StyleRule> get styles => [
@@ -34,9 +33,6 @@ class PackActionBar extends StatelessComponent {
       gap: Gap.all(0.75.rem),
       backgroundColor: AppTheme.surfaceColor,
       raw: {'box-shadow': '6px 6px 0 0 var(--theme-border)'},
-    ),
-    css('.pd-action-spacer').styles(
-      flex: Flex(grow: 1),
     ),
     css('.pd-action-btn .neo-button-icon').styles(
       display: Display.inlineFlex,
@@ -118,17 +114,6 @@ class PackActionBar extends StatelessComponent {
               ),
             ]),
             span([.text(l10n.packBookmark)]),
-          ],
-        ),
-        div(classes: 'pd-action-spacer', []),
-        NeoButton(
-          variant: isScoreboardOpen ? NeoButtonVariant.accent : NeoButtonVariant.primary,
-          size: NeoButtonSize.md,
-          onClick: onToggleScoreboard,
-          classes: 'pd-action-btn',
-          attributes: {'aria-pressed': isScoreboardOpen ? 'true' : 'false'},
-          children: [
-            span([.text(isScoreboardOpen ? l10n.packCloseScoreboard : l10n.packOpenScoreboard)]),
           ],
         ),
       ],

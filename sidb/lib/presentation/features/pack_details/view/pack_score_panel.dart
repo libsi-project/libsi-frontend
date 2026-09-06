@@ -3,19 +3,18 @@ import 'package:jaspr/jaspr.dart';
 import 'package:universal_web/web.dart' as web;
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/icon.dart';
+import 'package:sidb/presentation/features/pack_details/view/pack_scoreboard_scope.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
 /// Floating scoreboard rendered on top of the pack details page.
+///
+/// Sits as a persistent right-hand column on desktop (≥1024px) and
+/// as a slide-up bottom sheet on mobile. State (open/closed) comes
+/// from a [ScoreboardScope] so the trigger button and the panel can
+/// live at different points in the tree.
 class PackScorePanel extends StatefulComponent {
-  const PackScorePanel({
-    required this.isOpen,
-    required this.onClose,
-    super.key,
-  });
-
-  final bool isOpen;
-  final VoidCallback onClose;
+  const PackScorePanel({super.key});
 
   @css
   static List<StyleRule> get styles => [
@@ -212,22 +211,27 @@ class PackScorePanel extends StatefulComponent {
     css('.pd-scoreboard-add:focus-visible').styles(
       raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
     ),
-    css.media(MediaQuery.screen(minWidth: 768.px), [
+    css.media(MediaQuery.screen(minWidth: 1024.px), [
       css('.pd-scoreboard').styles(
-        position: Position.fixed(top: 100.px, bottom: 1.5.rem, right: 1.5.rem),
-        maxWidth: 30.rem,
+        position: Position.sticky(top: 100.px),
+        zIndex: ZIndex(1),
         maxHeight: 100.percent,
+        padding: Padding.all(1.25.rem),
         border: NeoTokens.border(width: NeoTokens.borderThick),
-        radius: NeoTokens.radius(NeoTokens.radiusLg),
-        transform: Transform.translate(x: 120.percent),
-        raw: {'box-shadow': '8px 8px 0 0 var(--theme-border)'},
+        radius: NeoTokens.radius(NeoTokens.radiusMd),
+        transform: Transform.translate(y: 0.percent),
+        backgroundColor: AppTheme.surfaceColor,
+        raw: {'box-shadow': '6px 6px 0 0 var(--theme-border)'},
       ),
-      css('.pd-scoreboard-open').styles(
-        transform: Transform.translate(x: 0.percent),
-      ),
+      css('.pd-scoreboard-close').styles(display: Display.none),
       css('.pd-scoreboard-players').styles(
         overflow: Overflow.only(y: Overflow.auto),
+        flexDirection: FlexDirection.column,
         flex: Flex(grow: 1),
+      ),
+      css('.pd-player').styles(
+        width: 100.percent,
+        minWidth: 0.px,
       ),
     ]),
   ];
@@ -238,6 +242,28 @@ class PackScorePanel extends StatefulComponent {
 
 class _PackScorePanelState extends State<PackScorePanel> {
   final List<_Player> _players = [_Player()];
+  ScoreboardController? _controller;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final controller = ScoreboardScope.of(context);
+    if (controller != _controller) {
+      _controller?.removeListener(_onControllerChanged);
+      _controller = controller..addListener(_onControllerChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.removeListener(_onControllerChanged);
+    super.dispose();
+  }
+
+  void _onControllerChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
 
   void _addPlayer() => setState(() => _players.add(_Player()));
 
@@ -261,14 +287,11 @@ class _PackScorePanelState extends State<PackScorePanel> {
   @override
   Component build(BuildContext context) {
     final l10n = context.l10n;
+    final isOpen = _controller?.isOpen ?? false;
     return div(
-      classes: [
-        'pd-scoreboard',
-        if (component.isOpen) 'pd-scoreboard-open',
-      ].join(' '),
+      classes: ['pd-scoreboard', if (isOpen) 'pd-scoreboard-open'].join(' '),
       attributes: {
-        'aria-hidden': component.isOpen ? 'false' : 'true',
-        if (!component.isOpen) 'inert': '',
+        'aria-hidden': isOpen ? 'false' : 'true',
       },
       [
         div(classes: 'pd-scoreboard-header', [
@@ -277,7 +300,7 @@ class _PackScorePanelState extends State<PackScorePanel> {
             classes: 'pd-scoreboard-close',
             type: ButtonType.button,
             attributes: {'aria-label': l10n.packCloseScoreboard},
-            onClick: component.onClose,
+            onClick: () => _controller?.close(),
             [
               const AppIcon(IconPaths.close, width: 18, height: 18, strokeWidth: '3'),
             ],
@@ -363,6 +386,89 @@ class _PackScorePanelState extends State<PackScorePanel> {
           ),
         ]),
       ],
+    );
+  }
+}
+
+/// Mobile-only floating button that opens the scoreboard.
+class PackScoreboardTrigger extends StatefulComponent {
+  const PackScoreboardTrigger({super.key});
+
+  @css
+  static List<StyleRule> get styles => [
+    css('.pd-score-trigger').styles(
+      display: Display.inlineFlex,
+      position: Position.fixed(bottom: 1.5.rem, right: 5.5.rem),
+      zIndex: ZIndex(90),
+      width: 56.px,
+      height: 56.px,
+      padding: Padding.zero,
+      border: NeoTokens.border(width: NeoTokens.borderThick),
+      radius: NeoTokens.radius(NeoTokens.radiusPill),
+      cursor: Cursor.pointer,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+      color: AppTheme.onPrimaryColor,
+      fontFamily: const FontFamily(NeoTokens.fontDisplay),
+      fontSize: 1.rem,
+      fontWeight: FontWeight.w800,
+      backgroundColor: AppTheme.primaryColor,
+      raw: {'box-shadow': '5px 5px 0 0 var(--theme-border)', 'outline': 'none'},
+    ),
+    css('.pd-score-trigger:hover').styles(
+      transform: Transform.translate(x: 2.px, y: 2.px),
+      raw: {'box-shadow': '3px 3px 0 0 var(--theme-border)'},
+    ),
+    css('.pd-score-trigger:focus-visible').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '4px'},
+    ),
+    css.media(MediaQuery.screen(minWidth: 1024.px), [
+      css('.pd-score-trigger').styles(display: Display.none),
+    ]),
+  ];
+
+  @override
+  State<PackScoreboardTrigger> createState() => _PackScoreboardTriggerState();
+}
+
+class _PackScoreboardTriggerState extends State<PackScoreboardTrigger> {
+  ScoreboardController? _controller;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final controller = ScoreboardScope.of(context);
+    if (controller != _controller) {
+      _controller?.removeListener(_onChanged);
+      _controller = controller..addListener(_onChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.removeListener(_onChanged);
+    super.dispose();
+  }
+
+  void _onChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  Component build(BuildContext context) {
+    final l10n = context.l10n;
+    final isOpen = _controller?.isOpen ?? false;
+    return button(
+      classes: 'pd-score-trigger',
+      type: ButtonType.button,
+      attributes: {
+        'aria-label': isOpen ? l10n.packCloseScoreboard : l10n.packOpenScoreboard,
+        'aria-pressed': isOpen ? 'true' : 'false',
+      },
+      onClick: () => _controller?.toggle(),
+      [.text('#')],
     );
   }
 }
