@@ -3,6 +3,7 @@ import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_bloc/jaspr_bloc.dart';
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/package_card.dart';
+import 'package:sidb/presentation/components/page_container.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
@@ -88,11 +89,11 @@ class PacksPage extends StatelessComponent {
 }
 
 Component _pageShell(List<Component> children) {
-  return div(
+  return PageContainer(
     styles: Styles(
-      padding: Padding.symmetric(vertical: 3.rem),
+      padding: Padding.symmetric(horizontal: 20.px, vertical: 3.rem),
     ),
-    children,
+    children: children,
   );
 }
 

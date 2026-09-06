@@ -4,6 +4,7 @@ import 'package:jaspr_bloc/jaspr_bloc.dart';
 import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/package_card.dart';
+import 'package:sidb/presentation/components/page_container.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
@@ -98,14 +99,14 @@ class SearchPage extends StatelessComponent {
 }
 
 Component _shell(List<Component> children) {
-  return div(
+  return PageContainer(
     styles: Styles(
       display: Display.flex,
-      padding: Padding.symmetric(vertical: 3.rem),
+      padding: Padding.symmetric(horizontal: 20.px, vertical: 3.rem),
       flexDirection: FlexDirection.column,
       gap: Gap.all(1.5.rem),
     ),
-    children,
+    children: children,
   );
 }
 

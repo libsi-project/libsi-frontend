@@ -177,6 +177,99 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Иное'
 	String get gameTypeOther => 'Иное';
+
+	/// ru: 'Показать ответ'
+	String get showAnswer => 'Показать ответ';
+
+	/// ru: 'Скрыть ответ'
+	String get hideAnswer => 'Скрыть ответ';
+
+	/// ru: 'Нравится'
+	String get packLike => 'Нравится';
+
+	/// ru: 'Не нравится'
+	String get packDislike => 'Не нравится';
+
+	/// ru: 'В избранное'
+	String get packBookmark => 'В избранное';
+
+	/// ru: 'Информация'
+	String get packInfo => 'Информация';
+
+	/// ru: 'Открыть табло'
+	String get packOpenScoreboard => 'Открыть табло';
+
+	/// ru: 'Закрыть табло'
+	String get packCloseScoreboard => 'Закрыть табло';
+
+	/// ru: 'Нужен вход'
+	String get loginRequiredTitle => 'Нужен вход';
+
+	/// ru: 'Чтобы поставить оценку или добавить в избранное, войдите в аккаунт.'
+	String get loginRequiredMessage => 'Чтобы поставить оценку или добавить в избранное, войдите в аккаунт.';
+
+	/// ru: 'Войти'
+	String get loginNow => 'Войти';
+
+	/// ru: 'Позже'
+	String get loginLater => 'Позже';
+
+	/// ru: 'Темы'
+	String get topicsHeading => 'Темы';
+
+	/// ru: 'Оглавление'
+	String get openContents => 'Оглавление';
+
+	/// ru: 'Закрыть оглавление'
+	String get closeContents => 'Закрыть оглавление';
+
+	/// ru: 'Табло счёта'
+	String get scoreboardTitle => 'Табло счёта';
+
+	/// ru: 'Добавить игрока'
+	String get scoreboardAddPlayer => 'Добавить игрока';
+
+	/// ru: 'Удалить игрока'
+	String get scoreboardRemovePlayer => 'Удалить игрока';
+
+	/// ru: 'Игрок'
+	String get scoreboardPlayerNamePlaceholder => 'Игрок';
+
+	/// ru: 'Прибавить'
+	String get scoreboardIncrease => 'Прибавить';
+
+	/// ru: 'Отнять'
+	String get scoreboardDecrease => 'Отнять';
+
+	/// ru: 'Номинал'
+	String get scoreboardNominal => 'Номинал';
+
+	/// ru: 'Ответ'
+	String get questionAnswer => 'Ответ';
+
+	/// ru: 'Зачёт'
+	String get questionAdditionalAnswers => 'Зачёт';
+
+	/// ru: 'Незачёт'
+	String get questionWrongAnswers => 'Незачёт';
+
+	/// ru: 'Комментарий'
+	String get questionComment => 'Комментарий';
+
+	/// ru: 'Источник'
+	String get questionSource => 'Источник';
+
+	/// ru: 'Скопировать ссылку на тему'
+	String get topicShare => 'Скопировать ссылку на тему';
+
+	/// ru: 'Добавить тему в избранное'
+	String get topicBookmark => 'Добавить тему в избранное';
+
+	/// ru: 'Ссылка на тему скопирована'
+	String get topicLinkCopied => 'Ссылка на тему скопирована';
+
+	/// ru: 'Не получилось скопировать ссылку'
+	String get topicLinkCopyFailed => 'Не получилось скопировать ссылку';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -233,6 +326,37 @@ extension on Translations {
 			'gameTypeIsi' => 'ИСИ',
 			'gameTypeKsi' => 'КСИ',
 			'gameTypeOther' => 'Иное',
+			'showAnswer' => 'Показать ответ',
+			'hideAnswer' => 'Скрыть ответ',
+			'packLike' => 'Нравится',
+			'packDislike' => 'Не нравится',
+			'packBookmark' => 'В избранное',
+			'packInfo' => 'Информация',
+			'packOpenScoreboard' => 'Открыть табло',
+			'packCloseScoreboard' => 'Закрыть табло',
+			'loginRequiredTitle' => 'Нужен вход',
+			'loginRequiredMessage' => 'Чтобы поставить оценку или добавить в избранное, войдите в аккаунт.',
+			'loginNow' => 'Войти',
+			'loginLater' => 'Позже',
+			'topicsHeading' => 'Темы',
+			'openContents' => 'Оглавление',
+			'closeContents' => 'Закрыть оглавление',
+			'scoreboardTitle' => 'Табло счёта',
+			'scoreboardAddPlayer' => 'Добавить игрока',
+			'scoreboardRemovePlayer' => 'Удалить игрока',
+			'scoreboardPlayerNamePlaceholder' => 'Игрок',
+			'scoreboardIncrease' => 'Прибавить',
+			'scoreboardDecrease' => 'Отнять',
+			'scoreboardNominal' => 'Номинал',
+			'questionAnswer' => 'Ответ',
+			'questionAdditionalAnswers' => 'Зачёт',
+			'questionWrongAnswers' => 'Незачёт',
+			'questionComment' => 'Комментарий',
+			'questionSource' => 'Источник',
+			'topicShare' => 'Скопировать ссылку на тему',
+			'topicBookmark' => 'Добавить тему в избранное',
+			'topicLinkCopied' => 'Ссылка на тему скопирована',
+			'topicLinkCopyFailed' => 'Не получилось скопировать ссылку',
 			_ => null,
 		};
 	}

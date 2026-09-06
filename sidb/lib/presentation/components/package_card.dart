@@ -1,6 +1,8 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
+import 'package:sidb/config/localization/l10n/l10n.g.dart';
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_badge.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
@@ -18,6 +20,15 @@ class PackageCard extends StatelessComponent {
 
   @css
   static List<StyleRule> get styles => [
+    css('.pc-link').styles(
+      display: Display.block,
+      color: AppTheme.textColor,
+      textDecoration: TextDecoration.none,
+    ),
+    css('.pc-body').styles(
+      display: Display.flex,
+      flexDirection: FlexDirection.column,
+    ),
     css('.pc').styles(
       width: 100.percent,
       minWidth: 220.px,
@@ -120,72 +131,93 @@ class PackageCard extends StatelessComponent {
   Component build(BuildContext context) {
     final l10n = context.l10n;
 
+    // Keep the reaction row OUTSIDE the router.Link — nesting <button>
+    // inside an <a> is invalid HTML and lets reaction clicks bubble
+    // into a navigation. Only the metadata block is anchor-wrapped.
     return NeoCard(
       classes: 'pc',
       children: [
-        h3(classes: 'pc-title', [.text(pack.title)]),
-        div(classes: 'pc-badges', [
-          NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
-          for (final audience in pack.audiences)
-            NeoBadge(
-              label: audience.label(l10n),
-              tone: _audienceTone(audience),
-              classes: 'pc-badge',
-            ),
-        ]),
-        div(classes: 'pc-meta', [
-          span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
-          span([.text(_monthYear(pack.publishDate))]),
-        ]),
-        p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
-        p(classes: 'pc-authors', [.text(pack.authors.map((author) => author.name).join(' · '))]),
-        div(classes: 'pc-reactions', [
-          div(classes: 'pc-reactions-group', [
-            NeoButton(
-              variant: NeoButtonVariant.ghost,
-              classes: 'pc-reaction-btn',
-              children: [
-                AppIcon(
-                  IconPaths.thumbUp,
-                  width: 22,
-                  height: 22,
-                  filled: true,
-                  fillColor: AppTheme.theme.textLink,
-                ),
-                span([.text('${pack.likesCount}')]),
-              ],
-            ),
-            NeoButton(
-              variant: NeoButtonVariant.ghost,
-              classes: 'pc-reaction-btn',
-              children: [
-                AppIcon(
-                  IconPaths.thumbDown,
-                  width: 22,
-                  height: 22,
-                  filled: true,
-                  fillColor: AppTheme.theme.textLink,
-                ),
-                span([.text('${pack.dislikesCount}')]),
-              ],
-            ),
-          ]),
-          NeoButton(
-            variant: NeoButtonVariant.ghost,
-            classes: 'pc-bookmark-btn',
-            children: [
-              AppIcon(
-                IconPaths.bookmark,
-                width: 18,
-                height: 22,
-                filled: true,
-                fillColor: AppTheme.theme.textLink,
-              ),
-            ],
+        router.Link(
+          to: '/pack/${pack.id}',
+          classes: 'pc-link',
+          styles: Styles(
+            textDecoration: TextDecoration.none,
+            raw: {'color': 'inherit'},
           ),
-        ]),
+          child: div(classes: 'pc-body', _cardBody(l10n)),
+        ),
+        _reactions(),
       ],
     );
+  }
+
+  List<Component> _cardBody(Translations l10n) {
+    return [
+      h3(classes: 'pc-title', [.text(pack.title)]),
+      div(classes: 'pc-badges', [
+        NeoBadge(label: pack.gameType.label(l10n), tone: NeoBadgeTone.thematic, classes: 'pc-badge'),
+        for (final audience in pack.audiences)
+          NeoBadge(
+            label: audience.label(l10n),
+            tone: _audienceTone(audience),
+            classes: 'pc-badge',
+          ),
+      ]),
+      div(classes: 'pc-meta', [
+        span([.text(l10n.topicsCount(n: pack.topicsCount).toLowerCase())]),
+        span([.text(_monthYear(pack.publishDate))]),
+      ]),
+      p(classes: 'pc-added', [.text(l10n.addedYesterday)]),
+      p(classes: 'pc-authors', [.text(pack.authors.map((author) => author.name).join(' · '))]),
+    ];
+  }
+
+  Component _reactions() {
+    return div(classes: 'pc-reactions', [
+      div(classes: 'pc-reactions-group', [
+        NeoButton(
+          variant: NeoButtonVariant.ghost,
+          classes: 'pc-reaction-btn',
+          children: [
+            AppIcon(
+              IconPaths.thumbUp,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
+            span([.text('${pack.likesCount}')]),
+          ],
+        ),
+        NeoButton(
+          variant: NeoButtonVariant.ghost,
+          classes: 'pc-reaction-btn',
+          children: [
+            AppIcon(
+              IconPaths.thumbDown,
+              width: 22,
+              height: 22,
+              filled: true,
+              fillColor: AppTheme.theme.textLink,
+            ),
+            span([.text('${pack.dislikesCount}')]),
+          ],
+        ),
+      ]),
+      NeoButton(
+        variant: NeoButtonVariant.ghost,
+        classes: 'pc-bookmark-btn',
+        children: [
+          AppIcon(
+            IconPaths.bookmark,
+            width: 22,
+            height: 22,
+            filled: true,
+            fillColor: AppTheme.theme.textLink,
+          ),
+        ],
+      ),
+    ]);
   }
 
   static NeoBadgeTone _audienceTone(TargetAudience audience) => switch (audience) {

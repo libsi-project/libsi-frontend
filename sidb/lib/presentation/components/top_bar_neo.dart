@@ -38,20 +38,25 @@ class TopBarNeo extends StatelessComponent {
   @css
   static List<StyleRule> get stylesheets => [
     css('.top-bar-neo').styles(
-      display: Display.flex,
+      display: Display.block,
       position: Position.sticky(top: 0.px),
       zIndex: ZIndex(100),
-      padding: Padding.symmetric(horizontal: 20.px, vertical: 20.px),
-      margin: Margin.symmetric(horizontal: (-20).px),
       border: Border.only(
         bottom: BorderSide.solid(width: 1.px, color: AppTheme.borderColor),
       ),
-      justifyContent: JustifyContent.spaceBetween,
-      alignItems: AlignItems.center,
-      gap: Gap.all(1.rem),
       flex: Flex(shrink: 0),
       backgroundColor: AppTheme.canvasColor,
       raw: {'box-shadow': 'none'},
+    ),
+    css('.top-bar-inner').styles(
+      display: Display.flex,
+      width: 100.percent,
+      maxWidth: NeoTokens.pageMaxWidth.px,
+      padding: Padding.symmetric(horizontal: 20.px, vertical: 20.px),
+      margin: Margin.symmetric(horizontal: Unit.auto),
+      justifyContent: JustifyContent.spaceBetween,
+      alignItems: AlignItems.center,
+      gap: Gap.all(1.rem),
     ),
     css('.top-bar-neo-nav').styles(
       display: Display.none,
@@ -154,8 +159,6 @@ class TopBarNeo extends StatelessComponent {
     ),
     css.media(MediaQuery.screen(minWidth: 768.px), [
       css('.top-bar-neo').styles(
-        padding: Padding.symmetric(horizontal: 0.px, vertical: 20.px),
-        margin: Margin.zero,
         border: Border.only(
           bottom: BorderSide.solid(width: NeoTokens.borderThin.px, color: AppTheme.borderColor),
         ),
@@ -179,9 +182,8 @@ class TopBarNeo extends StatelessComponent {
     final activePath = _normalizePath(location);
     final items = _items(context, activePath);
 
-    return header(
-      classes: 'top-bar-neo',
-      [
+    return header(classes: 'top-bar-neo', [
+      div(classes: 'top-bar-inner', [
         _TopBarDrawerButton(
           location: location,
           items: items,
@@ -212,8 +214,8 @@ class TopBarNeo extends StatelessComponent {
             const ThemeToggle(),
           ],
         ),
-      ],
-    );
+      ]),
+    ]);
   }
 
   List<_NavItem> _items(BuildContext context, String activePath) {

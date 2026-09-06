@@ -4,6 +4,7 @@ import 'package:jaspr_router/jaspr_router.dart' as router;
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_button.dart';
+import 'package:sidb/presentation/components/page_container.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
@@ -127,11 +128,12 @@ class NotFoundPage extends StatelessComponent {
   Component build(BuildContext context) {
     final l10n = context.l10n;
 
-    return section(
-      classes: 'not-found',
-      attributes: const {'aria-labelledby': 'not-found-heading'},
-      [
-        div(classes: 'not-found-hero', [
+    return PageContainer(children: [
+      section(
+        classes: 'not-found',
+        attributes: const {'aria-labelledby': 'not-found-heading'},
+        [
+          div(classes: 'not-found-hero', [
           span(
             classes: 'not-found-stamp',
             [.text(l10n.notFoundBadge)],
@@ -185,7 +187,8 @@ class NotFoundPage extends StatelessComponent {
             ],
           ),
         ]),
-      ],
-    );
+        ],
+      ),
+    ]);
   }
 }

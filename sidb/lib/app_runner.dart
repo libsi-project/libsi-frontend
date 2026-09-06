@@ -5,19 +5,20 @@ import 'package:jaspr_bloc/jaspr_bloc.dart';
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/core/di/di.dart';
 import 'package:sidb/presentation/components/app_dialog.dart';
+import 'package:sidb/presentation/components/neo_toast.dart';
 import 'package:sidb/presentation/features/about/view/about.dart';
 import 'package:sidb/presentation/features/developer_faq/view/developer_faq_page.dart';
 import 'package:sidb/presentation/features/not_found/view/not_found_page.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/features/pack/usecase/pack_usecase.dart';
 import 'package:sidb/presentation/features/pack/view/packs_page.dart';
+import 'package:sidb/presentation/features/pack_details/view/pack_details_page.dart';
 import 'package:sidb/presentation/features/placeholder/view/placeholder_page.dart';
 import 'package:sidb/presentation/features/search/view/search_page.dart';
 import 'package:sidb/presentation/theme/theme_cubit.dart';
 
 import 'package:sidb/presentation/components/footer_neo.dart';
 import 'package:sidb/presentation/components/top_bar_neo.dart';
-import 'package:sidb/presentation/theme/neo_tokens.dart';
 
 // The main component of your application.
 class AppRunner extends StatelessComponent {
@@ -27,7 +28,8 @@ class AppRunner extends StatelessComponent {
   Component build(BuildContext context) {
     return _BlocProviders(
       child: AppDialogHost(
-        child: router.Router(
+        child: ToastHost(
+          child: router.Router(
           errorBuilder: (context, state) => _AppShell(
             location: state.location,
             child: NotFoundPage(),
@@ -41,6 +43,11 @@ class AppRunner extends StatelessComponent {
               ),
               routes: [
                 router.Route(path: '/', title: 'Home', builder: (context, state) => const PacksPage()),
+                router.Route(
+                  path: '/pack/:id',
+                  title: 'Pack',
+                  builder: (context, state) => PackDetailsPage(id: state.params['id'] ?? ''),
+                ),
                 router.Route(path: '/about', title: 'About', builder: (context, state) => const About()),
                 router.Route(
                   path: '/developer-faq',
@@ -85,6 +92,7 @@ class AppRunner extends StatelessComponent {
               ],
             ),
           ],
+          ),
         ),
       ),
     );
@@ -119,8 +127,6 @@ class _AppShell extends StatelessComponent {
               display: Display.flex,
               width: 100.percent,
               height: 100.percent,
-              maxWidth: NeoTokens.pageMaxWidth.px,
-              padding: Padding.symmetric(horizontal: 20.px),
               overflow: Overflow.only(y: Overflow.auto),
               flexDirection: FlexDirection.column,
             ),

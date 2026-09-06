@@ -2,6 +2,7 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/presentation/components/neo_card.dart';
+import 'package:sidb/presentation/components/page_container.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
 
@@ -12,11 +13,16 @@ class About extends StatelessComponent {
   Component build(BuildContext context) {
     final l10n = context.l10n;
 
-    return section(
+    return PageContainer(
       styles: Styles(
-        padding: NeoTokens.pagePadding(top: 3, bottom: 3),
+        padding: Padding.only(
+          left: NeoTokens.pagePaddingX.rem,
+          right: NeoTokens.pagePaddingX.rem,
+          top: 3.rem,
+          bottom: 3.rem,
+        ),
       ),
-      [
+      children: [
         NeoCard(
           interactive: false,
           styles: Styles(maxWidth: 720.px),

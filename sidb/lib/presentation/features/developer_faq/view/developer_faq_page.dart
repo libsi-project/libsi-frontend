@@ -12,6 +12,7 @@ import 'package:sidb/presentation/components/neo_card.dart';
 import 'package:sidb/presentation/components/neo_input.dart';
 import 'package:sidb/presentation/components/neo_nav_link.dart';
 import 'package:sidb/presentation/components/neo_surface.dart';
+import 'package:sidb/presentation/components/page_container.dart';
 import 'package:sidb/presentation/components/switch_toggle.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
@@ -88,7 +89,8 @@ class DeveloperFaqPage extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return main_(classes: 'dev-faq', [
+    return PageContainer(children: [
+      main_(classes: 'dev-faq', [
       div(classes: 'dev-faq-header', [
         h1(
           styles: NeoStyles.text(
@@ -445,6 +447,7 @@ NeoCard(
           ),
         ],
       ),
+      ]),
     ]);
   }
 
