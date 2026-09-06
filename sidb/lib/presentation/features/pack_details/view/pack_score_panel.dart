@@ -56,7 +56,7 @@ class PackScorePanel extends StatefulComponent {
       height: 40.px,
       padding: Padding.zero,
       border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusSm),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,
@@ -76,62 +76,46 @@ class PackScorePanel extends StatefulComponent {
     css('.pd-scoreboard-players').styles(
       display: Display.flex,
       padding: Padding.symmetric(vertical: 4.px, horizontal: 4.px),
-      overflow: Overflow.only(x: Overflow.auto),
-      flexDirection: FlexDirection.row,
-      gap: Gap.all(1.rem),
-    ),
-    css('.pd-player').styles(
-      display: Display.flex,
-      position: Position.relative(),
-      minWidth: 200.px,
-      padding: Padding.all(1.rem),
-      border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusMd),
       flexDirection: FlexDirection.column,
       gap: Gap.all(0.75.rem),
-      flex: Flex(shrink: 0),
-      backgroundColor: AppTheme.surfaceColor,
-      raw: {'box-shadow': '5px 5px 0 0 var(--theme-border)'},
     ),
-    css('.pd-player-name').styles(
-      width: 100.percent,
-      padding: Padding.symmetric(horizontal: 10.px, vertical: 8.px),
-      border: NeoTokens.border(width: NeoTokens.borderThin),
-      radius: NeoTokens.radius(NeoTokens.radiusSm),
-      color: AppTheme.textColor,
-      fontFamily: const FontFamily(NeoTokens.fontDisplay),
-      fontSize: 0.95.rem,
-      fontWeight: FontWeight.w700,
-      backgroundColor: AppTheme.canvasColor,
-      raw: {'outline': 'none'},
-    ),
-    css('.pd-player-name:focus').styles(
-      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '-3px'},
-    ),
-    css('.pd-player-score').styles(
-      padding: Padding.symmetric(vertical: 8.px),
-      border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusSm),
-      color: AppTheme.textColor,
-      textAlign: TextAlign.center,
-      fontFamily: const FontFamily(NeoTokens.fontDisplay),
-      fontSize: 2.5.rem,
-      fontWeight: FontWeight.w800,
-      lineHeight: 1.em,
-      backgroundColor: AppTheme.canvasColor,
-    ),
-    css('.pd-player-nominal').styles(
+    css('.pd-scoreboard-picker').styles(
       display: Display.flex,
       alignItems: AlignItems.stretch,
       gap: Gap.all(6.px),
     ),
-    css('.pd-player-nominal-btn').styles(
+    css('.pd-scoreboard-picker-select').styles(
+      display: Display.block,
+      padding: Padding.symmetric(horizontal: 10.px, vertical: 8.px),
+      border: NeoTokens.border(width: NeoTokens.borderThick),
+      cursor: Cursor.pointer,
+      flex: Flex(grow: 1),
+      color: AppTheme.textColor,
+      fontFamily: const FontFamily(NeoTokens.fontDisplay),
+      fontSize: 0.9.rem,
+      fontWeight: FontWeight.w800,
+      backgroundColor: AppTheme.surfaceColor,
+      raw: {
+        'appearance': 'none',
+        'box-shadow': '3px 3px 0 0 var(--theme-border)',
+        'outline': 'none',
+        'background-image':
+            "url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e\")",
+        'background-repeat': 'no-repeat',
+        'background-position': 'right 10px center',
+        'background-size': '16px 16px',
+        'padding-right': '32px',
+      },
+    ),
+    css('.pd-scoreboard-picker-select:focus-visible').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '2px'},
+    ),
+    css('.pd-scoreboard-quick-add').styles(
       display: Display.inlineFlex,
       width: 40.px,
       height: 40.px,
       padding: Padding.zero,
       border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusSm),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,
@@ -144,42 +128,116 @@ class PackScorePanel extends StatefulComponent {
       backgroundColor: AppTheme.accentColor,
       raw: {'box-shadow': '3px 3px 0 0 var(--theme-border)', 'outline': 'none'},
     ),
-    css('.pd-player-nominal-btn:hover').styles(
+    css('.pd-scoreboard-quick-add:hover').styles(
       transform: Transform.translate(x: 1.px, y: 1.px),
       backgroundColor: AppTheme.primaryColor,
       raw: {'box-shadow': '2px 2px 0 0 var(--theme-border)'},
+    ),
+    css('.pd-scoreboard-quick-add:focus-visible').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
+    ),
+    css('.pd-player').styles(
+      display: Display.none,
+    ),
+    css('.pd-player-current').styles(
+      display: Display.flex,
+      position: Position.relative(),
+      padding: Padding.all(0.75.rem),
+      border: NeoTokens.border(width: NeoTokens.borderThick),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
+      flexDirection: FlexDirection.column,
+      gap: Gap.all(0.5.rem),
+      backgroundColor: AppTheme.surfaceColor,
+      raw: {'box-shadow': '4px 4px 0 0 var(--theme-border)'},
+    ),
+    css('.pd-player-name').styles(
+      width: 100.percent,
+      padding: Padding.only(left: 8.px, right: 30.px, top: 6.px, bottom: 6.px),
+      border: NeoTokens.border(width: NeoTokens.borderThin),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
+      color: AppTheme.textColor,
+      fontFamily: const FontFamily(NeoTokens.fontDisplay),
+      fontSize: 0.85.rem,
+      fontWeight: FontWeight.w700,
+      backgroundColor: AppTheme.canvasColor,
+      raw: {'outline': 'none'},
+    ),
+    css('.pd-player-name:focus').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '-3px'},
+    ),
+    css('.pd-player-score').styles(
+      padding: Padding.symmetric(vertical: 4.px),
+      border: NeoTokens.border(width: NeoTokens.borderThin),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
+      color: AppTheme.textColor,
+      textAlign: TextAlign.center,
+      fontFamily: const FontFamily(NeoTokens.fontDisplay),
+      fontSize: 1.75.rem,
+      fontWeight: FontWeight.w800,
+      lineHeight: 1.em,
+      backgroundColor: AppTheme.canvasColor,
+    ),
+    css('.pd-player-nominal').styles(
+      display: Display.flex,
+      alignItems: AlignItems.stretch,
+      gap: Gap.all(4.px),
+    ),
+    css('.pd-player-nominal-btn').styles(
+      display: Display.inlineFlex,
+      width: 32.px,
+      height: 32.px,
+      padding: Padding.zero,
+      border: NeoTokens.border(width: NeoTokens.borderThin),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
+      cursor: Cursor.pointer,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+      flex: Flex(shrink: 0),
+      color: AppTheme.textColor,
+      fontFamily: const FontFamily(NeoTokens.fontDisplay),
+      fontSize: 1.1.rem,
+      fontWeight: FontWeight.w800,
+      backgroundColor: AppTheme.accentColor,
+      raw: {'box-shadow': '2px 2px 0 0 var(--theme-border)', 'outline': 'none'},
+    ),
+    css('.pd-player-nominal-btn:hover').styles(
+      transform: Transform.translate(x: 1.px, y: 1.px),
+      backgroundColor: AppTheme.primaryColor,
+      raw: {'box-shadow': '1px 1px 0 0 var(--theme-border)'},
     ),
     css('.pd-player-nominal-btn:focus-visible').styles(
       raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
     ),
     css('.pd-player-nominal-input').styles(
       width: 100.percent,
-      padding: Padding.symmetric(horizontal: 8.px),
+      minWidth: 0.px,
+      padding: Padding.symmetric(horizontal: 4.px),
       border: NeoTokens.border(width: NeoTokens.borderThin),
-      radius: NeoTokens.radius(NeoTokens.radiusSm),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       color: AppTheme.textColor,
       textAlign: TextAlign.center,
       fontFamily: const FontFamily(NeoTokens.fontDisplay),
-      fontSize: 1.rem,
+      fontSize: 0.9.rem,
       fontWeight: FontWeight.w800,
       backgroundColor: AppTheme.canvasColor,
       raw: {'outline': 'none'},
     ),
     css('.pd-player-remove').styles(
       display: Display.inlineFlex,
-      position: Position.absolute(top: (-10).px, right: (-10).px),
-      width: 28.px,
-      height: 28.px,
+      position: Position.absolute(top: 4.px, right: 4.px),
+      width: 22.px,
+      height: 22.px,
       padding: Padding.zero,
-      border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusPill),
+      border: NeoTokens.border(width: NeoTokens.borderThin),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
-      color: AppTheme.textColor,
-      backgroundColor: AppTheme.surfaceColor,
-      raw: {'box-shadow': '2px 2px 0 0 var(--theme-border)', 'outline': 'none'},
+      color: AppTheme.textSecondary,
+      backgroundColor: AppTheme.canvasColor,
+      raw: {'outline': 'none'},
     ),
     css('.pd-player-remove:hover').styles(
       backgroundColor: AppTheme.accentColor,
@@ -188,11 +246,11 @@ class PackScorePanel extends StatefulComponent {
       raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '2px'},
     ),
     css('.pd-scoreboard-add').styles(
-      display: Display.inlineFlex,
-      minWidth: 200.px,
-      padding: Padding.all(1.rem),
+      display: Display.none,
+      minWidth: 140.px,
+      padding: Padding.all(0.75.rem),
       border: Border.all(style: BorderStyle.dashed, width: 3.px, color: AppTheme.borderColor),
-      radius: NeoTokens.radius(NeoTokens.radiusMd),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,
@@ -218,20 +276,29 @@ class PackScorePanel extends StatefulComponent {
         maxHeight: 100.percent,
         padding: Padding.all(1.25.rem),
         border: NeoTokens.border(width: NeoTokens.borderThick),
-        radius: NeoTokens.radius(NeoTokens.radiusMd),
+        radius: NeoTokens.radius(NeoTokens.radiusNone),
         transform: Transform.translate(y: 0.percent),
         backgroundColor: AppTheme.surfaceColor,
         raw: {'box-shadow': '6px 6px 0 0 var(--theme-border)'},
       ),
       css('.pd-scoreboard-close').styles(display: Display.none),
+      css('.pd-scoreboard-picker').styles(display: Display.none),
+      css('.pd-scoreboard-add').styles(display: Display.inlineFlex),
       css('.pd-scoreboard-players').styles(
         overflow: Overflow.only(y: Overflow.auto),
         flexDirection: FlexDirection.column,
         flex: Flex(grow: 1),
       ),
       css('.pd-player').styles(
+        display: Display.flex,
+        position: Position.relative(),
         width: 100.percent,
-        minWidth: 0.px,
+        padding: Padding.all(0.75.rem),
+        border: NeoTokens.border(width: NeoTokens.borderThick),
+        flexDirection: FlexDirection.column,
+        gap: Gap.all(0.5.rem),
+        backgroundColor: AppTheme.surfaceColor,
+        raw: {'box-shadow': '4px 4px 0 0 var(--theme-border)'},
       ),
     ]),
   ];
@@ -242,6 +309,7 @@ class PackScorePanel extends StatefulComponent {
 
 class _PackScorePanelState extends State<PackScorePanel> {
   final List<_Player> _players = [_Player()];
+  int _selectedIndex = 0;
   ScoreboardController? _controller;
 
   @override
@@ -265,11 +333,24 @@ class _PackScorePanelState extends State<PackScorePanel> {
     setState(() {});
   }
 
-  void _addPlayer() => setState(() => _players.add(_Player()));
+  void _addPlayer() => setState(() {
+    _players.add(_Player());
+    _selectedIndex = _players.length - 1;
+  });
 
   void _removePlayer(int index) {
     if (_players.length <= 1) return;
-    setState(() => _players.removeAt(index));
+    setState(() {
+      _players.removeAt(index);
+      if (_selectedIndex >= _players.length) {
+        _selectedIndex = _players.length - 1;
+      }
+    });
+  }
+
+  void _selectPlayer(int index) {
+    if (index < 0 || index >= _players.length || index == _selectedIndex) return;
+    setState(() => _selectedIndex = index);
   }
 
   void _setName(int index, String name) {
@@ -282,6 +363,13 @@ class _PackScorePanelState extends State<PackScorePanel> {
 
   void _bumpScore(int index, int delta) {
     setState(() => _players[index].score += delta);
+  }
+
+  String _playerLabel(int index) {
+    final name = _players[index].name.trim();
+    return name.isEmpty
+        ? 'Игрок ${index + 1}'
+        : name;
   }
 
   @override
@@ -307,6 +395,34 @@ class _PackScorePanelState extends State<PackScorePanel> {
           ),
         ]),
         div(classes: 'pd-scoreboard-players', [
+          div(classes: 'pd-scoreboard-picker', [
+            select(
+              [
+                for (var i = 0; i < _players.length; i++)
+                  option(
+                    [.text(_playerLabel(i))],
+                    value: '$i',
+                    selected: i == _selectedIndex,
+                  ),
+              ],
+              classes: 'pd-scoreboard-picker-select',
+              attributes: {'aria-label': l10n.scoreboardTitle},
+              events: {
+                'change': (event) {
+                  final target = event.target as web.HTMLSelectElement;
+                  final parsed = int.tryParse(target.value);
+                  if (parsed != null) _selectPlayer(parsed);
+                },
+              },
+            ),
+            button(
+              classes: 'pd-scoreboard-quick-add',
+              type: ButtonType.button,
+              attributes: {'aria-label': l10n.scoreboardAddPlayer, 'title': l10n.scoreboardAddPlayer},
+              onClick: _addPlayer,
+              [.text('+')],
+            ),
+          ]),
           for (var i = 0; i < _players.length; i++) _playerColumn(context, i),
           button(
             classes: 'pd-scoreboard-add',
@@ -324,7 +440,7 @@ class _PackScorePanelState extends State<PackScorePanel> {
     final player = _players[index];
     return div(
       key: ValueKey(index),
-      classes: 'pd-player',
+      classes: ['pd-player', if (index == _selectedIndex) 'pd-player-current'].join(' '),
       [
         if (_players.length > 1)
           button(
@@ -365,7 +481,8 @@ class _PackScorePanelState extends State<PackScorePanel> {
             attributes: {
               'type': 'number',
               'inputmode': 'numeric',
-              'min': '1',
+              'min': '10',
+              'step': '10',
               'value': '${player.nominal}',
               'aria-label': l10n.scoreboardNominal,
             },
@@ -404,7 +521,7 @@ class PackScoreboardTrigger extends StatefulComponent {
       height: 56.px,
       padding: Padding.zero,
       border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusPill),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,

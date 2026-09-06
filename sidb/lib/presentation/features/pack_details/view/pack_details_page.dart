@@ -1,10 +1,16 @@
+import 'dart:async';
+
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_bloc/jaspr_bloc.dart';
+import 'package:universal_web/web.dart' as web;
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/core/di/di.dart';
+import 'package:sidb/presentation/components/app_dialog.dart';
+import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/components/neo_badge.dart';
 import 'package:sidb/presentation/components/neo_card.dart';
+import 'package:sidb/presentation/components/neo_toast.dart';
 import 'package:sidb/presentation/features/not_found/view/not_found_page.dart';
 import 'package:sidb/presentation/features/pack/model/detailed_package/detailed_package.dart';
 import 'package:sidb/presentation/features/pack/model/game_type/game_type.dart';
@@ -52,7 +58,7 @@ class PackDetailsPage extends StatelessComponent {
       display: Display.flex,
       padding: Padding.all(1.75.rem),
       border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusLg),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       flexDirection: FlexDirection.column,
       gap: Gap.all(1.rem),
       backgroundColor: AppTheme.surfaceColor,
@@ -92,7 +98,7 @@ class PackDetailsPage extends StatelessComponent {
       padding: Padding.all(1.5.rem),
       margin: Margin.zero,
       border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusMd),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       color: AppTheme.textColor,
       fontFamily: const FontFamily(NeoTokens.fontBody),
       fontSize: 1.05.rem,
@@ -103,13 +109,51 @@ class PackDetailsPage extends StatelessComponent {
     ),
     css('.pd-topic').styles(
       padding: Padding.all(1.5.rem),
-      raw: {'scroll-margin-top': '100px'},
     ),
     css('.pd-topic-header').styles(
       display: Display.flex,
       margin: Margin.only(bottom: 1.rem),
       flexDirection: FlexDirection.column,
       gap: Gap.all(0.4.rem),
+    ),
+    css('.pd-topic-title-row').styles(
+      display: Display.flex,
+      flexDirection: FlexDirection.row,
+      justifyContent: JustifyContent.spaceBetween,
+      alignItems: AlignItems.center,
+      gap: Gap.all(1.rem),
+    ),
+    css('.pd-topic-actions').styles(
+      display: Display.flex,
+      alignItems: AlignItems.center,
+      gap: Gap.all(10.px),
+      flex: Flex(shrink: 0),
+    ),
+    css('.pd-topic-action').styles(
+      display: Display.inlineFlex,
+      width: 44.px,
+      height: 44.px,
+      padding: Padding.zero,
+      border: NeoTokens.border(width: NeoTokens.borderThick),
+      cursor: Cursor.pointer,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+      color: AppTheme.textColor,
+      backgroundColor: AppTheme.accentColor,
+      raw: {'box-shadow': '4px 4px 0 0 var(--theme-border)', 'outline': 'none'},
+    ),
+    css('.pd-topic-action:hover').styles(
+      transform: Transform.translate(x: 2.px, y: 2.px),
+      backgroundColor: AppTheme.primaryColor,
+      raw: {'box-shadow': '2px 2px 0 0 var(--theme-border)'},
+    ),
+    css('.pd-topic-action:active').styles(
+      transform: Transform.translate(x: 4.px, y: 4.px),
+      raw: {'box-shadow': '0 0 0 0 var(--theme-border)'},
+    ),
+    css('.pd-topic-action:focus-visible').styles(
+      raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '3px'},
     ),
     css('.pd-topic-title').styles(
       margin: Margin.zero,
@@ -118,6 +162,7 @@ class PackDetailsPage extends StatelessComponent {
       fontSize: 1.5.rem,
       fontWeight: FontWeight.w800,
       lineHeight: 1.2.em,
+      raw: {'scroll-margin-top': '100px'},
     ),
     css('.pd-topic-description').styles(
       margin: Margin.zero,
@@ -149,9 +194,9 @@ class PackDetailsPage extends StatelessComponent {
         alignItems: AlignItems.start,
         gridTemplate: GridTemplate(
           columns: GridTracks([
-            GridTrack(TrackSize(240.px)),
+            GridTrack(TrackSize(220.px)),
             GridTrack(TrackSize.minmax(TrackSize(0.px), .fr(1))),
-            GridTrack(TrackSize(320.px)),
+            GridTrack(TrackSize(260.px)),
           ]),
         ),
         gap: Gap.all(2.rem),
@@ -187,13 +232,70 @@ class _PackDetailsView extends StatelessComponent {
   static Component _state(String text) => p(classes: 'pd-state', [.text(text)]);
 }
 
-class _PackDetailsLoaded extends StatelessComponent {
+class _PackDetailsLoaded extends StatefulComponent {
   const _PackDetailsLoaded({required this.pack});
 
   final DetailedPackage pack;
 
   @override
+  State<_PackDetailsLoaded> createState() => _PackDetailsLoadedState();
+}
+
+class _PackDetailsLoadedState extends State<_PackDetailsLoaded> {
+  @override
+  void initState() {
+    super.initState();
+    // If the user landed here via a deep link like `/pack/1#topic-3`,
+    // the browser can't jump to the anchor because Jaspr hydrates the
+    // DOM after load. Do the scroll manually once the tree is mounted.
+    Timer.run(_scrollToHash);
+  }
+
+  void _scrollToHash() {
+    if (!mounted) return;
+    final hash = web.window.location.hash;
+    if (hash.length < 2) return;
+    final id = hash.substring(1);
+    final element = web.document.getElementById(id);
+    element?.scrollIntoView(
+      web.ScrollIntoViewOptions(behavior: 'smooth', block: 'start'),
+    );
+  }
+
+  void _copyTopicLink(BuildContext context, int topicId) {
+    final l10n = context.l10n;
+    final origin = web.window.location.origin;
+    final basePath = context.binding.basePath;
+    final normalised = basePath.endsWith('/')
+        ? basePath.substring(0, basePath.length - 1)
+        : basePath;
+    final target = '$origin$normalised/pack/${component.pack.id}#topic-$topicId';
+    // Fire and forget: the clipboard write returns a JS promise but
+    // we can't await it without pulling in `dart:js_interop`, which
+    // isn't available during Jaspr's CSS generation phase. If the
+    // browser blocks the write (insecure context / permissions), the
+    // toast still fires so the user gets visible feedback.
+    web.window.navigator.clipboard.writeText(target);
+    ToastScope.of(context).show(l10n.topicLinkCopied);
+  }
+
+  Future<void> _promptLogin(BuildContext context) {
+    final l10n = context.l10n;
+    return context.showDialog(
+      title: l10n.loginRequiredTitle,
+      message: l10n.loginRequiredMessage,
+      cancelLabel: l10n.loginLater,
+      okLabel: l10n.loginNow,
+      onCancel: () {},
+      onOk: () {
+        // TODO: once /login lands, `router.Router.of(context).push('/login')`.
+      },
+    );
+  }
+
+  @override
   Component build(BuildContext context) {
+    final pack = component.pack;
     final l10n = context.l10n;
     return div(classes: 'pd', [
       div(classes: 'pd-layout', [
@@ -221,25 +323,48 @@ class _PackDetailsLoaded extends StatelessComponent {
             dislikesCount: pack.dislikesCount,
           ),
           p(classes: 'pd-description', [.text(pack.description)]),
-          for (final topic in pack.topics) _topic(topic),
+          for (final topic in pack.topics) _topic(context, topic),
         ]),
         const PackScorePanel(),
       ]),
-      const PackScoreboardTrigger(),
     ]);
   }
 
-  Component _topic(Topic topic) {
+  Component _topic(BuildContext context, Topic topic) {
+    final l10n = context.l10n;
     return NeoCard(
       classes: 'pd-topic',
       interactive: false,
+      styles: Styles(radius: NeoTokens.radius(NeoTokens.radiusNone)),
       children: [
         div(classes: 'pd-topic-header', [
-          h2(
-            classes: 'pd-topic-title',
-            attributes: {'id': 'topic-${topic.id}'},
-            [.text(topic.title)],
-          ),
+          div(classes: 'pd-topic-title-row', [
+            h2(
+              classes: 'pd-topic-title',
+              attributes: {'id': 'topic-${topic.id}'},
+              [.text(topic.title)],
+            ),
+            div(classes: 'pd-topic-actions', [
+              button(
+                classes: 'pd-topic-action',
+                type: ButtonType.button,
+                attributes: {'aria-label': l10n.topicShare, 'title': l10n.topicShare},
+                onClick: () => _copyTopicLink(context, topic.id),
+                [
+                  const AppIcon(IconPaths.link, width: 20, height: 20, strokeWidth: '2.5'),
+                ],
+              ),
+              button(
+                classes: 'pd-topic-action',
+                type: ButtonType.button,
+                attributes: {'aria-label': l10n.topicBookmark, 'title': l10n.topicBookmark},
+                onClick: () => _promptLogin(context),
+                [
+                  const AppIcon(IconPaths.bookmark, width: 18, height: 20, strokeWidth: '2.5'),
+                ],
+              ),
+            ]),
+          ]),
           if (topic.description != null && topic.description!.isNotEmpty)
             p(classes: 'pd-topic-description', [.text(topic.description!)]),
         ]),

@@ -5,6 +5,7 @@ import 'package:jaspr_bloc/jaspr_bloc.dart';
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/core/di/di.dart';
 import 'package:sidb/presentation/components/app_dialog.dart';
+import 'package:sidb/presentation/components/neo_toast.dart';
 import 'package:sidb/presentation/features/about/view/about.dart';
 import 'package:sidb/presentation/features/developer_faq/view/developer_faq_page.dart';
 import 'package:sidb/presentation/features/not_found/view/not_found_page.dart';
@@ -27,7 +28,8 @@ class AppRunner extends StatelessComponent {
   Component build(BuildContext context) {
     return _BlocProviders(
       child: AppDialogHost(
-        child: router.Router(
+        child: ToastHost(
+          child: router.Router(
           errorBuilder: (context, state) => _AppShell(
             location: state.location,
             child: NotFoundPage(),
@@ -90,6 +92,7 @@ class AppRunner extends StatelessComponent {
               ],
             ),
           ],
+          ),
         ),
       ),
     );

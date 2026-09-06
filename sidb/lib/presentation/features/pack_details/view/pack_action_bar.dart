@@ -27,13 +27,23 @@ class PackActionBar extends StatelessComponent {
       display: Display.flex,
       padding: Padding.all(1.rem),
       border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusMd),
+      radius: NeoTokens.radius(NeoTokens.radiusNone),
       flexWrap: FlexWrap.wrap,
       alignItems: AlignItems.center,
       gap: Gap.all(0.75.rem),
       backgroundColor: AppTheme.surfaceColor,
       raw: {'box-shadow': '6px 6px 0 0 var(--theme-border)'},
     ),
+    css('.pd-action-btn').styles(
+      width: 100.percent,
+      justifyContent: JustifyContent.start,
+    ),
+    css.media(MediaQuery.screen(minWidth: 768.px), [
+      css('.pd-action-btn').styles(
+        width: Unit.auto,
+        minWidth: 200.px,
+      ),
+    ]),
     css('.pd-action-btn .neo-button-icon').styles(
       display: Display.inlineFlex,
       alignItems: AlignItems.center,
@@ -67,6 +77,7 @@ class PackActionBar extends StatelessComponent {
           size: NeoButtonSize.md,
           onClick: () => _promptLogin(context),
           classes: 'pd-action-btn',
+          styles: Styles(radius: NeoTokens.radius(NeoTokens.radiusNone)),
           children: [
             span(classes: 'neo-button-icon', [
               const AppIcon(
@@ -85,6 +96,7 @@ class PackActionBar extends StatelessComponent {
           size: NeoButtonSize.md,
           onClick: () => _promptLogin(context),
           classes: 'pd-action-btn',
+          styles: Styles(radius: NeoTokens.radius(NeoTokens.radiusNone)),
           children: [
             span(classes: 'neo-button-icon', [
               const AppIcon(
@@ -103,6 +115,7 @@ class PackActionBar extends StatelessComponent {
           size: NeoButtonSize.md,
           onClick: () => _promptLogin(context),
           classes: 'pd-action-btn',
+          styles: Styles(radius: NeoTokens.radius(NeoTokens.radiusNone)),
           children: [
             span(classes: 'neo-button-icon', [
               const AppIcon(

@@ -73,8 +73,11 @@
     "scoreboardDecrease": "Отнять",
     "scoreboardNominal": "Номинал",
     "questionAnswer": "Ответ",
-    "questionAdditionalAnswers": "Также принимается",
-    "questionWrongAnswers": "Не принимается",
+    "questionAdditionalAnswers": "Зачёт",
+    "questionWrongAnswers": "Незачёт",
     "questionComment": "Комментарий",
-    "questionSource": "Источник"
+    "questionSource": "Источник",
+    "topicShare": "Скопировать ссылку на тему",
+    "topicBookmark": "Добавить тему в избранное",
+    "topicLinkCopied": "Ссылка на тему скопирована"
 }

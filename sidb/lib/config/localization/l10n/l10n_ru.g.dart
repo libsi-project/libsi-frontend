@@ -247,17 +247,26 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// ru: 'Ответ'
 	String get questionAnswer => 'Ответ';
 
-	/// ru: 'Также принимается'
-	String get questionAdditionalAnswers => 'Также принимается';
+	/// ru: 'Зачёт'
+	String get questionAdditionalAnswers => 'Зачёт';
 
-	/// ru: 'Не принимается'
-	String get questionWrongAnswers => 'Не принимается';
+	/// ru: 'Незачёт'
+	String get questionWrongAnswers => 'Незачёт';
 
 	/// ru: 'Комментарий'
 	String get questionComment => 'Комментарий';
 
 	/// ru: 'Источник'
 	String get questionSource => 'Источник';
+
+	/// ru: 'Скопировать ссылку на тему'
+	String get topicShare => 'Скопировать ссылку на тему';
+
+	/// ru: 'Добавить тему в избранное'
+	String get topicBookmark => 'Добавить тему в избранное';
+
+	/// ru: 'Ссылка на тему скопирована'
+	String get topicLinkCopied => 'Ссылка на тему скопирована';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -337,10 +346,13 @@ extension on Translations {
 			'scoreboardDecrease' => 'Отнять',
 			'scoreboardNominal' => 'Номинал',
 			'questionAnswer' => 'Ответ',
-			'questionAdditionalAnswers' => 'Также принимается',
-			'questionWrongAnswers' => 'Не принимается',
+			'questionAdditionalAnswers' => 'Зачёт',
+			'questionWrongAnswers' => 'Незачёт',
 			'questionComment' => 'Комментарий',
 			'questionSource' => 'Источник',
+			'topicShare' => 'Скопировать ссылку на тему',
+			'topicBookmark' => 'Добавить тему в избранное',
+			'topicLinkCopied' => 'Ссылка на тему скопирована',
 			_ => null,
 		};
 	}

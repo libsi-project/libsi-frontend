@@ -196,7 +196,7 @@ class PackageCard extends StatelessComponent {
             children: [
               AppIcon(
                 IconPaths.bookmark,
-                width: 18,
+                width: 22,
                 height: 22,
                 filled: true,
                 fillColor: AppTheme.theme.textLink,
