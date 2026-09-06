@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_bloc/jaspr_bloc.dart';
+import 'package:universal_web/js_interop.dart';
 import 'package:universal_web/web.dart' as web;
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/core/di/di.dart';
@@ -262,7 +263,7 @@ class _PackDetailsLoadedState extends State<_PackDetailsLoaded> {
     );
   }
 
-  void _copyTopicLink(BuildContext context, int topicId) {
+  Future<void> _copyTopicLink(BuildContext context, int topicId) async {
     final l10n = context.l10n;
     final origin = web.window.location.origin;
     final basePath = context.binding.basePath;
@@ -272,13 +273,11 @@ class _PackDetailsLoadedState extends State<_PackDetailsLoaded> {
     final target = '$origin$normalised/pack/${component.pack.id}#topic-$topicId';
     final toast = ToastScope.of(context);
     try {
-      // TODO: once we can pull in `dart:js_interop` without breaking
-      // Jaspr's CSS-generation phase, await this JS promise and
-      // surface the actual success/failure instead of relying on
-      // synchronous exceptions.
-      web.window.navigator.clipboard.writeText(target);
+      await web.window.navigator.clipboard.writeText(target).toDart;
+      if (!mounted) return;
       toast.show(l10n.topicLinkCopied);
     } catch (_) {
+      if (!mounted) return;
       toast.show(l10n.topicLinkCopyFailed);
     }
   }
