@@ -157,18 +157,7 @@ class PackTopicSidebar extends StatelessComponent {
       attributes: {'aria-label': l10n.topicsHeading},
       [
         div(classes: 'pd-sidebar-mobile-row', [
-          Builder(builder: (context) {
-            return button(
-              classes: 'pd-sidebar-scoreboard-btn',
-              type: ButtonType.button,
-              attributes: {
-                'aria-label': l10n.packOpenScoreboard,
-                'title': l10n.packOpenScoreboard,
-              },
-              onClick: () => ScoreboardScope.of(context).toggle(),
-              [.text('#')],
-            );
-          }),
+          const _ScoreboardToggleButton(),
           select(
             [
               option([.text(l10n.topicsHeading)], value: '', selected: true, disabled: true),
@@ -199,6 +188,57 @@ class PackTopicSidebar extends StatelessComponent {
             ),
         ]),
       ],
+    );
+  }
+}
+
+class _ScoreboardToggleButton extends StatefulComponent {
+  const _ScoreboardToggleButton();
+
+  @override
+  State<_ScoreboardToggleButton> createState() =>
+      _ScoreboardToggleButtonState();
+}
+
+class _ScoreboardToggleButtonState extends State<_ScoreboardToggleButton> {
+  ScoreboardController? _controller;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final controller = ScoreboardScope.of(context);
+    if (controller != _controller) {
+      _controller?.removeListener(_onChanged);
+      _controller = controller..addListener(_onChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.removeListener(_onChanged);
+    super.dispose();
+  }
+
+  void _onChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  Component build(BuildContext context) {
+    final l10n = context.l10n;
+    final isOpen = _controller?.isOpen ?? false;
+    final label = isOpen ? l10n.packCloseScoreboard : l10n.packOpenScoreboard;
+    return button(
+      classes: 'pd-sidebar-scoreboard-btn',
+      type: ButtonType.button,
+      attributes: {
+        'aria-label': label,
+        'aria-pressed': isOpen ? 'true' : 'false',
+        'title': label,
+      },
+      onClick: () => _controller?.toggle(),
+      [.text('#')],
     );
   }
 }

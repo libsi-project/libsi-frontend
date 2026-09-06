@@ -29,7 +29,7 @@ class FooterNeo extends StatelessComponent {
       display: Display.flex,
       width: 100.percent,
       maxWidth: NeoTokens.pageMaxWidth.px,
-      padding: Padding.symmetric(horizontal: NeoTokens.pagePaddingX.rem),
+      padding: Padding.symmetric(horizontal: 20.px),
       margin: Margin.symmetric(horizontal: Unit.auto),
       flexDirection: FlexDirection.column,
       justifyContent: JustifyContent.spaceBetween,

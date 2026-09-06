@@ -510,7 +510,16 @@ class _PackScorePanelState extends State<PackScorePanel> {
               'input': (event) {
                 final target = event.target as web.HTMLInputElement;
                 final parsed = int.tryParse(target.value);
-                if (parsed != null && parsed > 0) _setNominal(index, parsed);
+                if (parsed != null && parsed >= 10 && parsed % 10 == 0) {
+                  _setNominal(index, parsed);
+                }
+              },
+              'change': (event) {
+                final target = event.target as web.HTMLInputElement;
+                final parsed = int.tryParse(target.value);
+                if (parsed == null || parsed < 10 || parsed % 10 != 0) {
+                  target.value = '${_players[index].nominal}';
+                }
               },
             },
           ),
