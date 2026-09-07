@@ -3,7 +3,13 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- `interactive-widget=resizes-content` lets Chrome/Edge/Samsung
+       Browser shrink the layout viewport when the on-screen keyboard
+       opens, so position:fixed panels (like the mobile scoreboard) sit
+       above the keyboard instead of being covered by it. Safari falls
+       back to its default behaviour, which is already keyboard-aware. -->
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
   <base href="/" />
   <title>sidb</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
