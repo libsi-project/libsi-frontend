@@ -157,11 +157,11 @@ class SearchPage extends StatelessComponent {
       radius: NeoTokens.radius(NeoTokens.radiusSm),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      transform: Transform.rotate(0.deg),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
       color: AppTheme.textSecondary,
       backgroundColor: Colors.transparent,
-      transform: Transform.rotate(0.deg),
       raw: {'outline': 'none'},
     ),
     css('.search-filters-collapse:hover').styles(
@@ -329,10 +329,15 @@ class _SearchScreenState extends State<_SearchScreen> {
   }
 
   void _onReset() {
+    // Use the entity's own default sort — the SearchQuery constructor
+    // defaults to `relevance`, which is not a valid option on the
+    // authors tab. Without this, resetting on /authors would encode
+    // `sort=relevance` in the URL and keep `hasFilters == true`.
     _navigate(
       SearchQuery(
         entity: component.query.entity,
         query: component.query.query,
+        sort: SearchSortMeta.optionsFor(component.query.entity).first,
       ),
     );
     setState(() => _filtersOpen = false);
@@ -359,7 +364,9 @@ class _SearchScreenState extends State<_SearchScreen> {
             size: NeoButtonSize.md,
             attributes: {
               'aria-expanded': _filtersOpen ? 'true' : 'false',
-              'aria-controls': 'search-filters-panel',
+              // The mobile toggle shows/hides the whole aside; the
+              // inner body is what the desktop chevron controls.
+              'aria-controls': 'search-filters-aside',
             },
             onClick: () => setState(() => _filtersOpen = !_filtersOpen),
             children: [
@@ -377,6 +384,7 @@ class _SearchScreenState extends State<_SearchScreen> {
         ].join(' '),
         [
           aside(
+            id: 'search-filters-aside',
             classes: [
               'search-filters',
               if (_filtersOpen) 'search-filters-open',
@@ -544,7 +552,12 @@ class _SearchResults extends StatelessComponent {
       if (query.playFrom != null && pack.playDate.isBefore(query.playFrom!)) {
         return false;
       }
-      if (query.playTo != null && pack.playDate.isAfter(query.playTo!)) {
+      // Treat `playTo` as inclusive of the whole selected day. Packs
+      // played on that date but at a non-midnight time would
+      // otherwise be excluded because `SearchQuery` parses dates at
+      // 00:00 while `Pack.playDate` restores a full timestamp.
+      final playTo = query.playTo;
+      if (playTo != null && !pack.playDate.isBefore(DateTime(playTo.year, playTo.month, playTo.day + 1))) {
         return false;
       }
       if (query.topicsMin != null && pack.topicsCount < query.topicsMin!) {

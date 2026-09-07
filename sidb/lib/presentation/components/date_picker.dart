@@ -580,7 +580,10 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   Component _footer(Translations l10n) {
-    final canGoToday = _isDateEnabled(DateTime.now());
+    // Compare date-only against date-only bounds so "Today" stays
+    // enabled when `lastDate` equals today at midnight (raw
+    // DateTime.now() would appear to be after that boundary).
+    final canGoToday = _isDateEnabled(_dateOnly(DateTime.now()));
     return div(classes: 'date-picker-footer', [
       button(
         classes: [

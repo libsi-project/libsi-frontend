@@ -67,8 +67,8 @@ class SearchFilters extends StatelessComponent {
     ),
     css('.sf-summary-count').styles(
       display: Display.inlineFlex,
-      minWidth: 18.px,
       height: 18.px,
+      minWidth: 18.px,
       padding: Padding.symmetric(horizontal: 5.px),
       border: NeoTokens.border(width: 1),
       radius: NeoTokens.radius(NeoTokens.radiusPill),
@@ -90,11 +90,11 @@ class SearchFilters extends StatelessComponent {
     css('.sf-summary-chevron').styles(
       display: Display.inlineFlex,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      transform: Transform.rotate(0.deg),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
       flex: Flex(shrink: 0),
       color: AppTheme.textSecondary,
-      transform: Transform.rotate(0.deg),
     ),
     css('.sf-group-collapsed .sf-summary-chevron').styles(
       transform: Transform.rotate((-90).deg),
@@ -321,8 +321,15 @@ class SearchFilters extends StatelessComponent {
           onInput: (event) {
             final raw = (event.target as web.HTMLInputElement).value.trim();
             final parsed = int.tryParse(raw);
+            // Non-empty but not a non-negative integer (letters,
+            // negatives, `-5`, decimals) → clear the filter. Passing
+            // null through `copyWith(topicsMin: null)` would leave the
+            // previous value in place because our copyWith uses null
+            // as "unchanged"; the URL would then silently disagree
+            // with what the field shows.
+            final invalid = raw.isNotEmpty && (parsed == null || parsed < 0);
             onChange(
-              raw.isEmpty ? query.copyWith(clearTopicsMin: true) : query.copyWith(topicsMin: parsed),
+              raw.isEmpty || invalid ? query.copyWith(clearTopicsMin: true) : query.copyWith(topicsMin: parsed),
             );
           },
         ),
@@ -337,8 +344,9 @@ class SearchFilters extends StatelessComponent {
           onInput: (event) {
             final raw = (event.target as web.HTMLInputElement).value.trim();
             final parsed = int.tryParse(raw);
+            final invalid = raw.isNotEmpty && (parsed == null || parsed < 0);
             onChange(
-              raw.isEmpty ? query.copyWith(clearTopicsMax: true) : query.copyWith(topicsMax: parsed),
+              raw.isEmpty || invalid ? query.copyWith(clearTopicsMax: true) : query.copyWith(topicsMax: parsed),
             );
           },
         ),
