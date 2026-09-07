@@ -151,6 +151,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// ru: 'Вопросы'
 	String get searchEntityQuestions => 'Вопросы';
 
+	/// ru: 'Темы'
+	String get searchEntityTopics => 'Темы';
+
 	/// ru: 'Турниры'
 	String get searchEntityTournaments => 'Турниры';
 
@@ -159,6 +162,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Поиск по вопросам…'
 	String get searchPlaceholderQuestions => 'Поиск по вопросам…';
+
+	/// ru: 'Поиск по темам…'
+	String get searchPlaceholderTopics => 'Поиск по темам…';
 
 	/// ru: 'Поиск по турнирам…'
 	String get searchPlaceholderTournaments => 'Поиск по турнирам…';
@@ -273,11 +279,51 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 		other: '${n} пакетов',
 	);
 
+	/// ru: '(one) {$n тема} (few) {$n темы} (many) {$n тем} (other) {$n тем}'
+	String searchAuthorTopicsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: '${n} тема',
+		few: '${n} темы',
+		many: '${n} тем',
+		other: '${n} тем',
+	);
+
 	/// ru: '$year г.'
 	String searchYearOnly({required Object year}) => '${year} г.';
 
 	/// ru: ' – '
 	String get searchDateRangeSeparator => ' – ';
+
+	/// ru: 'Турнир'
+	String get searchQuestionFromTournament => 'Турнир';
+
+	/// ru: 'Тема'
+	String get searchQuestionFromTopic => 'Тема';
+
+	/// ru: '(one) {$n вопрос} (few) {$n вопроса} (many) {$n вопросов} (other) {$n вопросов}'
+	String searchTopicQuestionsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: '${n} вопрос',
+		few: '${n} вопроса',
+		many: '${n} вопросов',
+		other: '${n} вопросов',
+	);
+
+	/// ru: 'Искать в'
+	String get searchFilterScopeLabel => 'Искать в';
+
+	/// ru: 'Название'
+	String get searchScopeTitle => 'Название';
+
+	/// ru: 'Текст вопроса'
+	String get searchScopeQuestion => 'Текст вопроса';
+
+	/// ru: 'Ответ | Зачёт'
+	String get searchScopeAnswer => 'Ответ | Зачёт';
+
+	/// ru: 'Комментарии'
+	String get searchScopeComment => 'Комментарии';
+
+	/// ru: 'Источники'
+	String get searchScopeSource => 'Источники';
 
 	/// ru: 'НЕ НАЙДЕНО'
 	String get notFoundBadge => 'НЕ НАЙДЕНО';
@@ -457,9 +503,11 @@ extension on Translations {
 			'searchNoResults' => 'По запросу ничего не найдено',
 			'searchResultsFor' => ({required Object query}) => 'Результаты поиска: «${query}»',
 			'searchEntityQuestions' => 'Вопросы',
+			'searchEntityTopics' => 'Темы',
 			'searchEntityTournaments' => 'Турниры',
 			'searchEntityAuthors' => 'Авторы',
 			'searchPlaceholderQuestions' => 'Поиск по вопросам…',
+			'searchPlaceholderTopics' => 'Поиск по темам…',
 			'searchPlaceholderTournaments' => 'Поиск по турнирам…',
 			'searchPlaceholderAuthors' => 'Поиск по авторам…',
 			'searchOpenFilters' => 'Фильтры',
@@ -496,8 +544,18 @@ extension on Translations {
 			'searchApplyFilters' => 'Применить',
 			'searchResetFilters' => 'Сбросить',
 			'searchAuthorPacksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} пакет', few: '${n} пакета', many: '${n} пакетов', other: '${n} пакетов', ), 
+			'searchAuthorTopicsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} тема', few: '${n} темы', many: '${n} тем', other: '${n} тем', ), 
 			'searchYearOnly' => ({required Object year}) => '${year} г.',
 			'searchDateRangeSeparator' => ' – ',
+			'searchQuestionFromTournament' => 'Турнир',
+			'searchQuestionFromTopic' => 'Тема',
+			'searchTopicQuestionsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} вопрос', few: '${n} вопроса', many: '${n} вопросов', other: '${n} вопросов', ), 
+			'searchFilterScopeLabel' => 'Искать в',
+			'searchScopeTitle' => 'Название',
+			'searchScopeQuestion' => 'Текст вопроса',
+			'searchScopeAnswer' => 'Ответ | Зачёт',
+			'searchScopeComment' => 'Комментарии',
+			'searchScopeSource' => 'Источники',
 			'notFoundBadge' => 'НЕ НАЙДЕНО',
 			'notFoundHeading' => 'Страница потерялась',
 			'notFoundMessage' => 'Ссылка могла устареть, или путь написан с ошибкой.',
