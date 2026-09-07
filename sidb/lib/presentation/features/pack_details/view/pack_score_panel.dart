@@ -284,7 +284,10 @@ class PackScorePanel extends StatefulComponent {
       css('.pd-scoreboard').styles(
         position: Position.sticky(top: 100.px),
         zIndex: ZIndex(1),
-        maxHeight: 100.percent,
+        // Cap by viewport so a long list of players scrolls inside the
+        // panel instead of pushing it past the bottom of the screen.
+        // The 120px slack covers the sticky top offset + a bit of
+        // breathing room below the panel.
         padding: Padding.all(1.25.rem),
         border: NeoTokens.border(width: NeoTokens.borderThick),
         radius: NeoTokens.radius(NeoTokens.radiusNone),
@@ -293,6 +296,7 @@ class PackScorePanel extends StatefulComponent {
         transform: Transform.translate(y: 0.percent),
         backgroundColor: AppTheme.surfaceColor,
         raw: {
+          'max-height': 'calc(100vh - 120px)',
           'box-shadow': '6px 6px 0 0 var(--theme-border)',
           'transition': 'none',
         },

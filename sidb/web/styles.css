@@ -66,6 +66,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  /* Suppress the default translucent blue rectangle that mobile
+     WebKit/Blink flashes on every clickable element — the app has its
+     own :hover/:focus-visible visuals that read better with the neo
+     brutalism style. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
