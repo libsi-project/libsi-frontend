@@ -121,6 +121,15 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// ru: 'Следующий год'
 	String get datePickerNextYear => 'Следующий год';
 
+	/// ru: 'Очистить'
+	String get datePickerClear => 'Очистить';
+
+	/// ru: 'Сегодня'
+	String get datePickerToday => 'Сегодня';
+
+	/// ru: 'Убрать дату'
+	String get datePickerClearField => 'Убрать дату';
+
 	/// ru: 'Меню'
 	String get menu => 'Меню';
 
@@ -138,6 +147,137 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// ru: 'Результаты поиска: «${query}»'
 	String searchResultsFor({required Object query}) => 'Результаты поиска: «${query}»';
+
+	/// ru: 'Вопросы'
+	String get searchEntityQuestions => 'Вопросы';
+
+	/// ru: 'Турниры'
+	String get searchEntityTournaments => 'Турниры';
+
+	/// ru: 'Авторы'
+	String get searchEntityAuthors => 'Авторы';
+
+	/// ru: 'Поиск по вопросам…'
+	String get searchPlaceholderQuestions => 'Поиск по вопросам…';
+
+	/// ru: 'Поиск по турнирам…'
+	String get searchPlaceholderTournaments => 'Поиск по турнирам…';
+
+	/// ru: 'Поиск по авторам…'
+	String get searchPlaceholderAuthors => 'Поиск по авторам…';
+
+	/// ru: 'Фильтры'
+	String get searchOpenFilters => 'Фильтры';
+
+	/// ru: 'Скрыть фильтры'
+	String get searchCloseFilters => 'Скрыть фильтры';
+
+	/// ru: 'Фильтры поиска'
+	String get searchFiltersTitle => 'Фильтры поиска';
+
+	/// ru: 'Свернуть фильтры'
+	String get searchCollapseFiltersColumn => 'Свернуть фильтры';
+
+	/// ru: 'Развернуть фильтры'
+	String get searchExpandFiltersColumn => 'Развернуть фильтры';
+
+	/// ru: 'Целевая аудитория'
+	String get searchFilterAudience => 'Целевая аудитория';
+
+	/// ru: 'Тип игры'
+	String get searchFilterGameType => 'Тип игры';
+
+	/// ru: 'Дата отыгрыша турнира'
+	String get searchFilterPlayDateRange => 'Дата отыгрыша турнира';
+
+	/// ru: 'От'
+	String get searchFilterPlayDateFrom => 'От';
+
+	/// ru: 'До'
+	String get searchFilterPlayDateTo => 'До';
+
+	/// ru: 'Количество тем в пакете'
+	String get searchFilterTopicsRange => 'Количество тем в пакете';
+
+	/// ru: 'От'
+	String get searchFilterTopicsMin => 'От';
+
+	/// ru: 'До'
+	String get searchFilterTopicsMax => 'До';
+
+	/// ru: 'Только онлайн-турниры'
+	String get searchFilterOnlineOnly => 'Только онлайн-турниры';
+
+	/// ru: 'Только очные турниры'
+	String get searchFilterOfflineOnly => 'Только очные турниры';
+
+	/// ru: 'Площадка'
+	String get searchFilterVenue => 'Площадка';
+
+	/// ru: '«От» не может быть позже «до»'
+	String get searchFilterPlayDateFromAfterTo => '«От» не может быть позже «до»';
+
+	/// ru: '«До» не может быть раньше «от»'
+	String get searchFilterPlayDateToBeforeFrom => '«До» не может быть раньше «от»';
+
+	/// ru: 'Любые'
+	String get searchFilterVenueAny => 'Любые';
+
+	/// ru: 'Онлайн'
+	String get searchFilterVenueOnline => 'Онлайн';
+
+	/// ru: 'Очно'
+	String get searchFilterVenueOffline => 'Очно';
+
+	/// ru: 'Сортировка'
+	String get searchFilterSortLabel => 'Сортировка';
+
+	/// ru: 'По релевантности'
+	String get searchSortRelevance => 'По релевантности';
+
+	/// ru: 'Сначала новые'
+	String get searchSortNewest => 'Сначала новые';
+
+	/// ru: 'Сначала старые'
+	String get searchSortOldest => 'Сначала старые';
+
+	/// ru: 'По количеству лайков'
+	String get searchSortLikes => 'По количеству лайков';
+
+	/// ru: 'По названию (А→Я)'
+	String get searchSortTitleAsc => 'По названию (А→Я)';
+
+	/// ru: 'По названию (Я→А)'
+	String get searchSortTitleDesc => 'По названию (Я→А)';
+
+	/// ru: 'По имени (А→Я)'
+	String get searchSortAuthorAsc => 'По имени (А→Я)';
+
+	/// ru: 'По имени (Я→А)'
+	String get searchSortAuthorDesc => 'По имени (Я→А)';
+
+	/// ru: 'По количеству пакетов'
+	String get searchSortAuthorPacks => 'По количеству пакетов';
+
+	/// ru: 'Применить'
+	String get searchApplyFilters => 'Применить';
+
+	/// ru: 'Сбросить'
+	String get searchResetFilters => 'Сбросить';
+
+	/// ru: '(one) {$n пакет} (few) {$n пакета} (many) {$n пакетов} (other) {$n пакетов}'
+	String searchAuthorPacksCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: '${n} пакет',
+		few: '${n} пакета',
+		many: '${n} пакетов',
+		other: '${n} пакетов',
+	);
+
+	/// ru: '$year г.'
+	String searchYearOnly({required Object year}) => '${year} г.';
+
+	/// ru: ' – '
+	String get searchDateRangeSeparator => ' – ';
 
 	/// ru: 'НЕ НАЙДЕНО'
 	String get notFoundBadge => 'НЕ НАЙДЕНО';
@@ -307,12 +447,57 @@ extension on Translations {
 			'datePickerPreviousYear' => 'Предыдущий год',
 			'datePickerNextMonth' => 'Следующий месяц',
 			'datePickerNextYear' => 'Следующий год',
+			'datePickerClear' => 'Очистить',
+			'datePickerToday' => 'Сегодня',
+			'datePickerClearField' => 'Убрать дату',
 			'menu' => 'Меню',
 			'openMenu' => 'Открыть меню',
 			'closeMenu' => 'Закрыть меню',
 			'searchPrompt' => 'Введите запрос и нажмите Enter, чтобы найти пакет',
 			'searchNoResults' => 'По запросу ничего не найдено',
 			'searchResultsFor' => ({required Object query}) => 'Результаты поиска: «${query}»',
+			'searchEntityQuestions' => 'Вопросы',
+			'searchEntityTournaments' => 'Турниры',
+			'searchEntityAuthors' => 'Авторы',
+			'searchPlaceholderQuestions' => 'Поиск по вопросам…',
+			'searchPlaceholderTournaments' => 'Поиск по турнирам…',
+			'searchPlaceholderAuthors' => 'Поиск по авторам…',
+			'searchOpenFilters' => 'Фильтры',
+			'searchCloseFilters' => 'Скрыть фильтры',
+			'searchFiltersTitle' => 'Фильтры поиска',
+			'searchCollapseFiltersColumn' => 'Свернуть фильтры',
+			'searchExpandFiltersColumn' => 'Развернуть фильтры',
+			'searchFilterAudience' => 'Целевая аудитория',
+			'searchFilterGameType' => 'Тип игры',
+			'searchFilterPlayDateRange' => 'Дата отыгрыша турнира',
+			'searchFilterPlayDateFrom' => 'От',
+			'searchFilterPlayDateTo' => 'До',
+			'searchFilterTopicsRange' => 'Количество тем в пакете',
+			'searchFilterTopicsMin' => 'От',
+			'searchFilterTopicsMax' => 'До',
+			'searchFilterOnlineOnly' => 'Только онлайн-турниры',
+			'searchFilterOfflineOnly' => 'Только очные турниры',
+			'searchFilterVenue' => 'Площадка',
+			'searchFilterPlayDateFromAfterTo' => '«От» не может быть позже «до»',
+			'searchFilterPlayDateToBeforeFrom' => '«До» не может быть раньше «от»',
+			'searchFilterVenueAny' => 'Любые',
+			'searchFilterVenueOnline' => 'Онлайн',
+			'searchFilterVenueOffline' => 'Очно',
+			'searchFilterSortLabel' => 'Сортировка',
+			'searchSortRelevance' => 'По релевантности',
+			'searchSortNewest' => 'Сначала новые',
+			'searchSortOldest' => 'Сначала старые',
+			'searchSortLikes' => 'По количеству лайков',
+			'searchSortTitleAsc' => 'По названию (А→Я)',
+			'searchSortTitleDesc' => 'По названию (Я→А)',
+			'searchSortAuthorAsc' => 'По имени (А→Я)',
+			'searchSortAuthorDesc' => 'По имени (Я→А)',
+			'searchSortAuthorPacks' => 'По количеству пакетов',
+			'searchApplyFilters' => 'Применить',
+			'searchResetFilters' => 'Сбросить',
+			'searchAuthorPacksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} пакет', few: '${n} пакета', many: '${n} пакетов', other: '${n} пакетов', ), 
+			'searchYearOnly' => ({required Object year}) => '${year} г.',
+			'searchDateRangeSeparator' => ' – ',
 			'notFoundBadge' => 'НЕ НАЙДЕНО',
 			'notFoundHeading' => 'Страница потерялась',
 			'notFoundMessage' => 'Ссылка могла устареть, или путь написан с ошибкой.',

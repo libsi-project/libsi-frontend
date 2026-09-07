@@ -1,6 +1,7 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:sidb/config/localization/extension.dart';
+import 'package:sidb/config/localization/l10n/l10n.g.dart';
 import 'package:sidb/presentation/components/icon.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
 import 'package:sidb/presentation/theme/neo_tokens.dart';
@@ -25,10 +26,17 @@ const _defaultWeekdayLabels = ['П', 'В', 'С', 'Ч', 'П', 'С', 'В'];
 
 enum _DatePickerMode { days, monthYear }
 
+/// Where the calendar popup should anchor horizontally. Callers pin it
+/// to the right when the field sits close to the container's right edge
+/// so the popup doesn't clip.
+enum DatePickerAlign { start, end }
+
 class DatePicker extends StatefulComponent {
   const DatePicker({
     required this.value,
     required this.onChange,
+    this.onClear,
+    this.onInvalidPick,
     this.firstDate,
     this.lastDate,
     this.initialVisibleMonth,
@@ -36,6 +44,7 @@ class DatePicker extends StatefulComponent {
     this.weekdayLabels = _defaultWeekdayLabels,
     this.placeholder = 'pick a date',
     this.disabled = false,
+    this.align = DatePickerAlign.start,
     this.id,
     this.classes,
     this.styles,
@@ -45,6 +54,18 @@ class DatePicker extends StatefulComponent {
 
   final DateTime? value;
   final ValueChanged<DateTime> onChange;
+
+  /// Optional handler that unsets the current date. When null the field
+  /// hides its inline × button and the popup omits the “Очистить” action.
+  final VoidCallback? onClear;
+
+  /// When set, days outside `[firstDate, lastDate]` remain visible and
+  /// clickable, calendar navigation is unrestricted, and clicking an
+  /// out-of-range day calls this handler instead of [onChange] — so
+  /// callers can explain the constraint (e.g. via a toast) without
+  /// hiding the invalid day. When null the picker keeps its default
+  /// behaviour: nav is capped and invalid days are silently disabled.
+  final ValueChanged<DateTime>? onInvalidPick;
   final DateTime? firstDate;
   final DateTime? lastDate;
   final DateTime? initialVisibleMonth;
@@ -52,6 +73,7 @@ class DatePicker extends StatefulComponent {
   final List<String> weekdayLabels;
   final String placeholder;
   final bool disabled;
+  final DatePickerAlign align;
   final String? id;
   final String? classes;
   final Styles? styles;
@@ -118,22 +140,91 @@ class DatePicker extends StatefulComponent {
       flex: Flex(shrink: 0),
       color: AppTheme.textSecondary,
     ),
+    css('.date-picker-clear').styles(
+      display: Display.inlineFlex,
+      width: 22.px,
+      height: 22.px,
+      padding: Padding.zero,
+      border: NeoTokens.border(color: Colors.transparent),
+      radius: NeoTokens.radius(NeoTokens.radiusPill),
+      cursor: Cursor.pointer,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      justifyContent: JustifyContent.center,
+      alignItems: AlignItems.center,
+      flex: Flex(shrink: 0),
+      color: AppTheme.textSecondary,
+      backgroundColor: Colors.transparent,
+      raw: {'outline': 'none'},
+    ),
+    css('.date-picker-clear:hover').styles(
+      border: NeoTokens.border(),
+      shadow: NeoTokens.shadow(offset: NeoTokens.shadowXs),
+      color: AppTheme.textColor,
+      backgroundColor: AppTheme.inputBackground,
+    ),
     css('.date-picker-calendar').styles(
       display: Display.flex,
       position: Position.absolute(top: 100.percent, left: 0.px),
       zIndex: ZIndex(50),
-      width: 20.rem,
+      width: 15.rem,
       minWidth: 0.px,
-      maxWidth: 100.percent,
-      padding: Padding.all(0.75.rem),
-      margin: Margin.only(top: 0.35.rem),
+      maxWidth: 92.vw,
+      padding: Padding.all(0.5.rem),
+      margin: Margin.only(top: 0.3.rem),
       border: NeoTokens.border(width: NeoTokens.borderThick),
-      radius: NeoTokens.radius(NeoTokens.radiusLg),
-      shadow: NeoTokens.shadow(offset: NeoTokens.shadowMd),
+      radius: NeoTokens.radius(NeoTokens.radiusMd),
       flexDirection: FlexDirection.column,
-      gap: Gap.all(0.75.rem),
+      gap: Gap.all(0.4.rem),
       backgroundColor: AppTheme.surfaceColor,
-      raw: {'box-sizing': 'border-box'},
+      raw: {
+        'box-sizing': 'border-box',
+        'box-shadow': 'none',
+      },
+    ),
+    css('.date-picker-calendar-end').styles(
+      position: Position.absolute(top: 100.percent, right: 0.px),
+      raw: {'left': 'auto'},
+    ),
+    css('.date-picker-footer').styles(
+      display: Display.flex,
+      padding: Padding.only(top: 0.5.rem),
+      border: Border.only(
+        top: BorderSide.solid(width: 1.px, color: AppTheme.borderColor),
+      ),
+      justifyContent: JustifyContent.spaceBetween,
+      alignItems: AlignItems.center,
+      gap: Gap.all(0.5.rem),
+    ),
+    css('.date-picker-footer-btn').styles(
+      display: Display.inlineFlex,
+      padding: Padding.symmetric(horizontal: 0.5.rem, vertical: 0.25.rem),
+      border: NeoTokens.border(),
+      radius: NeoTokens.radius(NeoTokens.radiusSm),
+      cursor: Cursor.pointer,
+      transition: NeoTokens.transition(NeoTokens.motionFastMs),
+      color: AppTheme.textColor,
+      fontFamily: const FontFamily(NeoTokens.fontBody),
+      fontSize: 0.72.rem,
+      fontWeight: FontWeight.w800,
+      backgroundColor: AppTheme.surfaceColor,
+      raw: {
+        'outline': 'none',
+        'box-shadow': '2px 2px 0 0 var(--theme-border)',
+      },
+    ),
+    css('.date-picker-footer-btn:hover').styles(
+      backgroundColor: AppTheme.accentColor,
+    ),
+    css('.date-picker-footer-btn:active').styles(
+      transform: Transform.translate(x: 1.px, y: 1.px),
+      raw: {'box-shadow': '1px 1px 0 0 var(--theme-border)'},
+    ),
+    css('.date-picker-footer-btn-primary').styles(
+      color: AppTheme.onPrimaryColor,
+      backgroundColor: AppTheme.primaryColor,
+    ),
+    css('.date-picker-footer-btn-primary:hover').styles(
+      backgroundColor: AppTheme.primaryColor,
     ),
     css('.date-picker-header').styles(
       display: Display.flex,
@@ -144,8 +235,8 @@ class DatePicker extends StatefulComponent {
     ),
     css('.date-picker-nav-button').styles(
       display: Display.inlineFlex,
-      width: 2.rem,
-      height: 2.rem,
+      width: 1.5.rem,
+      height: 1.5.rem,
       padding: Padding.zero,
       border: NeoTokens.border(color: Colors.transparent),
       radius: NeoTokens.radius(NeoTokens.radiusPill),
@@ -155,7 +246,7 @@ class DatePicker extends StatefulComponent {
       alignItems: AlignItems.center,
       color: AppTheme.textSecondary,
       fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontSize: 1.25.rem,
+      fontSize: 0.95.rem,
       fontWeight: FontWeight.w900,
       backgroundColor: Colors.transparent,
       raw: {'flex': '0 0 auto', 'outline': 'none'},
@@ -169,18 +260,18 @@ class DatePicker extends StatefulComponent {
     css('.date-picker-title-button').styles(
       display: Display.inlineFlex,
       minWidth: 0.px,
-      padding: Padding.symmetric(horizontal: 0.7.rem, vertical: 0.4.rem),
+      padding: Padding.symmetric(horizontal: 0.5.rem, vertical: 0.25.rem),
       border: Border.none,
       radius: NeoTokens.radius(NeoTokens.radiusPill),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,
       alignItems: AlignItems.center,
-      gap: Gap.all(0.35.rem),
+      gap: Gap.all(0.3.rem),
       color: AppTheme.textColor,
       textAlign: TextAlign.center,
       fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontSize: 0.9.rem,
+      fontSize: 0.8.rem,
       fontWeight: FontWeight.w900,
       backgroundColor: AppTheme.inputBackground,
       raw: {
@@ -218,20 +309,20 @@ class DatePicker extends StatefulComponent {
     ),
     css('.date-picker-weekdays, .date-picker-days').styles(
       display: Display.grid,
-      gap: Gap.all(0.25.rem),
+      gap: Gap.all(0.15.rem),
       raw: {'grid-template-columns': 'repeat(7, minmax(0, 1fr))'},
     ),
     css('.date-picker-weekday').styles(
-      padding: Padding.symmetric(vertical: 0.25.rem),
+      padding: Padding.symmetric(vertical: 0.15.rem),
       color: AppTheme.textSecondary,
       textAlign: TextAlign.center,
-      fontSize: 0.85.rem,
+      fontSize: 0.7.rem,
       raw: {'text-transform': 'uppercase'},
     ),
     css('.date-picker-day-button').styles(
       display: Display.inlineFlex,
       width: 100.percent,
-      height: 2.25.rem,
+      height: 1.65.rem,
       padding: Padding.zero,
       border: NeoTokens.border(color: Colors.transparent),
       radius: NeoTokens.radius(NeoTokens.radiusPill),
@@ -241,7 +332,7 @@ class DatePicker extends StatefulComponent {
       alignItems: AlignItems.center,
       color: AppTheme.textColor,
       fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontSize: 0.95.rem,
+      fontSize: 0.8.rem,
       fontWeight: FontWeight.w800,
       backgroundColor: Colors.transparent,
       raw: {'outline': 'none'},
@@ -255,40 +346,69 @@ class DatePicker extends StatefulComponent {
       opacity: 0.35,
     ),
     css('.date-picker-day-today').styles(
-      border: NeoTokens.border(color: AppTheme.accentColor),
+      position: Position.relative(),
+    ),
+    css('.date-picker-day-today::after').styles(
+      display: Display.block,
+      position: Position.absolute(bottom: 2.px, left: 50.percent),
+      width: 4.px,
+      height: 4.px,
+      radius: NeoTokens.radius(NeoTokens.radiusPill),
+      backgroundColor: AppTheme.accentColor,
+      raw: {
+        'content': "''",
+        'transform': 'translateX(-50%)',
+      },
+    ),
+    css('.date-picker-day-selected.date-picker-day-today::after').styles(
+      backgroundColor: AppTheme.onAccentColor,
     ),
     css('.date-picker-day-selected').styles(
       shadow: NeoTokens.shadow(offset: NeoTokens.shadowSm),
       color: AppTheme.onAccentColor,
       backgroundColor: AppTheme.accentColor,
     ),
+    // Soft-disabled: day stays clickable so we can surface the
+    // constraint via [onInvalidPick], but visually communicates the
+    // "no-go" state.
+    css('.date-picker-day-invalid').styles(
+      opacity: 0.4,
+      cursor: Cursor.notAllowed,
+      color: AppTheme.textSecondary,
+      raw: {'text-decoration': 'line-through'},
+    ),
+    css('.date-picker-day-invalid:hover').styles(
+      border: NeoTokens.border(color: AppTheme.errorColor),
+      shadow: BoxShadow.none,
+      backgroundColor: AppTheme.surfaceColor,
+    ),
     css('.date-picker-month-year').styles(
       display: Display.grid,
       height: 100.percent,
-      minHeight: 14.5.rem,
-      gap: Gap.all(0.75.rem),
+      minHeight: 19.rem,
+      gap: Gap.all(0.5.rem),
       raw: {'grid-template-columns': 'minmax(0, 1fr) minmax(0, 1fr)'},
     ),
     css('.date-picker-wheel').styles(
       display: Display.flex,
-      maxHeight: 10.75.rem,
+      maxHeight: 19.rem,
       padding: Padding.only(right: 0.15.rem),
       flexDirection: FlexDirection.column,
-      gap: Gap.all(0.25.rem),
+      gap: Gap.all(0.2.rem),
       raw: {'overflow-y': 'auto'},
     ),
     css('.date-picker-wheel-option').styles(
       display: Display.inlineFlex,
       width: 100.percent,
-      padding: Padding.symmetric(horizontal: 0.75.rem, vertical: 0.45.rem),
+      padding: Padding.symmetric(horizontal: 0.5.rem, vertical: 0.3.rem),
       border: NeoTokens.border(color: Colors.transparent),
-      radius: NeoTokens.radius(NeoTokens.radiusMd),
+      radius: NeoTokens.radius(NeoTokens.radiusSm),
       cursor: Cursor.pointer,
       transition: NeoTokens.transition(NeoTokens.motionFastMs),
       justifyContent: JustifyContent.center,
       color: AppTheme.textColor,
       fontFamily: const FontFamily(NeoTokens.fontBody),
-      fontSize: 1.rem,
+      fontSize: 0.82.rem,
       fontWeight: FontWeight.w800,
       backgroundColor: Colors.transparent,
     ),
@@ -319,7 +439,6 @@ class DatePicker extends StatefulComponent {
 
 class _DatePickerState extends State<DatePicker> {
   late DateTime _visibleMonth;
-  late final int _fallbackCenterYear;
   _DatePickerMode _mode = _DatePickerMode.days;
   bool _isOpen = false;
 
@@ -327,7 +446,6 @@ class _DatePickerState extends State<DatePicker> {
   void initState() {
     super.initState();
     _visibleMonth = _monthStart(component.value ?? component.initialVisibleMonth ?? DateTime.now());
-    _fallbackCenterYear = _visibleMonth.year;
   }
 
   @override
@@ -340,8 +458,10 @@ class _DatePickerState extends State<DatePicker> {
 
   @override
   Component build(BuildContext context) {
+    final l10n = context.l10n;
     final formatted = _formattedValue;
     final hasValue = formatted != null;
+    final showClearInField = hasValue && component.onClear != null && !component.disabled;
     final calendarId = '${component.id ?? 'date-picker'}-calendar';
 
     return div(
@@ -389,12 +509,37 @@ class _DatePickerState extends State<DatePicker> {
                 .text(hasValue ? formatted : component.placeholder),
               ],
             ),
+            if (showClearInField)
+              span(
+                classes: 'date-picker-clear',
+                attributes: {
+                  'role': 'button',
+                  'tabindex': '0',
+                  'aria-label': l10n.datePickerClearField,
+                },
+                events: {
+                  'click': _handleClearFieldClick,
+                  'keydown': _handleClearFieldKey,
+                },
+                [
+                  const AppIcon(
+                    IconPaths.close,
+                    width: 14,
+                    height: 14,
+                    strokeWidth: '3',
+                    strokeColor: AppTheme.textSecondary,
+                  ),
+                ],
+              ),
           ],
         ),
         if (_isOpen && !component.disabled)
           div(
             id: calendarId,
-            classes: 'date-picker-calendar',
+            classes: [
+              'date-picker-calendar',
+              if (component.align == DatePickerAlign.end) 'date-picker-calendar-end',
+            ].join(' '),
             attributes: {'role': 'dialog'},
             [
               _header(),
@@ -427,10 +572,78 @@ class _DatePickerState extends State<DatePicker> {
                   ],
                 ),
               ]),
+              _footer(l10n),
             ],
           ),
       ],
     );
+  }
+
+  Component _footer(Translations l10n) {
+    // Compare date-only against date-only bounds so "Today" stays
+    // enabled when `lastDate` equals today at midnight (raw
+    // DateTime.now() would appear to be after that boundary).
+    final canGoToday = _isDateEnabled(_dateOnly(DateTime.now()));
+    return div(classes: 'date-picker-footer', [
+      button(
+        classes: [
+          'date-picker-footer-btn',
+          if (component.onClear == null) 'date-picker-button-disabled',
+        ].join(' '),
+        type: ButtonType.button,
+        disabled: component.onClear == null,
+        onClick: component.onClear == null ? null : _handleClearPopup,
+        [.text(l10n.datePickerClear)],
+      ),
+      button(
+        classes: [
+          'date-picker-footer-btn',
+          'date-picker-footer-btn-primary',
+          if (!canGoToday) 'date-picker-button-disabled',
+        ].join(' '),
+        type: ButtonType.button,
+        disabled: !canGoToday,
+        onClick: canGoToday ? _handleToday : null,
+        [.text(l10n.datePickerToday)],
+      ),
+    ]);
+  }
+
+  void _handleClearFieldClick(web.Event event) {
+    event.stopPropagation();
+    event.preventDefault();
+    final handler = component.onClear;
+    if (handler == null || component.disabled) return;
+    _close();
+    handler();
+  }
+
+  void _handleClearFieldKey(web.Event event) {
+    final key = (event as web.KeyboardEvent).key;
+    if (key != 'Enter' && key != ' ') return;
+    event.stopPropagation();
+    event.preventDefault();
+    final handler = component.onClear;
+    if (handler == null || component.disabled) return;
+    _close();
+    handler();
+  }
+
+  void _handleClearPopup() {
+    final handler = component.onClear;
+    if (handler == null) return;
+    _close();
+    handler();
+  }
+
+  void _handleToday() {
+    final today = _dateOnly(DateTime.now());
+    setState(() {
+      _visibleMonth = _monthStart(today);
+      _isOpen = false;
+      _mode = _DatePickerMode.days;
+    });
+    component.onChange(today);
   }
 
   Component _header() {
@@ -498,7 +711,27 @@ class _DatePickerState extends State<DatePicker> {
     final selected = component.value != null && _isSameDay(component.value!, date);
     final isToday = _isSameDay(today, date);
     final outside = !_isSameMonth(date, _visibleMonth);
-    final disabled = component.disabled || !_isDateEnabled(date);
+    final inRange = _isDateEnabled(date);
+    final invalidHandler = component.onInvalidPick;
+    // When invalidHandler is set we let the user click out-of-range
+    // days so we can surface *why* the click is rejected. Without it
+    // we fall back to a hard `disabled` state.
+    final softInvalid = !inRange && invalidHandler != null;
+    final hardDisabled = component.disabled || (!inRange && invalidHandler == null);
+
+    void handleClick() {
+      if (component.disabled) return;
+      if (!inRange) {
+        invalidHandler?.call(date);
+        return;
+      }
+      setState(() {
+        _visibleMonth = _monthStart(date);
+        _isOpen = false;
+        _mode = _DatePickerMode.days;
+      });
+      component.onChange(date);
+    }
 
     return button(
       classes: [
@@ -506,24 +739,17 @@ class _DatePickerState extends State<DatePicker> {
         if (outside) 'date-picker-day-outside',
         if (isToday) 'date-picker-day-today',
         if (selected) 'date-picker-day-selected',
-        if (disabled) 'date-picker-button-disabled',
+        if (softInvalid) 'date-picker-day-invalid',
+        if (hardDisabled) 'date-picker-button-disabled',
       ].join(' '),
       type: ButtonType.button,
-      disabled: disabled,
+      disabled: hardDisabled,
       attributes: {
         'aria-label': '${date.day}.${date.month}.${date.year}',
         if (selected) 'aria-current': 'date',
+        if (softInvalid) 'aria-disabled': 'true',
       },
-      onClick: disabled
-          ? null
-          : () {
-              setState(() {
-                _visibleMonth = _monthStart(date);
-                _isOpen = false;
-                _mode = _DatePickerMode.days;
-              });
-              component.onChange(date);
-            },
+      onClick: hardDisabled ? null : handleClick,
       [.text(date.day.toString())],
     );
   }
@@ -541,7 +767,8 @@ class _DatePickerState extends State<DatePicker> {
 
   Component _monthOption(DateTime monthDate) {
     final selected = monthDate.month == _visibleMonth.month;
-    final enabled = !component.disabled && _isMonthEnabled(_visibleMonth.year, monthDate.month);
+    final softInvalid = component.onInvalidPick != null;
+    final enabled = !component.disabled && (softInvalid || _isMonthEnabled(_visibleMonth.year, monthDate.month));
 
     return button(
       classes: [
@@ -564,7 +791,8 @@ class _DatePickerState extends State<DatePicker> {
 
   Component _yearOption(int year) {
     final selected = year == _visibleMonth.year;
-    final enabled = !component.disabled && _isYearEnabled(year);
+    final softInvalid = component.onInvalidPick != null;
+    final enabled = !component.disabled && (softInvalid || _isYearEnabled(year));
 
     return button(
       classes: [
@@ -577,7 +805,9 @@ class _DatePickerState extends State<DatePicker> {
       onClick: enabled
           ? () {
               setState(() {
-                _visibleMonth = _nearestEnabledMonth(DateTime(year, _visibleMonth.month));
+                _visibleMonth = softInvalid
+                    ? DateTime(year, _visibleMonth.month)
+                    : _nearestEnabledMonth(DateTime(year, _visibleMonth.month));
               });
             }
           : null,
@@ -586,18 +816,28 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   List<DateTime> _visibleMonths() {
+    // Rotate so the current month sits at the top of the wheel — the
+    // user asked for "start from our month" instead of always leading
+    // with January.
+    final currentMonth = DateTime.now().month;
     return [
-      for (var month = DateTime.january; month <= DateTime.december; month++) DateTime(2000, month),
+      for (var offset = 0; offset < 12; offset++) DateTime(2000, ((currentMonth - 1 + offset) % 12) + 1),
     ];
   }
 
   List<int> _visibleYears() {
+    // Newest year first so the current year lands at the top of the
+    // wheel and past years scroll below.
     return [
-      for (var year = _firstPickerYear; year <= _lastPickerYear; year++) year,
+      for (var year = _lastPickerYear; year >= _firstPickerYear; year--) year,
     ];
   }
 
   bool _canNavigate(int direction) {
+    // When the picker allows soft-invalid picks we let the user roam
+    // freely — capping nav here would hide the very months they need
+    // to see (e.g. paging past `firstDate` to inspect earlier dates).
+    if (component.onInvalidPick != null) return true;
     final next = _mode == _DatePickerMode.days
         ? DateTime(_visibleMonth.year, _visibleMonth.month + direction)
         : DateTime(_visibleMonth.year + direction, _visibleMonth.month);
@@ -610,13 +850,24 @@ class _DatePickerState extends State<DatePicker> {
       final next = _mode == _DatePickerMode.days
           ? DateTime(_visibleMonth.year, _visibleMonth.month + direction)
           : DateTime(_visibleMonth.year + direction, _visibleMonth.month);
-      _visibleMonth = _nearestEnabledMonth(next);
+      _visibleMonth = component.onInvalidPick != null ? next : _nearestEnabledMonth(next);
     });
   }
 
-  int get _firstPickerYear => component.firstDate?.year ?? _fallbackCenterYear - 100;
+  // Ignore anything before 2001 — SIGame packages don't predate the
+  // modern tournament era and the user asked to hide those years.
+  static const int _earliestAllowedYear = 2001;
 
-  int get _lastPickerYear => component.lastDate?.year ?? _fallbackCenterYear + 100;
+  int get _firstPickerYear {
+    final requested = component.firstDate?.year ?? _earliestAllowedYear;
+    return requested < _earliestAllowedYear ? _earliestAllowedYear : requested;
+  }
+
+  int get _lastPickerYear {
+    final now = DateTime.now().year;
+    final requested = component.lastDate?.year ?? now;
+    return requested < now ? now : requested;
+  }
 
   bool _isDateEnabled(DateTime date) {
     final firstDate = component.firstDate == null ? null : _dateOnly(component.firstDate!);
