@@ -24,7 +24,7 @@ class ApiPackRepository implements PackRepository {
   static const _gameTypeCycle = ['eruditeSextet', 'ksi', 'isi'];
   static const _russianGameTypeToSlug = {
     'Эрудит-Квартет': 'eruditeQuartet',
-    'Эрудит-Сикстет': 'eruditeSextet',
+    'Эрудит-Секстет': 'eruditeSextet',
     'ИСИ': 'isi',
     'КСИ': 'ksi',
     'Иное': 'other',

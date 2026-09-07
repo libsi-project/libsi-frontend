@@ -306,8 +306,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// ru: 'Эрудит-Квартет'
 	String get gameTypeEruditeQuartet => 'Эрудит-Квартет';
 
-	/// ru: 'Эрудит-Сикстет'
-	String get gameTypeEruditeSextet => 'Эрудит-Сикстет';
+	/// ru: 'Эрудит-Секстет'
+	String get gameTypeEruditeSextet => 'Эрудит-Секстет';
 
 	/// ru: 'ИСИ'
 	String get gameTypeIsi => 'ИСИ';
@@ -507,7 +507,7 @@ extension on Translations {
 			'audienceStudent' => 'Студенты',
 			'audienceAdult' => 'Взрослые',
 			'gameTypeEruditeQuartet' => 'Эрудит-Квартет',
-			'gameTypeEruditeSextet' => 'Эрудит-Сикстет',
+			'gameTypeEruditeSextet' => 'Эрудит-Секстет',
 			'gameTypeIsi' => 'ИСИ',
 			'gameTypeKsi' => 'КСИ',
 			'gameTypeOther' => 'Иное',

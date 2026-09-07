@@ -274,6 +274,34 @@ class SearchPage extends StatelessComponent {
       css('.search-filters-toggle').styles(display: Display.none),
       css('.search-filters-actions').styles(display: Display.none),
     ]),
+    // Wide screens: promote the filter column into the empty gutter
+    // left of the centered 1200px page container. The aside floats
+    // absolutely against `.search-layout` (which becomes the
+    // positioning anchor), so results reclaim the whole page width.
+    // The 1700px threshold is the point where a 240px filter + 20px
+    // gap comfortably fits into the left-hand gutter without
+    // clipping.
+    css.media(MediaQuery.screen(minWidth: 1700.px), [
+      css('.search-layout').styles(position: Position.relative()),
+      css('.search-body').styles(
+        gridTemplate: GridTemplate(
+          columns: GridTracks([GridTrack(.fr(1))]),
+        ),
+      ),
+      css('.search-body-narrow').styles(
+        gridTemplate: GridTemplate(
+          columns: GridTracks([GridTrack(.fr(1))]),
+        ),
+      ),
+      css('.search-filters').styles(
+        position: Position.absolute(top: 0.px),
+        width: 240.px,
+        raw: {
+          'right': 'calc(100% + 20px)',
+          'left': 'auto',
+        },
+      ),
+    ]),
   ];
 
   @override
