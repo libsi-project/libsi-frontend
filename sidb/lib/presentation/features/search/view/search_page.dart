@@ -15,6 +15,7 @@ import 'package:sidb/presentation/components/page_container.dart';
 import 'package:sidb/presentation/features/pack/bloc/pack_bloc.dart';
 import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 import 'package:sidb/presentation/features/pack/model/question/question.dart';
+import 'package:sidb/presentation/features/pack/repository/pack_repository.dart';
 import 'package:sidb/presentation/features/search/model/search_query.dart';
 import 'package:sidb/presentation/features/search/view/search_filters.dart';
 import 'package:sidb/presentation/theme/app_theme.dart';
@@ -297,15 +298,10 @@ class SearchPage extends StatelessComponent {
     css('.search-topic-summary:focus-visible').styles(
       raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '2px'},
     ),
-    css('.search-topic-info').styles(
-      display: Display.flex,
-      overflow: Overflow.hidden,
-      flexDirection: FlexDirection.column,
-      gap: Gap.all(0.2.rem),
-      flex: Flex(grow: 1, shrink: 1),
-    ),
     css('.search-topic-title').styles(
       margin: Margin.zero,
+      overflow: Overflow.hidden,
+      flex: Flex(grow: 1, shrink: 1),
       color: AppTheme.textColor,
       fontFamily: const FontFamily(NeoTokens.fontDisplay),
       fontSize: 1.rem,
@@ -314,6 +310,7 @@ class SearchPage extends StatelessComponent {
     ),
     css('.search-topic-meta').styles(
       display: Display.flex,
+      padding: Padding.only(left: 0.9.rem, right: 0.9.rem, bottom: 0.55.rem),
       flexWrap: FlexWrap.wrap,
       alignItems: AlignItems.baseline,
       gap: Gap(row: 0.15.rem, column: 0.75.rem),
@@ -859,8 +856,11 @@ class _SearchResults extends StatelessComponent {
   List<_TopicRow> _filterTopics(List<Pack> packs) {
     final needle = query.query.toLowerCase();
     final scopes = query.effectiveScopes;
+    // Run pack-level filters first so the audience/game-type/date
+    // chips also narrow the topic feed — otherwise Topics would ignore
+    // filters that the sibling tabs honour.
     final rows = <_TopicRow>[];
-    for (final pack in packs) {
+    for (final pack in _filterPacks(packs)) {
       for (final topic in _mockTopicsFor(pack)) {
         if (needle.isNotEmpty && !_topicMatches(topic, needle, scopes)) continue;
         rows.add(_TopicRow(pack: pack, topic: topic));
@@ -982,9 +982,7 @@ class _QuestionsFeed extends StatelessComponent {
       for (final topic in _mockTopicsFor(pack)) {
         final topicTitleMatches = scopes.contains(SearchScope.title) && topic.title.toLowerCase().contains(needle);
         for (final question in topic.questions) {
-          if (needle.isNotEmpty &&
-              !topicTitleMatches &&
-              !_SearchResults._questionMatches(question, needle, scopes)) {
+          if (needle.isNotEmpty && !topicTitleMatches && !_SearchResults._questionMatches(question, needle, scopes)) {
             continue;
           }
           all.add(_QuestionFeedItem(pack: pack, topic: topic, question: question));
@@ -992,23 +990,37 @@ class _QuestionsFeed extends StatelessComponent {
       }
     }
     if (all.isEmpty) return const [];
-    final random = Random(packs.length * 31 + query.toUrl().hashCode);
+    final random = Random(packs.length * 31 + _stableHash(query.toUrl()));
     all.shuffle(random);
     return all.take(_feedSize).toList();
   }
+}
+
+/// Deterministic string hash independent of the runtime — `String.hashCode`
+/// differs between the Dart VM and dart2js, which would reshuffle the
+/// question feed and rotate topic titles between hydration and client
+/// re-render. Uses the classic FNV-style 31·h + code unit fold clamped
+/// to 29 bits to stay inside `Random`'s positive-int seed range.
+int _stableHash(String value) {
+  var hash = 0;
+  for (final unit in value.codeUnits) {
+    hash = (hash * 31 + unit) & 0x1fffffff;
+  }
+  return hash;
 }
 
 /// Mirror of `ApiPackRepository._mockTopics` — kept module-private
 /// while questions/topics live client-side. Drop when a real API
 /// exposes topic bodies for a pack.
 List<_MockTopic> _mockTopicsFor(Pack pack) {
+  final titles = ApiPackRepository.mockTopicTitles;
   final topicCount = pack.topicsCount.clamp(1, 6).toInt();
-  final startOffset = pack.id.hashCode.abs() % mockTopicTitles.length;
+  final startOffset = _stableHash(pack.id) % titles.length;
   return [
     for (var i = 0; i < topicCount; i++)
       () {
         final index = i + 1;
-        final title = mockTopicTitles[(startOffset + i) % mockTopicTitles.length];
+        final title = titles[(startOffset + i) % titles.length];
         return _MockTopic(
           id: index,
           title: title,
@@ -1030,23 +1042,6 @@ List<_MockTopic> _mockTopicsFor(Pack pack) {
       }(),
   ];
 }
-
-/// Placeholder topic titles used until the API exposes topic bodies.
-/// Kept in sync with `ApiPackRepository.mockTopicTitles`.
-const List<String> mockTopicTitles = [
-  'Иваны России',
-  'Иваны Америки',
-  '1984',
-  '42',
-  'Кино и театр',
-  'British Rock',
-  'Космос',
-  'Programming Languages',
-  'Мировая история',
-  'Sports Legends',
-  'География',
-  'Modern Art',
-];
 
 class _MockTopic {
   const _MockTopic({required this.id, required this.title, required this.questions});
@@ -1195,18 +1190,7 @@ class _TopicFeedCardState extends State<_TopicFeedCard> {
           attributes: {'aria-expanded': _open ? 'true' : 'false'},
           onClick: _toggle,
           [
-            div(classes: 'search-topic-info', [
-              h3(classes: 'search-topic-title', [.text(topic.title)]),
-              div(classes: 'search-topic-meta', [
-                span([.text('${l10n.searchQuestionFromTournament}: ')]),
-                router.Link(
-                  to: '/pack/${pack.id}',
-                  classes: 'search-topic-meta-link',
-                  child: Component.text(pack.title),
-                ),
-                if (authors.isNotEmpty) span([.text('· $authors')]),
-              ]),
-            ]),
+            h3(classes: 'search-topic-title', [.text(topic.title)]),
             span(classes: 'search-topic-count', [
               .text(l10n.searchTopicQuestionsCount(n: topic.questions.length)),
             ]),
@@ -1215,6 +1199,19 @@ class _TopicFeedCardState extends State<_TopicFeedCard> {
             ]),
           ],
         ),
+        // Meta line lives outside the toggle button — `router.Link`
+        // renders an `<a>`, which HTML disallows inside interactive
+        // content, and its activation would otherwise bubble to the
+        // toggle and both navigate and expand.
+        div(classes: 'search-topic-meta', [
+          span([.text('${l10n.searchQuestionFromTournament}: ')]),
+          router.Link(
+            to: '/pack/${pack.id}',
+            classes: 'search-topic-meta-link',
+            child: Component.text(pack.title),
+          ),
+          if (authors.isNotEmpty) span([.text('· $authors')]),
+        ]),
         if (_open)
           div(classes: 'search-topic-body', [
             for (final question in topic.questions)

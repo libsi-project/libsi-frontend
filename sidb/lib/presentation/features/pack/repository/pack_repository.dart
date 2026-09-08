@@ -83,8 +83,8 @@ class ApiPackRepository implements PackRepository {
       'Пакет собран из авторских вопросов, отыгранных на профильных турнирах. Ниже — темы и вопросы; ответ раскрывается по клику.';
 
   /// Placeholder topic titles used until the API exposes topic bodies.
-  /// Kept in sync with `search_page.dart:mockTopicTitles` so links from
-  /// the /search topic feed match what the pack detail page shows.
+  /// Shared with `search_page.dart` so links from the /search topic
+  /// feed match what the pack detail page shows.
   static const List<String> mockTopicTitles = [
     'Иваны России',
     'Иваны Америки',
@@ -102,7 +102,7 @@ class ApiPackRepository implements PackRepository {
 
   static List<Topic> _mockTopics(Pack base) {
     final topicCount = base.topicsCount.clamp(1, 6).toInt();
-    final startOffset = base.id.hashCode.abs() % mockTopicTitles.length;
+    final startOffset = _stableHash(base.id) % mockTopicTitles.length;
     return List<Topic>.generate(topicCount, (i) {
       final index = i + 1;
       final title = mockTopicTitles[(startOffset + i) % mockTopicTitles.length];
@@ -127,6 +127,18 @@ class ApiPackRepository implements PackRepository {
       );
     });
   }
+}
+
+/// Deterministic string hash independent of the runtime — `String.hashCode`
+/// differs between the Dart VM and dart2js, and the mock topic rotation
+/// must agree between server and client so links from the /search topic
+/// feed anchor onto the same title in pack details.
+int _stableHash(String value) {
+  var hash = 0;
+  for (final unit in value.codeUnits) {
+    hash = (hash * 31 + unit) & 0x1fffffff;
+  }
+  return hash;
 }
 
 extension _FirstOrNull<T> on Iterable<T> {

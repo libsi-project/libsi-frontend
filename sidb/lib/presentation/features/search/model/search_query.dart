@@ -289,13 +289,23 @@ class SearchQuery {
   }
 
   /// Switches to a different entity, keeping the free-text query and
-  /// venue but dropping filters that don't apply to the new section and
-  /// resetting sort to that section's default.
+  /// pack-level filters that all pack-backed tabs share. Filters that
+  /// don't apply to the new section are dropped and sort is reset to
+  /// that section's default.
   SearchQuery withEntity(SearchEntity next) {
     if (next == entity) return this;
+    // Authors aggregate across packs and don't run the pack filters at
+    // all — carrying them over would leave irrelevant chips in the URL.
+    final keepsPackFilters = next != SearchEntity.authors;
     return SearchQuery(
       entity: next,
       query: query,
+      audiences: keepsPackFilters ? audiences : const <TargetAudience>{},
+      gameTypes: keepsPackFilters ? gameTypes : const <GameType>{},
+      playFrom: keepsPackFilters ? playFrom : null,
+      playTo: keepsPackFilters ? playTo : null,
+      topicsMin: keepsPackFilters ? topicsMin : null,
+      topicsMax: keepsPackFilters ? topicsMax : null,
       // Venue only applies to tournaments; drop it elsewhere so it
       // doesn't silently linger in the URL.
       venue: next == SearchEntity.tournaments ? venue : SearchVenue.any,

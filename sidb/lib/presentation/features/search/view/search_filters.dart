@@ -287,8 +287,13 @@ class SearchFilters extends StatelessComponent {
             final next = {...query.scopes.isEmpty ? active : query.scopes};
             if (isOn) {
               next.add(scope);
-            } else {
+            } else if (next.length > 1) {
               next.remove(scope);
+            } else {
+              // An empty set means "use defaults" (see [effectiveScopes]),
+              // which would immediately re-check this box. Keep the
+              // interaction honest by blocking the last unchecking.
+              return;
             }
             onChange(query.copyWith(scopes: next));
           },
