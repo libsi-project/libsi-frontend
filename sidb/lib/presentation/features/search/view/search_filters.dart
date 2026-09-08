@@ -2,6 +2,7 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:sidb/config/localization/extension.dart';
 import 'package:sidb/config/localization/l10n/l10n.g.dart';
+import 'package:sidb/presentation/components/checkbox.dart';
 import 'package:sidb/presentation/components/date_picker.dart';
 import 'package:sidb/presentation/components/dropdown_edit_field.dart';
 import 'package:sidb/presentation/components/icon.dart';
@@ -204,6 +205,20 @@ class SearchFilters extends StatelessComponent {
     css('.sf-venue-option:focus-visible').styles(
       raw: {'outline': '3px solid var(--theme-accent)', 'outline-offset': '2px'},
     ),
+    css('.sf-scope').styles(
+      display: Display.flex,
+      flexDirection: FlexDirection.column,
+      gap: Gap.all(0.4.rem),
+    ),
+    css('.sf-scope .neo-checkbox').styles(
+      fontSize: 0.9.rem,
+      fontWeight: FontWeight.w700,
+      gap: Gap.all(0.55.rem),
+    ),
+    css('.sf-scope .neo-checkbox-box').styles(
+      width: 1.15.rem,
+      height: 1.15.rem,
+    ),
   ];
 
   @override
@@ -238,12 +253,19 @@ class SearchFilters extends StatelessComponent {
           activeCount: (query.topicsMin != null ? 1 : 0) + (query.topicsMax != null ? 1 : 0),
           body: _topicsBody(l10n),
         ),
-      if (query.entity != SearchEntity.authors)
+      if (query.entity == SearchEntity.tournaments)
         _CollapsibleGroup(
           key: const ValueKey('sf-venue'),
           title: l10n.searchFilterVenue,
           activeCount: query.venue == SearchVenue.any ? 0 : 1,
           body: _venueBody(l10n),
+        ),
+      if (SearchScopeMeta.appliesTo(query.entity))
+        _CollapsibleGroup(
+          key: const ValueKey('sf-scope'),
+          title: l10n.searchFilterScopeLabel,
+          activeCount: query.scopes.length,
+          body: _scopeBody(l10n),
         ),
       _CollapsibleGroup(
         key: const ValueKey('sf-sort'),
@@ -251,6 +273,31 @@ class SearchFilters extends StatelessComponent {
         activeCount: 0,
         body: _sortBody(l10n),
       ),
+    ]);
+  }
+
+  Component _scopeBody(Translations l10n) {
+    final active = query.effectiveScopes;
+    return div(classes: 'sf-scope', [
+      for (final scope in SearchScope.values)
+        Checkbox(
+          checked: active.contains(scope),
+          label: .text(scope.label(l10n)),
+          onChange: (isOn) {
+            final next = {...query.scopes.isEmpty ? active : query.scopes};
+            if (isOn) {
+              next.add(scope);
+            } else if (next.length > 1) {
+              next.remove(scope);
+            } else {
+              // An empty set means "use defaults" (see [effectiveScopes]),
+              // which would immediately re-check this box. Keep the
+              // interaction honest by blocking the last unchecking.
+              return;
+            }
+            onChange(query.copyWith(scopes: next));
+          },
+        ),
     ]);
   }
 

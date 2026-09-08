@@ -6,31 +6,78 @@ import 'package:sidb/presentation/features/pack/model/pack/pack.dart';
 import 'package:sidb/presentation/features/pack/model/target_audience/target_audience.dart';
 
 /// The section of the search screen the user is currently in.
-enum SearchEntity { questions, tournaments, authors }
+enum SearchEntity { tournaments, topics, questions, authors }
 
 extension SearchEntityMeta on SearchEntity {
   String label(Translations t) => switch (this) {
     SearchEntity.questions => t.searchEntityQuestions,
+    SearchEntity.topics => t.searchEntityTopics,
     SearchEntity.tournaments => t.searchEntityTournaments,
     SearchEntity.authors => t.searchEntityAuthors,
   };
 
   String placeholder(Translations t) => switch (this) {
     SearchEntity.questions => t.searchPlaceholderQuestions,
+    SearchEntity.topics => t.searchPlaceholderTopics,
     SearchEntity.tournaments => t.searchPlaceholderTournaments,
     SearchEntity.authors => t.searchPlaceholderAuthors,
   };
 
   String get slug => switch (this) {
     SearchEntity.questions => 'questions',
+    SearchEntity.topics => 'topics',
     SearchEntity.tournaments => 'tournaments',
     SearchEntity.authors => 'authors',
   };
 
   static SearchEntity fromSlug(String? slug) => switch (slug) {
-    'tournaments' => SearchEntity.tournaments,
+    'questions' => SearchEntity.questions,
     'authors' => SearchEntity.authors,
-    _ => SearchEntity.questions,
+    'topics' => SearchEntity.topics,
+    _ => SearchEntity.tournaments,
+  };
+}
+
+/// Which fields inside a topic/question the free-text query should
+/// match against. Persisted in the URL so shared links restore the
+/// exact scope selection.
+enum SearchScope { title, question, answer, comment, source }
+
+extension SearchScopeMeta on SearchScope {
+  String label(Translations t) => switch (this) {
+    SearchScope.title => t.searchScopeTitle,
+    SearchScope.question => t.searchScopeQuestion,
+    SearchScope.answer => t.searchScopeAnswer,
+    SearchScope.comment => t.searchScopeComment,
+    SearchScope.source => t.searchScopeSource,
+  };
+
+  String get slug => name;
+
+  static Set<SearchScope> parse(String? raw) {
+    if (raw == null || raw.isEmpty) return const <SearchScope>{};
+    final byName = {for (final v in SearchScope.values) v.name: v};
+    final out = <SearchScope>{};
+    for (final part in raw.split(',')) {
+      final value = byName[part.trim()];
+      if (value != null) out.add(value);
+    }
+    return out;
+  }
+
+  /// Topic and question searches expose the scope picker in the UI:
+  /// their results aggregate over a topic/question body, so it's
+  /// meaningful to choose which parts to match against. Other
+  /// sections search a single field (pack title, author name).
+  static bool appliesTo(SearchEntity entity) => entity == SearchEntity.topics || entity == SearchEntity.questions;
+
+  /// Default scope set when the user hasn't picked any — matches the
+  /// most obvious field for the section so the search still returns
+  /// results before the user touches the checkboxes.
+  static Set<SearchScope> defaultsFor(SearchEntity entity) => switch (entity) {
+    SearchEntity.topics => const {SearchScope.title},
+    SearchEntity.questions => const {SearchScope.question},
+    _ => const {SearchScope.title},
   };
 }
 
@@ -99,6 +146,11 @@ extension SearchSortMeta on SearchSort {
       SearchSort.titleAsc,
       SearchSort.titleDesc,
     ],
+    SearchEntity.topics => const [
+      SearchSort.relevance,
+      SearchSort.titleAsc,
+      SearchSort.titleDesc,
+    ],
     SearchEntity.tournaments => const [
       SearchSort.relevance,
       SearchSort.newest,
@@ -121,7 +173,7 @@ extension SearchSortMeta on SearchSort {
 @immutable
 class SearchQuery {
   const SearchQuery({
-    this.entity = SearchEntity.questions,
+    this.entity = SearchEntity.tournaments,
     this.query = '',
     this.audiences = const <TargetAudience>{},
     this.gameTypes = const <GameType>{},
@@ -131,6 +183,7 @@ class SearchQuery {
     this.topicsMax,
     this.venue = SearchVenue.any,
     this.sort = SearchSort.relevance,
+    this.scopes = const <SearchScope>{},
   });
 
   final SearchEntity entity;
@@ -143,6 +196,13 @@ class SearchQuery {
   final int? topicsMax;
   final SearchVenue venue;
   final SearchSort sort;
+
+  /// Selected search scopes. Empty means "use the section defaults"
+  /// (see [SearchScopeMeta.defaultsFor]); resolved lookups should go
+  /// through [effectiveScopes].
+  final Set<SearchScope> scopes;
+
+  Set<SearchScope> get effectiveScopes => scopes.isEmpty ? SearchScopeMeta.defaultsFor(entity) : scopes;
 
   factory SearchQuery.fromParams(Map<String, String> params) {
     final entity = SearchEntityMeta.fromSlug(params['type']);
@@ -157,6 +217,7 @@ class SearchQuery {
       topicsMax: int.tryParse(params['topicsMax'] ?? ''),
       venue: SearchVenueSerde.fromParam(params['venue']),
       sort: SearchSortMeta.fromSlug(params['sort'], entity),
+      scopes: SearchScopeMeta.parse(params['scopes']),
     );
   }
 
@@ -178,12 +239,15 @@ class SearchQuery {
     if (sort != SearchSortMeta.optionsFor(entity).first) {
       map['sort'] = sort.slug;
     }
+    if (scopes.isNotEmpty) {
+      map['scopes'] = scopes.map((s) => s.name).join(',');
+    }
     return map;
   }
 
   String toUrl() {
     final params = toParams();
-    if (params.length == 1 && params['type'] == SearchEntity.questions.slug) {
+    if (params.length == 1 && params['type'] == SearchEntity.tournaments.slug) {
       return '/search';
     }
     return Uri(path: '/search', queryParameters: params).toString();
@@ -207,6 +271,7 @@ class SearchQuery {
     bool clearTopicsMax = false,
     SearchVenue? venue,
     SearchSort? sort,
+    Set<SearchScope>? scopes,
   }) {
     return SearchQuery(
       entity: entity ?? this.entity,
@@ -219,19 +284,36 @@ class SearchQuery {
       topicsMax: clearTopicsMax ? null : (topicsMax ?? this.topicsMax),
       venue: venue ?? this.venue,
       sort: sort ?? this.sort,
+      scopes: scopes ?? this.scopes,
     );
   }
 
   /// Switches to a different entity, keeping the free-text query and
-  /// venue but dropping filters that don't apply to the new section and
-  /// resetting sort to that section's default.
+  /// pack-level filters that all pack-backed tabs share. Filters that
+  /// don't apply to the new section are dropped and sort is reset to
+  /// that section's default.
   SearchQuery withEntity(SearchEntity next) {
     if (next == entity) return this;
+    // Authors aggregate across packs and don't run the pack filters at
+    // all — carrying them over would leave irrelevant chips in the URL.
+    final keepsPackFilters = next != SearchEntity.authors;
     return SearchQuery(
       entity: next,
       query: query,
-      venue: next == SearchEntity.authors ? SearchVenue.any : venue,
+      audiences: keepsPackFilters ? audiences : const <TargetAudience>{},
+      gameTypes: keepsPackFilters ? gameTypes : const <GameType>{},
+      playFrom: keepsPackFilters ? playFrom : null,
+      playTo: keepsPackFilters ? playTo : null,
+      topicsMin: keepsPackFilters ? topicsMin : null,
+      topicsMax: keepsPackFilters ? topicsMax : null,
+      // Venue only applies to tournaments; drop it elsewhere so it
+      // doesn't silently linger in the URL.
+      venue: next == SearchEntity.tournaments ? venue : SearchVenue.any,
       sort: SearchSortMeta.optionsFor(next).first,
+      // Drop the scope selection when moving to a section that doesn't
+      // expose the picker — otherwise it would silently linger in the
+      // URL and re-apply if the user came back.
+      scopes: SearchScopeMeta.appliesTo(next) ? scopes : const <SearchScope>{},
     );
   }
 
@@ -243,6 +325,7 @@ class SearchQuery {
       topicsMin != null ||
       topicsMax != null ||
       venue != SearchVenue.any ||
+      scopes.isNotEmpty ||
       sort != SearchSortMeta.optionsFor(entity).first;
 
   static Set<T> _parseEnums<T extends Enum>(String? raw, List<T> values) {
@@ -277,12 +360,14 @@ class AuthorSummary {
   const AuthorSummary({
     required this.author,
     required this.packsCount,
+    required this.totalTopics,
     required this.totalLikes,
     required this.latestPlayDate,
   });
 
   final Author author;
   final int packsCount;
+  final int totalTopics;
   final int totalLikes;
   final DateTime? latestPlayDate;
 
@@ -303,11 +388,13 @@ class _AuthorAccumulator {
 
   final Author author;
   int packs = 0;
+  int topics = 0;
   int likes = 0;
   DateTime? latest;
 
   void add(Pack pack) {
     packs += 1;
+    topics += pack.topicsCount;
     likes += pack.likesCount;
     final latestSoFar = latest;
     if (latestSoFar == null || pack.playDate.isAfter(latestSoFar)) {
@@ -318,6 +405,7 @@ class _AuthorAccumulator {
   AuthorSummary build() => AuthorSummary(
     author: author,
     packsCount: packs,
+    totalTopics: topics,
     totalLikes: likes,
     latestPlayDate: latest,
   );
